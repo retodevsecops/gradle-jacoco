@@ -1,0 +1,24 @@
+pluginManagement {
+    repositories {
+        mavenLocal()
+        //maven { url '...' }
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = 'puc-loans-documents-msa'
+
+include ':app-service'
+project(':app-service').projectDir = file('./applications/app-service')
+
+include ':model'
+project(':model').projectDir = file('./domain/model')
+
+include ':usecase'
+project(':usecase').projectDir = file('./domain/usecase')
+
+include ':rest-consumer'
+project(':rest-consumer').projectDir = file('./infrastructure/driven-adapters/rest-consumer')
+
+include ':api'
+project(':api').projectDir = file('./infrastructure/entry-points/api')
