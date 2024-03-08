@@ -35,7 +35,7 @@ subprojects {
     }
 
     tasks.withType(Test).configureEach {
-        if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_13)) {
+        if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)) {
             jvmArgs += [
                     "-XX:+AllowRedefinitionToAddDeleteMethods"
             ]

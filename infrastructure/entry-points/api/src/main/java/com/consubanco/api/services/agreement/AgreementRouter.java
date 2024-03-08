@@ -14,11 +14,12 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 @Configuration
 public class AgreementRouter {
 
+    private static final String AGREEMENT_NUMBER_PATH_PARAM = "/{agreementNumber}";
     @Value("${entry.api.path-services.agreement}")
     private String agreementServicePath;
     @Bean
     public RouterFunction<ServerResponse> routerFunction(AgreementHandler agreementHandler) {
-        return route(GET(agreementServicePath), agreementHandler::findByNumber);
+        return route(GET(agreementServicePath.concat(AGREEMENT_NUMBER_PATH_PARAM)), agreementHandler::findByNumber);
     }
 
 }

@@ -1,6 +1,6 @@
 package com.consubanco.consumer.adapters.agreement.dto;
 
-import com.consubanco.model.agreement.Agreement;
+import com.consubanco.model.entities.agreement.Agreement;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

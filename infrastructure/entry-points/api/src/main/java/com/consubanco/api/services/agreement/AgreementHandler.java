@@ -1,6 +1,6 @@
 package com.consubanco.api.services.agreement;
 
-import com.consubanco.api.commons.HttpResponseUtil;
+import com.consubanco.api.commons.util.HttpResponseUtil;
 import com.consubanco.usecase.agreement.AgreementUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -12,10 +12,12 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class AgreementHandler {
 
+    private static final String AGREEMENT_NUMBER_PATH_PARAM = "agreementNumber";
     private final AgreementUseCase agreementUseCase;
 
     public Mono<ServerResponse> findByNumber(ServerRequest serverRequest) {
-        return agreementUseCase.findByNumber("10001186")
+        String agreementNumber = serverRequest.pathVariable(AGREEMENT_NUMBER_PATH_PARAM);
+        return agreementUseCase.findByNumber(agreementNumber)
                 .flatMap(HttpResponseUtil::Ok);
     }
 

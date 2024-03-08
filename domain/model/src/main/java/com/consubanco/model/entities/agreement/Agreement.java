@@ -1,5 +1,15 @@
-package com.consubanco.model.agreement;
+package com.consubanco.model.entities.agreement;
 import lombok.*;
+
+/*
+* technical exception 500
+* business exception 409
+* handler exception log de error
+* copiar helper de log:
+* log
+* variable de autenticacion del api va por variable de entorno
+*
+*/
 
 @Getter
 @Setter

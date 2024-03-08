@@ -118,6 +118,7 @@ cmake-build-*/
 
 # IntelliJ
 out/
+gradle/wrapper/gradle-wrapper.jar
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/

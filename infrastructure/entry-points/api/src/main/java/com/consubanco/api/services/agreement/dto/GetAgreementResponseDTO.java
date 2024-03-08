@@ -1,6 +1,6 @@
 package com.consubanco.api.services.agreement.dto;
 
-import com.consubanco.model.agreement.Agreement;
+import com.consubanco.model.entities.agreement.Agreement;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

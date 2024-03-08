@@ -1,7 +1,6 @@
 pluginManagement {
     repositories {
         mavenLocal()
-        //maven { url '...' }
         gradlePluginPortal()
     }
 }
@@ -22,3 +21,6 @@ project(':rest-consumer').projectDir = file('./infrastructure/driven-adapters/re
 
 include ':api'
 project(':api').projectDir = file('./infrastructure/entry-points/api')
+
+include ':custom-logger'
+project(':custom-logger').projectDir = file('./infrastructure/helpers/custom-logger')

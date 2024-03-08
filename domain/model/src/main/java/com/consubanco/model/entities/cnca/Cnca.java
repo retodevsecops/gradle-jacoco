@@ -1,4 +1,4 @@
-package com.consubanco.model.cnca;
+package com.consubanco.model.entities.cnca;
 import lombok.Builder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
