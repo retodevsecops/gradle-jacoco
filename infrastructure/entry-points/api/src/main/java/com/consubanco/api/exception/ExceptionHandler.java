@@ -57,7 +57,7 @@ public class ExceptionHandler extends AbstractErrorWebExceptionHandler {
                 .onErrorResume(BusinessException.class, responseBusinessError(request))
                 .onErrorResume(ResponseStatusException.class, responseStatusError(request))
                 .onErrorResume(responseDefaultError(request))
-                .doOnNext(e -> logger.error("ENTROOOOOO"))
+                .doOnNext(e -> logger.error(e))
                 .cast(ServerResponse.class);
     }
 

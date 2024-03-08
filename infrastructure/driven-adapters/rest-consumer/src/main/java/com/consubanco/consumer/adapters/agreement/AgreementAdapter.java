@@ -2,9 +2,11 @@ package com.consubanco.consumer.adapters.agreement;
 
 import com.consubanco.consumer.adapters.agreement.dto.GetAgreementDetailRequestDTO;
 import com.consubanco.consumer.adapters.agreement.dto.GetAgreementDetailResponseDTO;
+import com.consubanco.consumer.adapters.agreement.properties.AgreementGetDetailApiProperties;
 import com.consubanco.model.entities.agreement.Agreement;
 import com.consubanco.model.entities.agreement.gateways.AgreementRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -14,22 +16,26 @@ import reactor.core.publisher.Mono;
 public class AgreementAdapter implements AgreementRepository {
 
     private final WebClient clientHttp;
+    private final ModelMapper modelMapper;
+    private final AgreementGetDetailApiProperties agreementGetDetailApiProperties;
+
 
     @Override
     public Mono<Agreement> findByNumber(String agreementNumber) {
+        System.out.println(agreementGetDetailApiProperties.getEndpoint());
         return this.clientHttp.post()
-                .uri("https://it-api-gateway.qa.masnominadigital.com/convenios/getDetail")
-                .headers(headers -> headers.setBearerAuth("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub21icmUiOiJQcnVlYmFzIiwiZGVzY3JpcGNpb24iOiJVc3VhcmlvIHBhcmEgaGFjZXIgcHJ1ZWJhcyBkZSBzZXJ2aWNpb3MgZGVzYXJyb2xsYWRvcyIsImlhdCI6MTY0NTg1OTYzM30.3AHLJaCOi12UY9tsvFUMhvrnHI-jZgPgOuBwAj4C7EA"))
+                .uri(agreementGetDetailApiProperties.getEndpoint())
+                .headers(headers -> headers.setBearerAuth(agreementGetDetailApiProperties.getAuthToken()))
                 .bodyValue(this.buildRequest(agreementNumber))
                 .retrieve()
                 .bodyToMono(GetAgreementDetailResponseDTO.class)
-                .map(GetAgreementDetailResponseDTO::toDomainEntity);
+                .map(response -> modelMapper.map(response.getDetail().getAgreement(), Agreement.class));
     }
 
     private GetAgreementDetailRequestDTO buildRequest(String agreementNumber) {
         return GetAgreementDetailRequestDTO.builder()
                 .agreementNumber(agreementNumber)
-                .channel("ECSB")
+                .channel(agreementGetDetailApiProperties.getChannel())
                 .build();
     }
 

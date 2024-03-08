@@ -16,12 +16,13 @@ import java.util.List;
 @Builder(toBuilder = true)
 public class GetAgreementDetailResponseDTO {
 
-    private ResGetAgreementDetailDTO resGetAgreementDetail;
+    @JsonProperty("resGetAgreementDetail")
+    private detailDTO detail;
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class ResGetAgreementDetailDTO implements Serializable {
+    public static class detailDTO implements Serializable {
 
         private String traceId;
 
@@ -126,13 +127,4 @@ public class GetAgreementDetailResponseDTO {
         private String convertTo;
     }
 
-    public Agreement toDomainEntity() {
-        AgreementDTO agreementDTO = this.resGetAgreementDetail.getAgreement();
-        return Agreement.builder()
-                .id(agreementDTO.getId())
-                .name(agreementDTO.getName())
-                .number(agreementDTO.getNumber())
-                .businessName(agreementDTO.getBusinessName())
-                .build();
-    }
 }

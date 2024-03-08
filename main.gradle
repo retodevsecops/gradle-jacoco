@@ -18,6 +18,12 @@ subprojects {
         useJUnitPlatform()
     }
 
+    configurations {
+        implementation {
+            exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+        }
+    }
+
     dependencies {
         implementation 'io.projectreactor:reactor-core'
         implementation 'io.projectreactor.addons:reactor-extra'

@@ -1,6 +1,8 @@
 server:
   port: 8080
 spring:
+  main:
+    banner-mode: off
   webflux:
     base-path: /api/v1/loans-documents
   application:
@@ -14,9 +16,13 @@ spring:
   profiles:
     include: null
 adapter:
-  restconsumer:
+  rest-consumer:
     timeout: 5000
-    url: "http://localhost:8080"
+    apis:
+      agreement-get-detail:
+        endpoint: https://it-api-gateway.qa.masnominadigital.com/convenios/getDetail
+        auth-token: ${API_AGREEMENT_AUTH_TOKEN}
+        channel: ${API_AGREEMENT_CHANNEL:ECSB}
 entry:
   api:
     path-services:
@@ -57,3 +63,4 @@ resilience4j:
         waitDurationInOpenState: "10s"
 cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080"
+
