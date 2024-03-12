@@ -6,9 +6,8 @@ import org.springframework.context.annotation.Configuration;
 
 @Data
 @Configuration
-@ConfigurationProperties(prefix = "adapter.rest-consumer.apis.agreement-get-detail")
+@ConfigurationProperties(prefix = "adapter.rest-consumer.apis.promoter.agreement-get-detail")
 public class AgreementGetDetailApiProperties {
         private String endpoint;
-        private String authToken;
         private String channel;
 }

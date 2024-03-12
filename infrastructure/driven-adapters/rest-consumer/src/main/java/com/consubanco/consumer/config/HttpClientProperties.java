@@ -8,7 +8,5 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "adapters.rest-consumer")
 public class HttpClientProperties {
-
     private int timeout;
-
 }

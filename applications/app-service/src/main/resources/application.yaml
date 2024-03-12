@@ -1,4 +1,4 @@
-server:
+<server:
   port: 8080
 spring:
   main:
@@ -19,15 +19,26 @@ adapter:
   rest-consumer:
     timeout: 5000
     apis:
-      agreement-get-detail:
-        endpoint: https://it-api-gateway.qa.masnominadigital.com/convenios/getDetail
+      promoter:
         auth-token: ${API_AGREEMENT_AUTH_TOKEN}
-        channel: ${API_AGREEMENT_CHANNEL:ECSB}
+        agreement-get-detail:
+          endpoint: https://it-api-gateway.qa.masnominadigital.com/convenios/getDetail
+          channel: ${API_AGREEMENT_CHANNEL:ECSB}
+      api-connect:
+        client-id: ${API_CONNECT_CLIENT_ID}
+        get-cnca-letter:
+          endpoint: http://localhost:3001/
+
 entry:
   api:
+    open-api:
+      title: ${spring.application.name}
+      version: 1.0.0
+      description: resolves loan document capabilities.
     path-services:
       agreement: /agreement
-      cnca: /cnca
+      file: /file
+
 management:
   health:
     circuitbreakers:
@@ -64,3 +75,9 @@ resilience4j:
 cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080"
 
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    disable-swagger-default-url: true
+    path: /swagger.html

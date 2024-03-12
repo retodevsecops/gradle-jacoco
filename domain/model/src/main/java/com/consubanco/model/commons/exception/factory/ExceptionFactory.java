@@ -14,12 +14,12 @@ public class ExceptionFactory {
         return Mono.error(new BusinessException(exceptionMessage));
     }
 
-    public static Mono<Error> buildTechnical(IExceptionMessage exceptionMessage) {
-        return Mono.error(new TechnicalException(exceptionMessage));
+    public static TechnicalException buildTechnical(IExceptionMessage exceptionMessage) {
+        return new TechnicalException(exceptionMessage);
     }
 
-    public static Mono<Error> buildTechnical(Throwable cause, IExceptionMessage exceptionMessage) {
-        return Mono.error(new TechnicalException(cause, exceptionMessage));
+    public static TechnicalException buildTechnical(Throwable cause, IExceptionMessage exceptionMessage) {
+        return new TechnicalException(cause, exceptionMessage);
     }
 
 }

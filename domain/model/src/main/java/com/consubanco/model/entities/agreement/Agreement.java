@@ -1,18 +1,9 @@
 package com.consubanco.model.entities.agreement;
+import com.consubanco.model.entities.document.Document;
 import lombok.*;
 
 import java.io.Serializable;
 import java.util.List;
-
-/*
-* technical exception 500
-* business exception 409
-* handler exception log de error
-* copiar helper de log:
-* log
-* variable de autenticacion del api va por variable de entorno
-*
-*/
 
 @Getter
 @Setter
@@ -25,6 +16,23 @@ public class Agreement {
     private String number;
     private String name;
     private String businessName;
+    private String sectorCode;
+    private String sectorCodeType;
+    private String calculationBaseCode;
+    private String amortizationType;
+    private String calculator;
+    private String providerCapacity;
+    private String csbCode;
+    private String csbName;
+    private String company;
+    private Boolean signaturePromoterIsRequired;
+    private List<Catalog> frequencySalary;
+    private String signatureColor;
+    private List<Catalog> employeeType;
+    private List<Catalog> quotationType;
+    private List<Catalog> contract_type;
+    private List<Catalog> positions;
+    private Boolean videoTaskIsRequired;
     private List<Document> documents;
     private List<Annexe>  annexes;
 
@@ -33,33 +41,9 @@ public class Agreement {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder(toBuilder = true)
-    public static class Document {
-        private String id;
-        private String name;
-        private String technicalName;
-        private String classification;
-        private Boolean required;
-        private Boolean visible;
-        private List<Field> fields;
-    }
-
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Builder(toBuilder = true)
-    public static class Field {
-
-        private String id;
-        private Integer order;
-        private String name;
-        private String technicalName;
-        private String classification;
-        private String type;
-        private Boolean required;
-        private String max;
-        private Boolean isSpecial;
-        private String convertTo;
+    public static class Catalog {
+        private String code;
+        private String description;
     }
 
     @Getter

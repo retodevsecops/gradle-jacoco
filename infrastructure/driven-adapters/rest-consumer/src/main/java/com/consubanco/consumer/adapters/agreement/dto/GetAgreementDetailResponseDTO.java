@@ -2,10 +2,7 @@ package com.consubanco.consumer.adapters.agreement.dto;
 
 import com.consubanco.model.entities.agreement.Agreement;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.List;
@@ -17,12 +14,12 @@ import java.util.List;
 public class GetAgreementDetailResponseDTO {
 
     @JsonProperty("resGetAgreementDetail")
-    private detailDTO detail;
+    private DetailDTO detail;
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class detailDTO implements Serializable {
+    public static class DetailDTO implements Serializable {
 
         private String traceId;
 
@@ -64,14 +61,59 @@ public class GetAgreementDetailResponseDTO {
         @JsonProperty("calculator")
         private String calculator;
 
+        @JsonProperty("provider_capacity")
+        private String providerCapacity;
+
+        @JsonProperty("codigo_csb")
+        private String csbCode;
+
+        @JsonProperty("nombre_csb")
+        private String csbName;
+
+        @JsonProperty("empresa")
+        private String company;
+
+        @JsonProperty("firma_promotor")
+        private Boolean signaturePromoterIsRequired;
+
+        @JsonProperty("frecuenciaSueldo")
+        private List<CatalogDTO> frequencySalary;
+
         @JsonProperty("signature_color")
         private String signatureColor;
 
-        private  List<DocumentDTO> documents;
+        @JsonProperty("tipo_de_empleado")
+        private List<CatalogDTO> employeeType;
+
+        @JsonProperty("tipo_de_cotizacion")
+        private List<CatalogDTO> quotationType;
+
+        @JsonProperty("tipo_de_contrato")
+        private List<CatalogDTO> contract_type;
+
+        @JsonProperty("puestos")
+        private List<CatalogDTO> positions;
+
+        @JsonProperty("video_task")
+        private Boolean videoTaskIsRequired;
+
+        private List<DocumentDTO> documents;
 
         @JsonProperty("anexos")
         private List<AnnexeDTO>  annexes;
 
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class CatalogDTO {
+
+        @JsonProperty("codigo")
+        private String code;
+
+        @JsonProperty("descripcion")
+        private String description;
     }
 
     @Data
@@ -82,10 +124,16 @@ public class GetAgreementDetailResponseDTO {
         private String id;
         private String name;
         private String technicalName;
+
         @JsonProperty("clasification")
         private String classification;
-        private Boolean required;
-        private Boolean visible;
+
+        @JsonProperty("required")
+        private Boolean isRequired;
+
+        @JsonProperty("visible")
+        private Boolean isVisible;
+
         private List<FieldDTO> fields;
     }
 
@@ -98,10 +146,13 @@ public class GetAgreementDetailResponseDTO {
         private Integer order;
         private String name;
         private String technicalName;
+
         @JsonProperty("clasification")
         private String classification;
         private String type;
-        private Boolean required;
+
+        @JsonProperty("required")
+        private Boolean isRequired;
         private String max;
         private Boolean isSpecial;
         private String convertTo;
