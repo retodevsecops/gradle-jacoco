@@ -6,7 +6,6 @@ import com.consubanco.consumer.adapters.file.properties.GetCNCALetterApiProperti
 import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.gateways.FileRepository;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;

@@ -13,20 +13,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.server.RequestPredicates;
-import org.springframework.web.reactive.function.server.RouterFunction;
-import org.springframework.web.reactive.function.server.RouterFunctions;
-import org.springframework.web.reactive.function.server.ServerRequest;
-import org.springframework.web.reactive.function.server.ServerResponse;
+import org.springframework.web.reactive.function.server.*;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
 import java.util.function.Function;
 
-import static com.consubanco.api.exception.ErrorFactory.buildFromTechnicalException;
-import static com.consubanco.api.exception.ErrorFactory.buildFromBusinessException;
-import static com.consubanco.api.exception.ErrorFactory.buildFromResponseStatus;
-import static com.consubanco.api.exception.ErrorFactory.buildResponseDefault;
+import static com.consubanco.api.exception.ErrorFactory.*;
 import static reactor.core.publisher.Mono.just;
 
 

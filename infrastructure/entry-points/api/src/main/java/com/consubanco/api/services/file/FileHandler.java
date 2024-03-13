@@ -1,7 +1,6 @@
 package com.consubanco.api.services.file;
 
 import com.consubanco.api.commons.util.HttpResponseUtil;
-import com.consubanco.usecase.agreement.AgreementUseCase;
 import com.consubanco.usecase.file.FileUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

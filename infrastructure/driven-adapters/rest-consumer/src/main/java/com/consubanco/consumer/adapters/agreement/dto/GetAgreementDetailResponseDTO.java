@@ -1,8 +1,10 @@
 package com.consubanco.consumer.adapters.agreement.dto;
 
-import com.consubanco.model.entities.agreement.Agreement;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.List;

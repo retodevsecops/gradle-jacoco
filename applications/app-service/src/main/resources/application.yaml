@@ -15,19 +15,20 @@ spring:
       path: "/h2"
   profiles:
     include: null
+
 adapter:
   rest-consumer:
     timeout: 5000
     apis:
       promoter:
-        auth-token: ${API_AGREEMENT_AUTH_TOKEN}
+        auth-token: ${API_PROMOTER_AUTH_TOKEN}
         agreement-get-detail:
-          endpoint: https://it-api-gateway.qa.masnominadigital.com/convenios/getDetail
+          endpoint: ${API_AGREEMENT_GET_DETAIL:https://it-api-gateway.qa.masnominadigital.com/convenios/getDetail}
           channel: ${API_AGREEMENT_CHANNEL:ECSB}
       api-connect:
         client-id: ${API_CONNECT_CLIENT_ID}
         get-cnca-letter:
-          endpoint: http://localhost:3001/
+          endpoint: ${API_AGREEMENT_GET_DETAIL:http://localhost:3001/}
 
 entry:
   api:

@@ -1,6 +1,5 @@
 package com.consubanco.usecase.agreement;
 
-import com.consubanco.model.commons.exception.BusinessException;
 import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.consubanco.model.entities.agreement.Agreement;
 import com.consubanco.model.entities.agreement.gateways.AgreementRepository;

@@ -1,10 +1,9 @@
 package com.consubanco.api.services.agreement;
 
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import org.springdoc.core.fn.builders.operation.Builder;
 
 import java.util.function.Consumer;
-
-import org.springdoc.core.fn.builders.operation.Builder;
 
 import static org.springdoc.core.fn.builders.parameter.Builder.parameterBuilder;
 

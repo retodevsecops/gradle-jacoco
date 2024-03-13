@@ -1,7 +1,5 @@
 package com.consubanco.api.services.agreement;
 
-import com.consubanco.api.services.agreement.AgreementHandler;
-import org.springdoc.webflux.core.fn.SpringdocRouteBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,8 +9,8 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
-import static org.springframework.web.reactive.function.server.RequestPredicates.path;
 import static org.springdoc.webflux.core.fn.SpringdocRouteBuilder.route;
+import static org.springframework.web.reactive.function.server.RequestPredicates.path;
 
 @Configuration
 public class AgreementRouter {

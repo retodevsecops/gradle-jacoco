@@ -1,0 +1,27 @@
+Configuration:
+  name: PropertiesConfig
+  Properties:
+    Property:
+      - name: filename
+        value: logs
+  Appenders:
+    Console:
+      name: STDOUT
+      type: Console
+      JsonLayout:
+        objectMessageAsJsonObject: true
+        complete: false
+        compact: true
+        eventEol: true
+        properties: false
+        stacktraceAsString: false
+        includeTimeMillis: true
+        propertiesAsList: false
+        KeyValuePair:
+          - key: microservice
+            value: "${spring.application.name}"
+  Loggers:
+    Root:
+      level: "${sys:LOG_LEVEL:-info}"
+      AppenderRef:
+        - ref: STDOUT

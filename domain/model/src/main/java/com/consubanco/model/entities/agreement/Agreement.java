@@ -1,8 +1,8 @@
 package com.consubanco.model.entities.agreement;
+
 import com.consubanco.model.entities.document.Document;
 import lombok.*;
 
-import java.io.Serializable;
 import java.util.List;
 
 @Getter

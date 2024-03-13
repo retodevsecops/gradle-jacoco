@@ -1,6 +1,5 @@
 package com.consubanco.model.entities.document;
 
-import com.consubanco.model.entities.agreement.Agreement;
 import com.consubanco.model.entities.field.Field;
 import lombok.*;
 

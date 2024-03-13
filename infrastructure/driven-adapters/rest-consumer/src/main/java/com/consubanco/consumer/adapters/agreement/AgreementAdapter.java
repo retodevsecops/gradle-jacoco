@@ -6,8 +6,6 @@ import com.consubanco.consumer.adapters.agreement.properties.AgreementGetDetailA
 import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.consubanco.model.entities.agreement.Agreement;
 import com.consubanco.model.entities.agreement.gateways.AgreementRepository;
-import com.consubanco.model.entities.agreement.message.AgreementTechnicalMessage;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
