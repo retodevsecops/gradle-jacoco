@@ -15,7 +15,7 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 @Configuration
 public class FileRouter {
 
-    private static final String GET_CNCA_PATH_PARAM = "/cnca/{accountNumber}";
+    private static final String CNCA_PATH = "/cnca/offer";
     @Value("${entry.api.path-services.file}")
     private String fileServicesPath;
 
@@ -24,7 +24,7 @@ public class FileRouter {
         return RouterFunctions.nest(
                 path(fileServicesPath).and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                 route()
-                    .GET(GET_CNCA_PATH_PARAM, handler::getCNCALetter, FileOpenAPI.getCNCALetter())
+                    .POST(CNCA_PATH, handler::buildCNCALetters, FileOpenAPI.buildCNCALetters())
                     .build()
         );
     }

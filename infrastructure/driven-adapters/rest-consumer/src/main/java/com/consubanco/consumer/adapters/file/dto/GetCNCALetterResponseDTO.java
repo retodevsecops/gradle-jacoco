@@ -33,47 +33,7 @@ public class GetCNCALetterResponseDTO {
     @NoArgsConstructor
     public static class FileResponseDTO implements Serializable {
         private String fileName;
-        private String url;
         private String base64;
-        private DocumentDTO document;
-    }
-
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class DocumentDTO implements Serializable {
-
-        private String id;
-        private String name;
-        private String technicalName;
-
-        @JsonProperty("clasification")
-        private String classification;
-
-        @JsonProperty("required")
-        private Boolean isRequired;
-
-        @JsonProperty("visible")
-        private Boolean isVisible;
-        private List<FieldDTO> fields;
-    }
-
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class FieldDTO implements Serializable {
-
-        private String id;
-        private String name;
-        private String technicalName;
-
-        @JsonProperty("clasification")
-        private String classification;
-        private String type;
-
-        @JsonProperty("required")
-        private Boolean isRequired;
-        private String value;
     }
 
 }

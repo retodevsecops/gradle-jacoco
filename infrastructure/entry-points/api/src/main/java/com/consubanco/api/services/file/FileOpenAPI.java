@@ -11,7 +11,7 @@ public class FileOpenAPI {
 
     private static final String TAG = "File";
 
-    public static Consumer<Builder> getCNCALetter() {
+    public static Consumer<Builder> buildCNCALetters() {
         return ops -> ops.tag(TAG)
                 .operationId("getCNCALetter")
                 .description("Get CNCA letter by account number")

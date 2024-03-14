@@ -19,8 +19,14 @@ project(':usecase').projectDir = file('./domain/usecase')
 include ':rest-consumer'
 project(':rest-consumer').projectDir = file('./infrastructure/driven-adapters/rest-consumer')
 
+include ':gcs-storage'
+project(':gcs-storage').projectDir = file('./infrastructure/driven-adapters/gcs-storage')
+
 include ':api'
 project(':api').projectDir = file('./infrastructure/entry-points/api')
 
 include ':custom-logger'
 project(':custom-logger').projectDir = file('./infrastructure/helpers/custom-logger')
+
+include ':caffeine-cache'
+project(':caffeine-cache').projectDir = file('./infrastructure/helpers/caffeine-cache')

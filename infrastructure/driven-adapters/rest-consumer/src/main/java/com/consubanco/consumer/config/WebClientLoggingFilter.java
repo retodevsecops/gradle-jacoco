@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
-import org.springframework.web.reactive.function.BodyExtractors;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
@@ -83,7 +82,7 @@ public class WebClientLoggingFilter implements ExchangeFilterFunction {
     public static Map<String, Object> extractHeaders(HttpHeaders httpHeaders) {
         return httpHeaders.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, entry ->
-                        entry.getValue().size() == 1 ? entry.getValue().get(0) : entry.getValue())
+                        entry.getValue().size() == 1 ? entry.getValue().stream().findFirst() : entry.getValue())
                 );
     }
 

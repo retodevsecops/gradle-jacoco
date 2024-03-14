@@ -8,6 +8,7 @@ import com.consubanco.model.entities.agreement.Agreement;
 import com.consubanco.model.entities.agreement.gateways.AgreementRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -15,21 +16,22 @@ import reactor.core.publisher.Mono;
 import static com.consubanco.model.entities.agreement.message.AgreementTechnicalMessage.API_ERROR;
 
 @Service
-public class AgreementAdapter implements AgreementRepository {
+public class AgreementConsumerAdapter implements AgreementRepository {
 
     private final WebClient clientHttp;
     private final ModelMapper modelMapper;
     private final AgreementGetDetailApiProperties agreementGetDetailApiProperties;
 
-    public AgreementAdapter(final @Qualifier("ApiPromoterClient") WebClient clientHttp,
-                            final ModelMapper modelMapper,
-                            final AgreementGetDetailApiProperties agreementGetDetailApiProperties) {
+    public AgreementConsumerAdapter(final @Qualifier("ApiPromoterClient") WebClient clientHttp,
+                                    final ModelMapper modelMapper,
+                                    final AgreementGetDetailApiProperties agreementGetDetailApiProperties) {
         this.clientHttp = clientHttp;
         this.modelMapper = modelMapper;
         this.agreementGetDetailApiProperties = agreementGetDetailApiProperties;
     }
 
     @Override
+    @Cacheable("agreements")
     public Mono<Agreement> findByNumber(String agreementNumber) {
         return this.clientHttp.post()
                 .uri(agreementGetDetailApiProperties.getEndpoint())

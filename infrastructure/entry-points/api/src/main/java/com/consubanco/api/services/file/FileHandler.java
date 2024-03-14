@@ -1,6 +1,7 @@
 package com.consubanco.api.services.file;
 
 import com.consubanco.api.commons.util.HttpResponseUtil;
+import com.consubanco.api.services.file.dto.BuildCNCALettersRequestDTO;
 import com.consubanco.usecase.file.FileUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -12,12 +13,13 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class FileHandler {
 
-    private static final String ACCOUNT_NUMBER_PATH_PARAM = "accountNumber";
     private final FileUseCase fileUseCase;
 
-    public Mono<ServerResponse> getCNCALetter(ServerRequest serverRequest) {
-        String accountNumber = serverRequest.pathVariable(ACCOUNT_NUMBER_PATH_PARAM);
-        return fileUseCase.getCNCALetterByAccountNumber(accountNumber)
+    public Mono<ServerResponse> buildCNCALetters(ServerRequest serverRequest) {
+        return serverRequest.bodyToMono(BuildCNCALettersRequestDTO.class)
+                .map(BuildCNCALettersRequestDTO::getOffer)
+                .flatMapMany(offerDTO -> fileUseCase.buildCNCALetters(offerDTO.getId(), offerDTO.getLoansId()))
+                .collectList()
                 .flatMap(HttpResponseUtil::Ok);
     }
 

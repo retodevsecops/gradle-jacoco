@@ -1,8 +1,12 @@
 package com.consubanco.model.entities.file.gateways;
 
 import com.consubanco.model.entities.file.File;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 public interface FileRepository {
-    Mono<File> getCNCALetter(String accountNumber);
+    Flux<File> bulkSave(List<File> files);
+    Mono<File> save(File file);
 }

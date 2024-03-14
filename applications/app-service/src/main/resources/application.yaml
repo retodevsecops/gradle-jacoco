@@ -15,7 +15,6 @@ spring:
       path: "/h2"
   profiles:
     include: null
-
 adapter:
   rest-consumer:
     timeout: 5000
@@ -29,7 +28,8 @@ adapter:
         client-id: ${API_CONNECT_CLIENT_ID}
         get-cnca-letter:
           endpoint: ${API_AGREEMENT_GET_DETAIL:http://localhost:3001/}
-
+  gcs-storage:
+    project-id: ${GCS_PROJECT_ID:default}
 entry:
   api:
     open-api:
@@ -39,6 +39,10 @@ entry:
     path-services:
       agreement: /agreement
       file: /file
+helpers:
+  caffeine:
+    expire-after-write: ${CACHE_EXPIRE_TIME_MINUTES:2}
+    max-size-elements: ${CACHE_MAX_SIZE_ELEMENTS:100}
 
 management:
   health:
