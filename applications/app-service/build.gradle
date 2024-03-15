@@ -25,5 +25,5 @@ jar {
 
 bootJar {
     // Sets output jar name
-    archiveFileName = "${project.getParent().getName()}.${archiveExtension.get()}"
+    archiveFileName = "../../../../build/libs/${project.getParent().getName()}-${project.getParent().getVersion()}.${archiveExtension.get()}"
 }
