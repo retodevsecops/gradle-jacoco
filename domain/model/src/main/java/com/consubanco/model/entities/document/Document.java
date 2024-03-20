@@ -14,8 +14,15 @@ public class Document {
     private String id;
     private String name;
     private String technicalName;
+    private String order;
     private String classification;
     private Boolean isRequired;
     private Boolean isVisible;
+    private Boolean isSpecial;
+    private String type;
+    private String max;
+    private List<String> typeFile;
+    private Boolean isClient;
+    private String convertTo;
     private List<Field> fields;
 }

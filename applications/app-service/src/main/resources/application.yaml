@@ -1,4 +1,4 @@
-<server:
+server:
   port: 8080
 spring:
   main:
@@ -21,13 +21,16 @@ adapter:
     apis:
       promoter:
         auth-token: ${API_PROMOTER_AUTH_TOKEN}
+        generate-document:
+          endpoint: ${API_GENERATE_DOCUMENT_ENDPOINT:https://documents.qa.masnominadigital.com/api/generate/csb}
         agreement-get-detail:
-          endpoint: ${API_AGREEMENT_GET_DETAIL:https://it-api-gateway.qa.masnominadigital.com/convenios/getDetail}
-          channel: ${API_AGREEMENT_CHANNEL:ECSB}
+          endpoint: ${API_GET_AGREEMENT_ENDPOINT:https://it-api-gateway.qa.masnominadigital.com/convenios/getDetail}
+          channel: ${API_GET_AGREEMENT_CHANNEL:ECSB}
       api-connect:
         client-id: ${API_CONNECT_CLIENT_ID}
         get-cnca-letter:
-          endpoint: ${API_AGREEMENT_GET_DETAIL:http://localhost:3001/}
+          endpoint: ${API_GET_CNCA_ENDPOINT:https://apic.consubanco.com/csb/qa/opc-service/getCNCALetter}
+          application-id: ${API_GET_CNCA_APPLICATION:CSB-CTE-APP}
   gcs-storage:
     project-id: ${GCS_PROJECT_ID:default}
 entry:
@@ -35,10 +38,11 @@ entry:
     open-api:
       title: ${spring.application.name}
       version: 1.0.0
-      description: resolves loan document capabilities.
+      description: Resolves loan document capabilities.
     path-services:
       agreement: /agreement
       file: /file
+      document: /document
 helpers:
   caffeine:
     expire-after-write: ${CACHE_EXPIRE_TIME_MINUTES:2}
@@ -51,11 +55,12 @@ management:
   endpoints:
     web:
       exposure:
-        include: "health,prometheus"
+        include: health,prometheus
   endpoint:
     health:
       probes:
         enabled: true
+        show-details: always
 resilience4j:
   circuitbreaker:
     instances:
@@ -77,8 +82,6 @@ resilience4j:
         slidingWindowSize: 10
         minimumNumberOfCalls: 10
         waitDurationInOpenState: "10s"
-cors:
-  allowed-origins: "http://localhost:4200,http://localhost:8080"
 
 springdoc:
   api-docs:

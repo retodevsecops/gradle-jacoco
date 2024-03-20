@@ -16,19 +16,19 @@ import static com.consubanco.model.entities.file.message.FileTechnicalMessage.AP
 public class FileAdapter implements FileGateway {
 
     private final WebClient clientHttp;
-    private final GetCNCALetterApiProperties getCNCALetterApiProperties;
+    private final GetCNCALetterApiProperties apiProperties;
 
     public FileAdapter(final @Qualifier("ApiConnectClient") WebClient clientHttp,
                        final GetCNCALetterApiProperties getCNCALetterApiProperties) {
         this.clientHttp = clientHttp;
-        this.getCNCALetterApiProperties = getCNCALetterApiProperties;
+        this.apiProperties = getCNCALetterApiProperties;
     }
 
     @Override
     public Mono<String> getContentCNCALetter(String loanId) {
-        GetCNCALetterRequestDTO requestDTO = new GetCNCALetterRequestDTO("", loanId);
+        GetCNCALetterRequestDTO requestDTO = new GetCNCALetterRequestDTO(apiProperties.getApplicationId(), loanId);
         return this.clientHttp.post()
-                .uri(getCNCALetterApiProperties.getEndpoint())
+                .uri(apiProperties.getEndpoint())
                 .bodyValue(requestDTO)
                 .retrieve()
                 .bodyToMono(GetCNCALetterResponseDTO.class)

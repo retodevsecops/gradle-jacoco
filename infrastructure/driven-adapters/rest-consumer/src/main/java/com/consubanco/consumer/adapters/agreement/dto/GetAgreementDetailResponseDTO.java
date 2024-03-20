@@ -102,7 +102,7 @@ public class GetAgreementDetailResponseDTO {
         private List<DocumentDTO> documents;
 
         @JsonProperty("anexos")
-        private List<AnnexeDTO>  annexes;
+        private List<DocumentDTO>  annexes;
 
     }
 
@@ -126,6 +126,7 @@ public class GetAgreementDetailResponseDTO {
         private String id;
         private String name;
         private String technicalName;
+        private String order;
 
         @JsonProperty("clasification")
         private String classification;
@@ -135,7 +136,12 @@ public class GetAgreementDetailResponseDTO {
 
         @JsonProperty("visible")
         private Boolean isVisible;
-
+        private Boolean isSpecial;
+        private String type;
+        private String max;
+        private List<String> typeFile;
+        private Boolean isClient;
+        private String convertTo;
         private List<FieldDTO> fields;
     }
 
@@ -157,26 +163,6 @@ public class GetAgreementDetailResponseDTO {
         private Boolean isRequired;
         private String max;
         private Boolean isSpecial;
-        private String convertTo;
-    }
-
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class AnnexeDTO implements Serializable {
-
-        private String id;
-        private String order;
-        private String name;
-        private String technicalName;
-        @JsonProperty("clasification")
-        private String classification;
-        private String type;
-        private Boolean required;
-        private String max;
-        private Boolean isSpecial;
-        private List<String> typeFile;
-        private Boolean isClient;
         private String convertTo;
     }
 

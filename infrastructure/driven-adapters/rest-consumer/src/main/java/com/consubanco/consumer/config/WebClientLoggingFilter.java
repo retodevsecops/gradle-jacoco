@@ -40,8 +40,9 @@ public class WebClientLoggingFilter implements ExchangeFilterFunction {
     private <T> void orchestrateLog(ClientRequest request, ClientResponse response, T body) {
         if (response.statusCode().isError()) {
             buildLogError(request, response, body);
+        } else {
+            buildLogInfo(request, response, body);
         }
-        buildLogInfo(request, response, body);
     }
 
     private <T> void buildLogError(ClientRequest request, ClientResponse response, T body) {
@@ -82,7 +83,7 @@ public class WebClientLoggingFilter implements ExchangeFilterFunction {
     public static Map<String, Object> extractHeaders(HttpHeaders httpHeaders) {
         return httpHeaders.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, entry ->
-                        entry.getValue().size() == 1 ? entry.getValue().stream().findFirst() : entry.getValue())
+                        entry.getValue().size() == 1 ? entry.getValue().get(0) : entry.getValue())
                 );
     }
 

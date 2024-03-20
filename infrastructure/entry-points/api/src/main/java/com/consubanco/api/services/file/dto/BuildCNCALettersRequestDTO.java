@@ -1,5 +1,6 @@
 package com.consubanco.api.services.file.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -27,10 +28,12 @@ public class BuildCNCALettersRequestDTO {
     public static class OfferDTO implements Serializable {
 
         @NotBlank(message = "Offer identifier is required")
+        @Schema(description = "Offer identification number", example = "1775622")
         private String id;
 
         @Valid
         @NotEmpty(message = "List of loans is required")
+        @Schema(description = "List of loans belonging to the offer")
         private List<@NotNull(message = "LoansId is required") @Positive(message = "LoansId must be numerical") String> loansId;
     }
 

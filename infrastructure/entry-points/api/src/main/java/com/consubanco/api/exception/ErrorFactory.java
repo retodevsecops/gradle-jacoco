@@ -10,6 +10,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.function.Function;
 
+import static com.consubanco.model.commons.exception.message.TechnicalMessage.INVALID_REQUEST;
 import static reactor.core.publisher.Mono.just;
 
 @UtilityClass
@@ -39,7 +40,7 @@ public class ErrorFactory {
 
     public static Function<ResponseStatusException, Mono<ErrorDTO>> buildFromResponseStatus(String pathService) {
         return responseStatusException -> getReason(responseStatusException)
-                .flatMap(reason -> buildResponseDefault(reason, pathService));
+                .map(reason -> buildError(INVALID_REQUEST, reason, pathService));
     }
 
     private static Mono<String> getReason(ResponseStatusException responseException) {

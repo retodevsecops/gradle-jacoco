@@ -34,7 +34,7 @@ public class Agreement {
     private List<Catalog> positions;
     private Boolean videoTaskIsRequired;
     private List<Document> documents;
-    private List<Annexe>  annexes;
+    private List<Document>  annexes;
 
     @Getter
     @Setter
@@ -44,26 +44,6 @@ public class Agreement {
     public static class Catalog {
         private String code;
         private String description;
-    }
-
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Builder(toBuilder = true)
-    public static class Annexe {
-        private String id;
-        private String order;
-        private String name;
-        private String technicalName;
-        private String classification;
-        private String type;
-        private Boolean required;
-        private String max;
-        private Boolean isSpecial;
-        private List<String> typeFile;
-        private Boolean isClient;
-        private String convertTo;
     }
 
 }

@@ -27,7 +27,7 @@ import static reactor.core.publisher.Mono.just;
 @Component
 public class ExceptionHandler extends AbstractErrorWebExceptionHandler {
 
-    private CustomLogger logger;
+    private final CustomLogger logger;
 
     public ExceptionHandler(DefaultErrorAttributes errorAttributes, ApplicationContext applicationContext,
                             ServerCodecConfigurer serverCodecConfigurer,
@@ -50,7 +50,6 @@ public class ExceptionHandler extends AbstractErrorWebExceptionHandler {
                 .onErrorResume(BusinessException.class, responseBusinessError(request))
                 .onErrorResume(ResponseStatusException.class, responseStatusError(request))
                 .onErrorResume(responseDefaultError(request))
-                .doOnNext(e -> logger.error(e))
                 .cast(ServerResponse.class);
     }
 
@@ -62,20 +61,22 @@ public class ExceptionHandler extends AbstractErrorWebExceptionHandler {
     private Function<TechnicalException, Mono<ServerResponse>> responseTechnicalError(ServerRequest request) {
         return technicalException -> ParamsUtil.getDomain(request)
                 .flatMap(domain -> buildFromTechnicalException(technicalException, domain))
+                .doOnNext(logger::error)
                 .flatMap(HttpResponseUtil::InternalError);
     }
 
     private Function<BusinessException, Mono<ServerResponse>> responseBusinessError(ServerRequest request) {
         return businessException -> ParamsUtil.getDomain(request)
                 .flatMap(domain -> buildFromBusinessException(businessException, domain))
+                .doOnNext(logger::error)
                 .flatMap(HttpResponseUtil::conflict);
     }
 
     private Function<ResponseStatusException, Mono<ServerResponse>> responseStatusError(ServerRequest request) {
         return statusException -> ParamsUtil.getDomain(request)
-                .flatMap(domain -> buildFromResponseStatus(domain)
-                        .apply(statusException)
-                        .flatMap(error -> HttpResponseUtil.buildResponse(statusException.getStatusCode(), error)));
+                .flatMap(domain -> buildFromResponseStatus(domain).apply(statusException))
+                .doOnNext(logger::error)
+                .flatMap(error -> HttpResponseUtil.buildResponse(statusException.getStatusCode(), error));
     }
 
     private Function<Throwable, Mono<ServerResponse>> responseDefaultError(ServerRequest serverRequest) {
@@ -83,5 +84,7 @@ public class ExceptionHandler extends AbstractErrorWebExceptionHandler {
                 .flatMap(domain -> buildResponseDefault(exception.getMessage(), domain))
                 .flatMap(HttpResponseUtil::InternalError);
     }
+
+
 
 }
