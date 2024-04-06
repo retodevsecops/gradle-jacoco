@@ -3,29 +3,35 @@ package com.consubanco.api.services.file;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.MediaType;
-import org.springframework.web.reactive.function.server.RequestPredicates;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
+import static com.consubanco.api.services.file.FileOpenAPI.*;
+import static com.consubanco.api.services.file.constants.FilePaths.*;
 import static org.springdoc.webflux.core.fn.SpringdocRouteBuilder.route;
-import static org.springframework.web.reactive.function.server.RequestPredicates.path;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
+import static org.springframework.web.reactive.function.server.RequestPredicates.*;
 
 @Configuration
 public class FileRouter {
 
-    private static final String CNCA_PATH = "/cnca/offer";
     @Value("${entry.api.path-services.file}")
     private String fileServicesPath;
 
     @Bean
     public RouterFunction<ServerResponse> fileRoutes(FileHandler handler) {
         return RouterFunctions.nest(
-                path(fileServicesPath).and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
+                path(fileServicesPath).and(accept(APPLICATION_JSON)),
                 route()
-                    .POST(CNCA_PATH, handler::buildCNCALetters, FileOpenAPI.buildCNCALetters())
-                    .build()
+                    .POST(CNCA_PATH, handler::buildCNCALetters, buildCNCALetters())
+                    .POST(GENERATE_DOCUMENT_PATH, handler::generateFileWithDocuments, generateFileWithDocuments())
+                    .POST(GENERATE_DOCUMENT_ENCODED_PATH, handler::generateFileEncoded, generateFileEncoded())
+                    .POST(GET_AND_UPLOAD_DOCUMENT_PATH, handler::getAndUpload, getAndUpload())
+                    .POST(DOCUMENTS_AGREEMENT_PATH, contentType(MULTIPART_FORM_DATA), handler::uploadAgreementFiles, uploadAgreementFiles())
+                    .GET(DOCUMENTS_OFFER_PATH, handler::getFilesByOffer, getFilesByOffer())
+               .build()
         );
     }
 

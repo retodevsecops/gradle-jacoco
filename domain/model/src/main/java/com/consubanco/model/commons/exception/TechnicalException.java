@@ -13,6 +13,11 @@ public class TechnicalException extends RuntimeException {
         this.exceptionMessage = exceptionMessage;
     }
 
+    public TechnicalException(String cause, IExceptionMessage exceptionMessage) {
+        super(cause);
+        this.exceptionMessage = exceptionMessage;
+    }
+
     public TechnicalException(IExceptionMessage technicalMessage) {
         this.exceptionMessage = technicalMessage;
     }

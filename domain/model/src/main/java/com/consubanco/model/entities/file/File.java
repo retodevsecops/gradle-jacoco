@@ -8,8 +8,15 @@ import lombok.*;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class File {
+
     private String name;
     private String content;
     private String url;
-    private String bucketName;
+    private String directoryPath;
+    private String size;
+
+    public String fullPath(){
+        return this.directoryPath.concat(this.name);
+    }
+
 }

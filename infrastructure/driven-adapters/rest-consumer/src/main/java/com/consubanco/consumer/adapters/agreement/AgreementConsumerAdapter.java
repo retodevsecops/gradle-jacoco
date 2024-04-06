@@ -1,11 +1,10 @@
 package com.consubanco.consumer.adapters.agreement;
 
-import com.consubanco.consumer.adapters.agreement.dto.GetAgreementDetailRequestDTO;
-import com.consubanco.consumer.adapters.agreement.dto.GetAgreementDetailResponseDTO;
-import com.consubanco.consumer.adapters.agreement.properties.AgreementGetDetailApiProperties;
-import com.consubanco.model.commons.exception.factory.ExceptionFactory;
+import com.consubanco.consumer.adapters.agreement.dto.GetAgreementRequestDTO;
+import com.consubanco.consumer.adapters.agreement.dto.GetAgreementResponseDTO;
+import com.consubanco.consumer.adapters.agreement.properties.AgreementApisProperties;
 import com.consubanco.model.entities.agreement.Agreement;
-import com.consubanco.model.entities.agreement.gateways.AgreementRepository;
+import com.consubanco.model.entities.agreement.gateways.AgreementGateway;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
@@ -13,40 +12,34 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
 import static com.consubanco.model.entities.agreement.message.AgreementTechnicalMessage.API_ERROR;
 
 @Service
-public class AgreementConsumerAdapter implements AgreementRepository {
+public class AgreementConsumerAdapter implements AgreementGateway {
 
     private final WebClient clientHttp;
     private final ModelMapper modelMapper;
-    private final AgreementGetDetailApiProperties agreementGetDetailApiProperties;
+    private final AgreementApisProperties apis;
 
     public AgreementConsumerAdapter(final @Qualifier("ApiPromoterClient") WebClient clientHttp,
                                     final ModelMapper modelMapper,
-                                    final AgreementGetDetailApiProperties agreementGetDetailApiProperties) {
+                                    final AgreementApisProperties apis) {
         this.clientHttp = clientHttp;
         this.modelMapper = modelMapper;
-        this.agreementGetDetailApiProperties = agreementGetDetailApiProperties;
+        this.apis = apis;
     }
 
     @Override
     @Cacheable("agreements")
     public Mono<Agreement> findByNumber(String agreementNumber) {
         return this.clientHttp.post()
-                .uri(agreementGetDetailApiProperties.getEndpoint())
-                .bodyValue(this.buildRequest(agreementNumber))
+                .uri(apis.getApiGetAgreement())
+                .bodyValue(new GetAgreementRequestDTO(agreementNumber, apis.getChannel()))
                 .retrieve()
-                .bodyToMono(GetAgreementDetailResponseDTO.class)
+                .bodyToMono(GetAgreementResponseDTO.class)
                 .map(response -> modelMapper.map(response.getDetail().getAgreement(), Agreement.class))
-                .onErrorMap(error -> ExceptionFactory.buildTechnical(error, API_ERROR));
-    }
-
-    private GetAgreementDetailRequestDTO buildRequest(String agreementNumber) {
-        return GetAgreementDetailRequestDTO.builder()
-                .agreementNumber(agreementNumber)
-                .channel(agreementGetDetailApiProperties.getChannel())
-                .build();
+                .onErrorMap(throwTechnicalError(API_ERROR));
     }
 
 }

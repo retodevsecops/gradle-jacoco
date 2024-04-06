@@ -15,13 +15,14 @@ public class HttpResponseUtil {
         return buildResponse(OK, body);
     }
 
-    public static <T> Mono<ServerResponse> Created(T body){
+    public static <T> Mono<ServerResponse> accepted(T body){
+        return buildResponse(ACCEPTED, body);
+    }
+
+    public static <T> Mono<ServerResponse> created(T body){
         return buildResponse(CREATED, body);
     }
 
-    public static <T> Mono<ServerResponse> Accepted(T body){
-        return buildResponse(ACCEPTED, body);
-    }
 
     public static <T> Mono<ServerResponse> InternalError(T body){
         return buildResponse(INTERNAL_SERVER_ERROR, body);

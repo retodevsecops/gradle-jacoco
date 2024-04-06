@@ -34,23 +34,22 @@ public class GetAgreementResponseDTO {
     private String csbName;
     private String company;
     private Boolean signaturePromoterIsRequired;
-    private List<CatalogDTO> frequencySalary;
+    private List<Catalog> frequencySalary;
     private String signatureColor;
-    private List<CatalogDTO> employeeType;
-    private List<CatalogDTO> quotationType;
-    private List<CatalogDTO> contract_type;
-    private List<CatalogDTO> positions;
+    private List<Catalog> employeeType;
+    private List<Catalog> quotationType;
+    private List<Catalog> contract_type;
+    private List<Catalog> positions;
     private Boolean videoTaskIsRequired;
-
-    private List<DocumentDTO> documents;
-    private List<DocumentDTO>  annexes;
+    private List<Document> documents;
+    private List<Document>  attachments;
 
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder(toBuilder = true)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    public static class CatalogDTO {
+    public static class Catalog {
         private String code;
         private String description;
     }
@@ -60,21 +59,14 @@ public class GetAgreementResponseDTO {
     @AllArgsConstructor
     @Builder(toBuilder = true)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    public static class DocumentDTO {
-        private String id;
+    public static class Document {
         private String name;
         private String technicalName;
-        private String order;
-        private String classification;
         private Boolean isRequired;
-        private Boolean isVisible;
-        private Boolean isSpecial;
         private String type;
         private String max;
         private List<String> typeFile;
-        private Boolean isClient;
-        private String convertTo;
-        private List<FieldDTO> fields;
+        private List<Field> fields;
     }
 
     @Data
@@ -82,7 +74,7 @@ public class GetAgreementResponseDTO {
     @AllArgsConstructor
     @Builder(toBuilder = true)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    public static class FieldDTO {
+    public static class Field {
         private String id;
         private Integer order;
         private String name;

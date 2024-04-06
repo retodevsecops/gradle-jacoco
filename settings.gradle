@@ -30,3 +30,6 @@ project(':custom-logger').projectDir = file('./infrastructure/helpers/custom-log
 
 include ':caffeine-cache'
 project(':caffeine-cache').projectDir = file('./infrastructure/helpers/caffeine-cache')
+
+include ':freemarker'
+project(':freemarker').projectDir = file('./infrastructure/helpers/freemarker')

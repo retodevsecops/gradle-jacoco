@@ -1,5 +1,6 @@
 package com.consubanco.consumer.config;
 
+import com.consubanco.consumer.config.filters.WebClientLoggingFilter;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
@@ -62,6 +64,16 @@ public class RestConsumerConfig {
                 .defaultHeader(CLIENT_ID_HEADER, clientIdApiConnect)
                 .clientConnector(getClientHttpConnector())
                 .filter(webClientLoggingFilter)
+                .build();
+    }
+
+    @Bean("clientGetFiles")
+    public WebClient buildClientGetFiles(WebClient.Builder builder) {
+        return builder
+                .exchangeStrategies(ExchangeStrategies.builder()
+                        .codecs(config -> config.defaultCodecs().maxInMemorySize(1024 * 1024 * 10))
+                        .build())
+                .clientConnector(getClientHttpConnector())
                 .build();
     }
 

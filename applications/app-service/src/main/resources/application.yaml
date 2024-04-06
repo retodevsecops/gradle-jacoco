@@ -15,24 +15,30 @@ spring:
       path: "/h2"
   profiles:
     include: null
+app:
+  init:
+    agreements: ${APP_INIT_AGREEMENTS:10000041,10001121,10000080,10001183,10000790,10001103}
 adapter:
   rest-consumer:
     timeout: 5000
     apis:
       promoter:
         auth-token: ${API_PROMOTER_AUTH_TOKEN}
-        generate-document:
-          endpoint: ${API_GENERATE_DOCUMENT_ENDPOINT:https://documents.qa.masnominadigital.com/api/generate/csb}
-        agreement-get-detail:
-          endpoint: ${API_GET_AGREEMENT_ENDPOINT:https://it-api-gateway.qa.masnominadigital.com/convenios/getDetail}
-          channel: ${API_GET_AGREEMENT_CHANNEL:ECSB}
+        channel: ${API_GET_AGREEMENT_CHANNEL:ECSB}
+        api-generate-document: ${API_GENERATE_DOCUMENT_ENDPOINT:https://documents.qa.masnominadigital.com/api/generate/csb}
+        api-get-agreement: ${API_GET_AGREEMENT_ENDPOINT:https://it-api-gateway.qa.masnominadigital.com/convenios/getDetail}
       api-connect:
         client-id: ${API_CONNECT_CLIENT_ID}
-        get-cnca-letter:
-          endpoint: ${API_GET_CNCA_ENDPOINT:https://apic.consubanco.com/csb/qa/opc-service/getCNCALetter}
-          application-id: ${API_GET_CNCA_APPLICATION:CSB-CTE-APP}
+        application-id: ${API_CONNECT_APPLICATION_ID:CSB-CTE-APP}
+        api-get-cnca: ${API_GET_CNCA:https://apic.consubanco.com/csb/qa/opc-service/getCNCALetter}
+
   gcs-storage:
-    project-id: ${GCS_PROJECT_ID:default}
+    project-id: ${GCS_PROJECT_ID:csb-dev-venta-digital}
+    bucket-name: ${GCS_BUCKET_NAME:csb-venta-digital}
+    public-url: ${GCS_PUBLIC_URL:https://storage.googleapis.com/%s/%s}
+    sign-url-days: ${GCS_SIGN_URL_DAYS:1}
+    files-path:
+      payload-template: ${GCS_PAYLOAD_TEMPLATE_PATH:management/puc-loans-documents-msa/payload-template.ftl}
 entry:
   api:
     open-api:
@@ -42,10 +48,9 @@ entry:
     path-services:
       agreement: /agreement
       file: /file
-      document: /document
 helpers:
   caffeine:
-    expire-after-write: ${CACHE_EXPIRE_TIME_MINUTES:2}
+    expire-after-write: ${CACHE_EXPIRE_TIME_MINUTES:30}
     max-size-elements: ${CACHE_MAX_SIZE_ELEMENTS:100}
 
 management:

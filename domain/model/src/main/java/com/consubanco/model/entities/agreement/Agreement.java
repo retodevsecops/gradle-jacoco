@@ -1,6 +1,5 @@
 package com.consubanco.model.entities.agreement;
 
-import com.consubanco.model.entities.document.Document;
 import lombok.*;
 
 import java.util.List;
@@ -34,7 +33,7 @@ public class Agreement {
     private List<Catalog> positions;
     private Boolean videoTaskIsRequired;
     private List<Document> documents;
-    private List<Document>  annexes;
+    private List<Document> attachments;
 
     @Getter
     @Setter
@@ -44,6 +43,47 @@ public class Agreement {
     public static class Catalog {
         private String code;
         private String description;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder(toBuilder = true)
+    public static class Document {
+        private String name;
+        private String technicalName;
+        private String order;
+        private String classification;
+        private Boolean isRequired;
+        private Boolean isVisible;
+        private Boolean isSpecial;
+        private String type;
+        private String max;
+        private List<String> typeFile;
+        private Boolean isClient;
+        private String convertTo;
+        private List<Field> fields;
+
+        @Getter
+        @Setter
+        @AllArgsConstructor
+        @NoArgsConstructor
+        @Builder(toBuilder = true)
+        public static class Field {
+            private String id;
+            private Integer order;
+            private String name;
+            private String technicalName;
+            private String classification;
+            private String type;
+            private Boolean isRequired;
+            private String max;
+            private Boolean isSpecial;
+            private String convertTo;
+            private String value;
+        }
+
     }
 
 }

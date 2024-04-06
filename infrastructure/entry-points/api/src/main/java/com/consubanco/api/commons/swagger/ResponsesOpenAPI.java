@@ -31,4 +31,20 @@ public class ResponsesOpenAPI {
                 .implementation(tClass);
     }
 
+    public static <T> Builder responseAccepted(Class<T> tClass) {
+        return responseBuilder()
+                .responseCode(String.valueOf(ACCEPTED.value()))
+                .description("The request was accepted and is being processed.")
+                .implementation(tClass);
+    }
+
+    public static <T> Builder responseOkWithList(Class<T> tClass) {
+        return responseBuilder()
+                .responseCode(String.valueOf(OK.value()))
+                .description("Successful response with the data.")
+                .implementationArray(tClass);
+    }
+
+
+
 }
