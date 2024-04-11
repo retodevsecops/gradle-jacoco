@@ -9,8 +9,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 import reactor.core.scheduler.Schedulers;
 
-import java.util.Map;
-
 @Component
 @RequiredArgsConstructor
 public class FileInitializer implements ApplicationListener<ApplicationReadyEvent> {
@@ -24,7 +22,7 @@ public class FileInitializer implements ApplicationListener<ApplicationReadyEven
     }
 
     private void loadPayloadTemplateInCache() {
-        fileUseCase.getPayloadTemplate()
+        fileUseCase.loadPayloadTemplate()
                 .doOnNext(this::printLogInfo)
                 .doOnError(this::printLogError)
                 .subscribeOn(Schedulers.boundedElastic())
@@ -32,17 +30,11 @@ public class FileInitializer implements ApplicationListener<ApplicationReadyEven
     }
 
     private void printLogInfo(File file) {
-        logger.info(Map.of(
-                "message", "Cache file successfully loaded.",
-                "file", file)
-        );
+        logger.info("Cache file payload-template successfully loaded.");
     }
 
     private void printLogError(Throwable exception) {
-        logger.error(Map.of(
-                "message", "An error occurred while loading the payload-template file in cache.",
-                "error", exception)
-        );
+        logger.error("An error occurred while loading the payload-template file in cache.", exception);
     }
 
 }

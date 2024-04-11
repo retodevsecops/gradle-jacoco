@@ -29,7 +29,6 @@ public class FileAdapter implements FileGateway {
     private final WebClient apiConnectClient;
     private final WebClient apiPromoterClient;
     private final FileApisProperties apis;
-    private final ITemplateOperations templateOperations;
 
     public FileAdapter(final @Qualifier("ApiConnectClient") WebClient apiConnectClient,
                        final @Qualifier("ApiPromoterClient") WebClient apiPromoterClient,
@@ -40,7 +39,6 @@ public class FileAdapter implements FileGateway {
         this.apiPromoterClient = apiPromoterClient;
         this.logger = customLogger;
         this.apis = apisProperties;
-        this.templateOperations = templateOperations;
     }
 
     @Override
@@ -62,14 +60,7 @@ public class FileAdapter implements FileGateway {
     }
 
     @Override
-    public Mono<Map<String, Object>> buildPayload(String template) {
-        return templateOperations.processTemplate(template, null, Map.class)
-                .map(map -> (Map<String, Object>) map);
-    }
-
-    @Override
     public Mono<String> generate(List<String> documents, List<AttachmentVO> attachments, Map<String, Object> payload) {
-        logger.info("Payload with all data ", payload);
         return this.apiPromoterClient.post()
                 .uri(apis.generateDocumentApiEndpoint())
                 .bodyValue(new GenerateDocumentRequestDTO(documents, attachments, payload))

@@ -1,6 +1,6 @@
 package com.consubanco.api.services.file;
 
-import com.consubanco.api.commons.util.BytesUtil;
+import com.consubanco.api.commons.util.FilePartUtil;
 import com.consubanco.api.commons.util.HttpResponseUtil;
 import com.consubanco.api.services.file.constants.FilePathParams;
 import com.consubanco.api.services.file.dto.*;
@@ -10,8 +10,6 @@ import com.consubanco.usecase.file.FileUseCase;
 import com.consubanco.usecase.file.GenerateDocumentUseCase;
 import com.consubanco.usecase.file.UploadAgreementFilesUseCase;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.codec.binary.Base64;
-import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -80,14 +78,23 @@ public class FileHandler {
                 .flatMap(HttpResponseUtil::Ok);
     }
 
-    private Mono<FileUploadVO> buildFileUploadVO(FilePart file) {
-        return DataBufferUtils.join(file.content())
-                .map(BytesUtil::getBytesFromBuffer)
-                .map(fileContentBytes -> FileUploadVO.builder()
-                        .name(file.name())
-                        .extension(StringUtils.getFilenameExtension(file.filename()))
-                        .content(Base64.encodeBase64String(fileContentBytes))
+    private Mono<FileUploadVO> buildFileUploadVO(FilePart filePart) {
+        return FilePartUtil.fileToBase64(filePart)
+                .map(fileInBase63 -> FileUploadVO.builder()
+                        .name(filePart.name())
+                        .extension(StringUtils.getFilenameExtension(filePart.filename()))
+                        .content(fileInBase63)
                         .build());
+    }
+
+    public Mono<ServerResponse> uploadPayloadTemplate(ServerRequest request) {
+        return request.body(BodyExtractors.toParts())
+                .ofType(FilePart.class)
+                .next()
+                .flatMap(FilePartUtil::fileToBase64)
+                .flatMap(fileUseCase::uploadPayloadTemplate)
+                .map(FileResDTO::new)
+                .flatMap(HttpResponseUtil::Ok);
     }
 
 }

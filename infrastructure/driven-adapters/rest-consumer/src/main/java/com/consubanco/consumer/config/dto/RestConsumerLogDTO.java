@@ -1,4 +1,4 @@
-package com.consubanco.consumer.config.filters;
+package com.consubanco.consumer.config.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

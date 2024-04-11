@@ -41,4 +41,11 @@ public class FileUtil {
                 .map(contentFile -> Base64.getDecoder().decode(contentFile));
     }
 
+    public static String decodeBase64(String base64) {
+        byte[] decodedBytes = Base64.getDecoder().decode(base64);
+        return new String(decodedBytes);
+    }
+
+
+
 }

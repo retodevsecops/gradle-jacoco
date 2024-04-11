@@ -31,7 +31,8 @@ public class FileRouter {
                     .POST(GET_AND_UPLOAD_DOCUMENT_PATH, handler::getAndUpload, getAndUpload())
                     .POST(DOCUMENTS_AGREEMENT_PATH, contentType(MULTIPART_FORM_DATA), handler::uploadAgreementFiles, uploadAgreementFiles())
                     .GET(DOCUMENTS_OFFER_PATH, handler::getFilesByOffer, getFilesByOffer())
-               .build()
+                    .POST(PAYLOAD_TEMPLATE_PATH, contentType(MULTIPART_FORM_DATA), handler::uploadPayloadTemplate, uploadPayloadTemplate())
+                        .build()
         );
     }
 

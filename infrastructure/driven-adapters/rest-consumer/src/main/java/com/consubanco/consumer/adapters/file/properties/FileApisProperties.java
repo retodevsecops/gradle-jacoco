@@ -22,6 +22,7 @@ public class FileApisProperties {
     public static class ApiConnect {
         private String applicationId;
         private String apiGetCnca;
+        private String searchInterlocutor;
     }
 
     public String getApplicationId() {

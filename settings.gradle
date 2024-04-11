@@ -5,7 +5,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'puc-loans-documents-msa'
+rootProject.name = 'vd-loans-documents-msa'
 
 include ':app-service'
 project(':app-service').projectDir = file('./applications/app-service')
@@ -21,6 +21,9 @@ project(':rest-consumer').projectDir = file('./infrastructure/driven-adapters/re
 
 include ':gcs-storage'
 project(':gcs-storage').projectDir = file('./infrastructure/driven-adapters/gcs-storage')
+
+include ':open-pdf'
+project(':open-pdf').projectDir = file('./infrastructure/driven-adapters/open-pdf')
 
 include ':api'
 project(':api').projectDir = file('./infrastructure/entry-points/api')

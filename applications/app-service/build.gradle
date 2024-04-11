@@ -6,6 +6,7 @@ dependencies {
     implementation project(':gcs-storage')
     implementation project(':gcs-storage')
     implementation project(":custom-logger")
+    implementation project(":open-pdf")
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation project(':model')
     implementation project(':usecase')

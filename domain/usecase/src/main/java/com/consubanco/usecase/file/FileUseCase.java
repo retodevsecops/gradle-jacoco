@@ -8,8 +8,7 @@ import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import static com.consubanco.model.entities.file.message.FileBusinessMessage.OFFER_ID_IS_NULL;
-import static com.consubanco.model.entities.file.message.FileBusinessMessage.PAYLOAD_TEMPLATE_NOT_FOUND;
+import static com.consubanco.model.entities.file.message.FileBusinessMessage.*;
 
 @RequiredArgsConstructor
 public class FileUseCase {
@@ -22,9 +21,17 @@ public class FileUseCase {
                 .flatMapMany(fileRepository::listByFolder);
     }
 
-    public Mono<File> getPayloadTemplate() {
+    public Mono<File> loadPayloadTemplate() {
         return fileRepository.getPayloadTemplate()
-                .switchIfEmpty(ExceptionFactory.buildBusiness(PAYLOAD_TEMPLATE_NOT_FOUND));
+                .switchIfEmpty(fileRepository.getLocalPayloadTemplate()
+                        .switchIfEmpty(ExceptionFactory.buildBusiness(PAYLOAD_TEMPLATE_NOT_FOUND))
+                        .flatMap(this::uploadPayloadTemplate));
+    }
+
+    public Mono<File> uploadPayloadTemplate(String contentFile) {
+        return fileRepository.uploadPayloadTemplate(contentFile)
+                .switchIfEmpty(ExceptionFactory.buildBusiness(PAYLOAD_TEMPLATE_INCORRECT))
+                .flatMap(file -> fileRepository.getPayloadTemplate());
     }
 
     private Mono<String> checkOfferId(String offerId) {

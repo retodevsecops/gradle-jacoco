@@ -28,4 +28,8 @@ public class GoogleStorageProperties {
         private String payloadTemplate;
     }
 
+    public String payloadTemplatePath(){
+        return this.getFilesPath().getPayloadTemplate();
+    }
+
 }

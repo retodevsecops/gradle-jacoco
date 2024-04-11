@@ -1,5 +1,6 @@
 package com.consubanco.consumer.config.filters;
 
+import com.consubanco.consumer.config.dto.RestConsumerLogDTO;
 import com.consubanco.logger.CustomLogger;
 import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;

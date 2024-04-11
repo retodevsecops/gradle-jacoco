@@ -15,6 +15,7 @@ public class FileOpenAPI {
     private static final String TAG = "File";
 
     private static final String TAG_OFFER = "Offer Files";
+    private static final String TAG_MANAGEMENT = "Management";
 
     public static Consumer<Builder> buildCNCALetters() {
         return ops -> ops.tag(TAG_OFFER)
@@ -79,6 +80,16 @@ public class FileOpenAPI {
                 .summary("Get all files by offer.")
                 .parameter(ParamsOpenAPI.path(FilePathParams.OFFER_ID, "Offer identifier"))
                 .response(responseOkWithList(FileResDTO.class))
+                .response(responseBusinessException())
+                .response(responseInternalError());
+    }
+
+    public static Consumer<Builder> uploadPayloadTemplate() {
+        return ops -> ops.tag(TAG_MANAGEMENT)
+                .operationId("uploadPayloadTemplate")
+                .description("Upload template file with which the payload is built to consume the api to generate documents.")
+                .summary("Upload payload template file.")
+                .response(responseOk(FileResDTO.class))
                 .response(responseBusinessException())
                 .response(responseInternalError());
     }

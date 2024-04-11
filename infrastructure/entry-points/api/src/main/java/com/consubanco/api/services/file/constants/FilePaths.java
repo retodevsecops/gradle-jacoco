@@ -10,4 +10,5 @@ public class FilePaths {
     public static final String GET_AND_UPLOAD_DOCUMENT_PATH = "/document/generate-and-upload";
     public static final String DOCUMENTS_AGREEMENT_PATH = "/offer/{offerId}/agreement/{agreementNumber}";
     public static final String DOCUMENTS_OFFER_PATH = "/offer/{offerId}";
+    public static final String PAYLOAD_TEMPLATE_PATH = "/management/upload-payload-template";
 }

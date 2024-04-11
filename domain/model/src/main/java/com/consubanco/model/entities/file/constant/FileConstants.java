@@ -12,7 +12,6 @@ public class FileConstants {
 
     private final static String CNCA_LETTERS_DIRECTORY_PATH = OFFER_DIRECTORY_PATH.concat("cnca/");
 
-
     public static String pdfFormat(String fileName) {
         return String.format(PDF_FORMAT, fileName);
     }

@@ -24,7 +24,7 @@ public class CaffeineCacheConfig {
         cacheManager.setCaffeine(Caffeine.newBuilder()
                 .maximumSize(caffeineProperties.getMaxSizeElements())
                 .expireAfterWrite(caffeineProperties.getExpireAfterWrite(), TimeUnit.MINUTES));
-        cacheManager.setAllowNullValues(false);
+        cacheManager.setAllowNullValues(true);
         cacheManager.setAsyncCacheMode(true);
         return cacheManager;
     }

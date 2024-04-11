@@ -15,8 +15,10 @@ public class File {
     private String directoryPath;
     private String size;
 
-    public String fullPath(){
-        return this.directoryPath.concat(this.name);
+    public String fullPath() {
+        String directory = this.directoryPath;
+        if (!directory.endsWith("/")) directory += "/";
+        return directory.concat(this.name);
     }
 
 }

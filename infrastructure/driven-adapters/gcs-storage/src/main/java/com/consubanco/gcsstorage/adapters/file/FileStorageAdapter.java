@@ -1,10 +1,12 @@
 package com.consubanco.gcsstorage.adapters.file;
 
+import com.consubanco.freemarker.ITemplateOperations;
 import com.consubanco.gcsstorage.commons.FileFactoryUtil;
 import com.consubanco.gcsstorage.commons.FileUtil;
 import com.consubanco.gcsstorage.config.GoogleStorageProperties;
 import com.consubanco.logger.CustomLogger;
 import com.consubanco.model.commons.exception.TechnicalException;
+import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.gateways.FileRepository;
 import com.google.api.gax.paging.Page;
@@ -13,14 +15,18 @@ import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.codec.binary.Base64;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
@@ -33,15 +39,7 @@ public class FileStorageAdapter implements FileRepository {
     private final CustomLogger logger;
     private final Storage storage;
     private final GoogleStorageProperties properties;
-
-    @Override
-    public Flux<File> bulkSave(List<File> files) {
-        return Flux.fromIterable(files)
-                .parallel()
-                .runOn(Schedulers.parallel())
-                .flatMap(this::save)
-                .sequential();
-    }
+    private final ITemplateOperations templateOperations;
 
     @Override
     public Mono<File> save(File file) {
@@ -80,7 +78,37 @@ public class FileStorageAdapter implements FileRepository {
     @Cacheable("payloadTemplate")
     public Mono<File> getPayloadTemplate() {
         return getByName(properties.getFilesPath().getPayloadTemplate())
-                .doOnNext(file -> logger.info("The payload template was consulted.", file));
+                .doOnNext(file -> logger.info("Payload template was consulted.", file));
+    }
+
+    @Override
+    public Mono<String> getLocalPayloadTemplate() {
+        return Mono.just(properties.payloadTemplatePath())
+                .map(FileUtil::getFileName)
+                .map(ClassPathResource::new)
+                .map(resource -> {
+                    try {
+                        return FileCopyUtils.copyToByteArray(resource.getInputStream());
+                    } catch (IOException exception) {
+                        throw ExceptionFactory.buildTechnical(exception, LOCAL_TEMPLATE_ERROR);
+                    }
+                })
+                .map(Base64::encodeBase64String)
+                .doOnTerminate(() -> logger.info("Payload template was get from local source."));
+    }
+
+    @Override
+    @CacheEvict(cacheNames = "payloadTemplate", allEntries = true)
+    public Mono<File> uploadPayloadTemplate(String contentFile) {
+        return Mono.just(contentFile)
+                .map(FileUtil::decodeBase64)
+                .filter(templateOperations::validate)
+                .map(isValid -> File.builder()
+                        .name(FileUtil.getFileName(properties.payloadTemplatePath()))
+                        .directoryPath(FileUtil.getDirectory(properties.payloadTemplatePath()))
+                        .content(contentFile)
+                        .build())
+                .flatMap(this::save);
     }
 
     private Mono<File> buildFileEntityFromBlob(Blob blob) {

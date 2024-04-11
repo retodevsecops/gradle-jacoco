@@ -10,7 +10,4 @@ public interface FileGateway {
     Mono<String> getContentCNCALetter(String loanId);
     Mono <String> generate(List<String> documents, List<AttachmentVO> attachments, Map<String, Object> payload);
     Mono <String> generate(String document, Map<String, Object> payload);
-
-    Mono<Map<String, Object>> buildPayload(String template);
-
 }

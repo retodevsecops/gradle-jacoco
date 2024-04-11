@@ -25,7 +25,7 @@ public class TemplateAdapter implements ITemplateOperations {
     private final TemplateHashModel templateHashModel;
 
     @Override
-    public <T> Mono<T> processTemplate(String templateAsString, Object data, Class<T> cls) {
+    public <T> Mono<T> process(String templateAsString, Object data, Class<T> cls) {
         return Mono.fromCallable(() -> {
             try (StringWriter writer = new StringWriter()) {
                 Template template = buildTemplate(templateAsString);
@@ -38,6 +38,11 @@ public class TemplateAdapter implements ITemplateOperations {
                 throw new Exception(exception);
             }
         });
+    }
+
+    @Override
+    public boolean validate(String templateAsString) {
+        return templateAsString.contains("${") && templateAsString.contains("<#assign");
     }
 
     private Template buildTemplate(String templateAsString) throws IOException {

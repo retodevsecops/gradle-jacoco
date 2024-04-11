@@ -1,11 +1,13 @@
 package com.consubanco.consumer.config;
 
+import com.consubanco.consumer.config.filters.AuthTokenRenexFilter;
 import com.consubanco.consumer.config.filters.WebClientLoggingFilter;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,28 +21,18 @@ import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
+import static com.consubanco.consumer.commons.Constants.AUTH_BEARER_VALUE;
+import static com.consubanco.consumer.commons.Constants.CLIENT_ID_HEADER;
 import static io.netty.channel.ChannelOption.CONNECT_TIMEOUT_MILLIS;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 @Configuration
+@RequiredArgsConstructor
 public class RestConsumerConfig {
 
-    private static final String CLIENT_ID_HEADER = "X-IBM-Client-Id";
-    private static final String AUTH_BEARER_VALUE = "Bearer %s";
-    private final String authTokenApiPromoter;
-    private final String clientIdApiConnect;
     private final HttpClientProperties clientProperties;
     private final WebClientLoggingFilter webClientLoggingFilter;
-
-    public RestConsumerConfig(final @Value("${adapter.rest-consumer.apis.promoter.auth-token}") String token,
-                              final @Value("${adapter.rest-consumer.apis.api-connect.client-id}") String clientId,
-                              final HttpClientProperties clientProperties,
-                              final WebClientLoggingFilter webClientLoggingFilter) {
-        this.authTokenApiPromoter = token;
-        this.clientIdApiConnect = clientId;
-        this.clientProperties = clientProperties;
-        this.webClientLoggingFilter = webClientLoggingFilter;
-    }
+    private final AuthTokenRenexFilter authTokenRenexFilter;
 
     @Bean
     public ModelMapper buildModelMapper() {
@@ -48,20 +40,20 @@ public class RestConsumerConfig {
     }
 
     @Bean("ApiPromoterClient")
-    public WebClient buildWebClient(WebClient.Builder builder) {
-        return builder
+    public WebClient buildClientPromoter(@Value("${adapter.rest-consumer.apis.promoter.auth-token}") String token) {
+        return WebClient.builder()
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .defaultHeader(HttpHeaders.AUTHORIZATION, String.format(AUTH_BEARER_VALUE, authTokenApiPromoter))
+                .defaultHeader(HttpHeaders.AUTHORIZATION, String.format(AUTH_BEARER_VALUE, token))
                 .clientConnector(getClientHttpConnector())
                 .filter(webClientLoggingFilter)
                 .build();
     }
 
     @Bean("ApiConnectClient")
-    public WebClient buildWebClientApiConnect(WebClient.Builder builder) {
-        return builder
+    public WebClient buildClientApiConnect(@Value("${adapter.rest-consumer.apis.api-connect.client-id}") String clientId) {
+        return WebClient.builder()
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .defaultHeader(CLIENT_ID_HEADER, clientIdApiConnect)
+                .defaultHeader(CLIENT_ID_HEADER, clientId)
                 .clientConnector(getClientHttpConnector())
                 .filter(webClientLoggingFilter)
                 .build();
@@ -74,6 +66,16 @@ public class RestConsumerConfig {
                         .codecs(config -> config.defaultCodecs().maxInMemorySize(1024 * 1024 * 10))
                         .build())
                 .clientConnector(getClientHttpConnector())
+                .build();
+    }
+
+    @Bean("ApiRenexClient")
+    public WebClient buildClientRenex() {
+        return WebClient.builder()
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .clientConnector(getClientHttpConnector())
+                .filter(webClientLoggingFilter)
+                .filter(authTokenRenexFilter)
                 .build();
     }
 
