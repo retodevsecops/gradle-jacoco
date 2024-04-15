@@ -25,8 +25,11 @@ adapter:
     timeout: ${REST_TIMEOUT:5000}
     apis:
       renex:
-        pre-application: ${API_PRE_APPLICATION:https://apic.consubanco.com/csb/qa/opc-service/getPreApplicationData}
-        get-active-offer: ${API_GET_ACTIVE_OFFER:/offers/active-offering/{processId}}
+        audience: ${API_RENEX_AUDIENCE:renovacion-dev}
+        api-health-customer: ${API_HEALTH_CUSTOMER:https://vd-dev.csbservicios.com/customers-api/puc-customers/customer/healthz}
+        api-customer-process: ${API_CUSTOMER_PROCESS:/customer/process/{processId}}
+        api-health-offer: ${API_HEALTH_OFFER:https://vd-dev.csbservicios.com/customers-api/puc-customers/customer/healthz}
+        api-active-offer: ${API_ACTIVE_OFFER:https://vd-dev.csbservicios.com/offers-api-dev/puc-offers/offers/active-offering/{processId}}
       promoter:
         auth-token: ${API_PROMOTER_AUTH_TOKEN}
         channel: ${API_GET_AGREEMENT_CHANNEL:ECSB}

@@ -3,7 +3,7 @@ package com.consubanco.usecase.file;
 import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.constant.FileConstants;
-import com.consubanco.model.entities.file.gateways.FileRepository;
+import com.consubanco.model.entities.file.gateway.FileRepository;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

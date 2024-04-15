@@ -5,5 +5,5 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class FilePathParams {
     public static final String OFFER_ID = "offerId";
-    public static final String AGREEMENT_NUMBER = "agreementNumber";
+    public static final String PROCESS_ID = "processId";
 }

@@ -1,4 +1,4 @@
-package com.consubanco.model.entities.agreement.gateways;
+package com.consubanco.model.entities.agreement.gateway;
 
 import com.consubanco.model.entities.agreement.Agreement;
 import reactor.core.publisher.Mono;

@@ -8,18 +8,8 @@ Configuration:
     Console:
       name: STDOUT
       type: Console
-      JsonLayout:
-        objectMessageAsJsonObject: true
-        complete: false
-        compact: true
-        eventEol: true
-        properties: false
-        stacktraceAsString: false
-        includeTimeMillis: true
-        propertiesAsList: false
-        KeyValuePair:
-          - key: microservice
-            value: "${spring.application.name}"
+      PatternLayout:
+        pattern: '{"date":"%d{yyyy-MM-dd HH:mm:ss.SSS}","level":"%p","thread":"%t","logger":"%c","message":%m}%n'
   Loggers:
     Root:
       level: "${sys:LOG_LEVEL:-info}"

@@ -23,14 +23,8 @@ import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class GetAndUploadDocumentReqDTO {
 
-    @Schema(description = "Offer identifier associated with the file to be generated.", requiredMode = REQUIRED)
-    private String offerId;
-
     @Schema(description = "The name under which the file will be saved.", requiredMode = REQUIRED)
     private String fileName;
-
-    @Schema(description = "Payload with all the parameters to map documents.", requiredMode = REQUIRED)
-    private Map<String, Object> payload;
 
     @Schema(description = "Documents to be contained in the resulting unified pdf document.", example = "[\"formato-unico-caratula\", \"domiciliacion\"]", requiredMode = REQUIRED)
     private List<String> documents;

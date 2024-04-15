@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class GenerateDocumentResDTO {
-
     @Schema(description = "Generated pdf document")
     private String document;
+
 }

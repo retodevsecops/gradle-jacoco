@@ -2,7 +2,7 @@ package com.consubanco.usecase.document;
 
 import com.consubanco.model.entities.document.gateway.PayloadDocumentGateway;
 import com.consubanco.model.entities.file.File;
-import com.consubanco.model.entities.file.gateways.FileRepository;
+import com.consubanco.model.entities.file.gateway.FileRepository;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 import reactor.function.TupleUtils;
@@ -15,8 +15,8 @@ public class BuildPayloadUseCase {
     private final FileRepository fileRepository;
     private final PayloadDocumentGateway payloadGateway;
 
-    public Mono<Map<String, Object>> execute() {
-        return Mono.zip(getPayloadTemplate(), payloadGateway.getAllData())
+    public Mono<Map<String, Object>> execute(String processId) {
+        return Mono.zip(getPayloadTemplate(), payloadGateway.getAllData(processId))
                 .flatMap(TupleUtils.function(payloadGateway::buildPayload));
     }
 

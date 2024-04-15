@@ -1,4 +1,4 @@
-package com.consubanco.model.entities.file.gateways;
+package com.consubanco.model.entities.file.gateway;
 
 import com.consubanco.model.entities.file.File;
 import reactor.core.publisher.Flux;

@@ -8,7 +8,7 @@ import com.consubanco.logger.CustomLogger;
 import com.consubanco.model.commons.exception.TechnicalException;
 import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.consubanco.model.entities.file.File;
-import com.consubanco.model.entities.file.gateways.FileRepository;
+import com.consubanco.model.entities.file.gateway.FileRepository;
 import com.google.api.gax.paging.Page;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;

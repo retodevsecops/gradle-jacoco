@@ -1,4 +1,4 @@
-package com.consubanco.model.entities.file.gateways;
+package com.consubanco.model.entities.file.gateway;
 
 import com.consubanco.model.entities.file.vo.AttachmentVO;
 import reactor.core.publisher.Mono;

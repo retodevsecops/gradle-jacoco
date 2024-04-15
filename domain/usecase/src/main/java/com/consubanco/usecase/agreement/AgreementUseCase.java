@@ -2,7 +2,7 @@ package com.consubanco.usecase.agreement;
 
 import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.consubanco.model.entities.agreement.Agreement;
-import com.consubanco.model.entities.agreement.gateways.AgreementGateway;
+import com.consubanco.model.entities.agreement.gateway.AgreementGateway;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

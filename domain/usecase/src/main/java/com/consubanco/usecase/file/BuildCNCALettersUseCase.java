@@ -1,8 +1,10 @@
 package com.consubanco.usecase.file;
 
 import com.consubanco.model.entities.file.File;
-import com.consubanco.model.entities.file.gateways.FileGateway;
-import com.consubanco.model.entities.file.gateways.FileRepository;
+import com.consubanco.model.entities.file.gateway.FileGateway;
+import com.consubanco.model.entities.file.gateway.FileRepository;
+import com.consubanco.model.entities.process.Process;
+import com.consubanco.usecase.process.GetProcessByIdUseCase;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -18,9 +20,12 @@ public class BuildCNCALettersUseCase {
 
     private final FileGateway fileGateway;
     private final FileRepository fileRepository;
+    private final GetProcessByIdUseCase getProcessByIdUseCase;
 
-    public Flux<File> execute(String offerId, List<String> loansId) {
-        return getAllCNCALetter(offerId, loansId)
+    public Flux<File> execute(String processId) {
+        return getProcessByIdUseCase.execute(processId)
+                .map(Process::getOffer)
+                .flatMapMany(offer -> getAllCNCALetter(offer.getId(), offer.getLoansId()))
                 .parallel()
                 .runOn(Schedulers.parallel())
                 .flatMap(fileRepository::save)

@@ -2,7 +2,7 @@ package com.consubanco.consumer.adapters.file;
 
 import com.consubanco.consumer.commons.Base64Util;
 import com.consubanco.model.commons.exception.TechnicalException;
-import com.consubanco.model.entities.file.gateways.FileConvertGateway;
+import com.consubanco.model.entities.file.gateway.FileConvertGateway;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;

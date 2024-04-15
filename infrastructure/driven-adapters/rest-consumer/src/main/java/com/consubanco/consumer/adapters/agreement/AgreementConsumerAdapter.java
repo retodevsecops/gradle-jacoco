@@ -4,7 +4,7 @@ import com.consubanco.consumer.adapters.agreement.dto.GetAgreementRequestDTO;
 import com.consubanco.consumer.adapters.agreement.dto.GetAgreementResponseDTO;
 import com.consubanco.consumer.adapters.agreement.properties.AgreementApisProperties;
 import com.consubanco.model.entities.agreement.Agreement;
-import com.consubanco.model.entities.agreement.gateways.AgreementGateway;
+import com.consubanco.model.entities.agreement.gateway.AgreementGateway;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;

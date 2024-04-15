@@ -1,4 +1,4 @@
-package com.consubanco.initialization;
+package com.consubanco.initializer;
 
 import com.consubanco.logger.CustomLogger;
 import com.consubanco.usecase.agreement.AgreementUseCase;

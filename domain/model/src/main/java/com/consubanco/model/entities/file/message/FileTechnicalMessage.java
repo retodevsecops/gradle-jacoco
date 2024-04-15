@@ -17,8 +17,7 @@ public enum FileTechnicalMessage implements IExceptionMessage {
     SIGN_URL_ERROR("TE_FILE_0007", "An error occurred while signing file url."),
     GET_FILE_ERROR("TE_FILE_0007", "An error occurred while querying files in storage."),
     FIND_FILE_ERROR("TE_FILE_0008", "An error occurred while querying file in storage."),
-    LOCAL_TEMPLATE_ERROR("TE_FILE_0009", "Error loading local template file."),
-    SEARCH_INTERLOCUTOR_ERROR("TE_FILE_0010", "Error when consuming searchInterlocutor API.");
+    LOCAL_TEMPLATE_ERROR("TE_FILE_0009", "Error loading local template file.");
 
     private final String code;
     private final String message;

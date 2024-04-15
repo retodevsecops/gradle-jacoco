@@ -14,18 +14,18 @@ import java.util.List;
 import java.util.Map;
 
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
-import static com.consubanco.model.entities.file.message.FileTechnicalMessage.SEARCH_INTERLOCUTOR_ERROR;
+import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.API_SEARCH_INTERLOCUTOR_ERROR;
 
 @Service
-public class PromoterService {
+public class PromoterApiConsumer {
 
     private final CustomLogger logger;
     private final WebClient apiConnectClient;
     private final PayloadApisProperties apis;
 
-    public PromoterService(final @Qualifier("ApiConnectClient") WebClient apiConnectClient,
-                           final PayloadApisProperties apisProperties,
-                           final CustomLogger logger) {
+    public PromoterApiConsumer(final @Qualifier("ApiConnectClient") WebClient apiConnectClient,
+                               final PayloadApisProperties apisProperties,
+                               final CustomLogger logger) {
         this.apiConnectClient = apiConnectClient;
         this.apis = apisProperties;
         this.logger = logger;
@@ -47,7 +47,7 @@ public class PromoterService {
                 .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
                 .filter(response -> getResponseCode(response).equals("200"))
                 .flatMap(this::getDataInterlocutor)
-                .onErrorMap(throwTechnicalError(SEARCH_INTERLOCUTOR_ERROR));
+                .onErrorMap(throwTechnicalError(API_SEARCH_INTERLOCUTOR_ERROR));
     }
 
     private String getResponseCode(Map<String, Object> response) {

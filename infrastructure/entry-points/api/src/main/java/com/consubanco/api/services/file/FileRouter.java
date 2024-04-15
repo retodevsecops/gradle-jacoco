@@ -25,7 +25,7 @@ public class FileRouter {
         return RouterFunctions.nest(
                 path(fileServicesPath).and(accept(APPLICATION_JSON)),
                 route()
-                    .POST(CNCA_PATH, handler::buildCNCALetters, buildCNCALetters())
+                    .GET(CNCA_PATH, handler::buildCNCALetters, buildCNCALetters())
                     .POST(GENERATE_DOCUMENT_PATH, handler::generateFileWithDocuments, generateFileWithDocuments())
                     .POST(GENERATE_DOCUMENT_ENCODED_PATH, handler::generateFileEncoded, generateFileEncoded())
                     .POST(GET_AND_UPLOAD_DOCUMENT_PATH, handler::getAndUpload, getAndUpload())

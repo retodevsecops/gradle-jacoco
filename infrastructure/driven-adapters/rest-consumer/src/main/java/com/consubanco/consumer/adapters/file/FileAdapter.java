@@ -8,7 +8,7 @@ import com.consubanco.consumer.adapters.file.properties.FileApisProperties;
 import com.consubanco.freemarker.ITemplateOperations;
 import com.consubanco.logger.CustomLogger;
 import com.consubanco.model.commons.exception.TechnicalException;
-import com.consubanco.model.entities.file.gateways.FileGateway;
+import com.consubanco.model.entities.file.gateway.FileGateway;
 import com.consubanco.model.entities.file.vo.AttachmentVO;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;

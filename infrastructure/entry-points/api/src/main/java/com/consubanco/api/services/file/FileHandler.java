@@ -2,6 +2,7 @@ package com.consubanco.api.services.file;
 
 import com.consubanco.api.commons.util.FilePartUtil;
 import com.consubanco.api.commons.util.HttpResponseUtil;
+import com.consubanco.api.services.agreement.constants.AgreementPathParams;
 import com.consubanco.api.services.file.constants.FilePathParams;
 import com.consubanco.api.services.file.dto.*;
 import com.consubanco.model.entities.file.vo.FileUploadVO;
@@ -18,6 +19,8 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import static com.consubanco.api.services.file.constants.FilePathParams.*;
+
 @Component
 @RequiredArgsConstructor
 public class FileHandler {
@@ -28,45 +31,46 @@ public class FileHandler {
     private final UploadAgreementFilesUseCase uploadFilesAgreementUseCase;
 
     public Mono<ServerResponse> buildCNCALetters(ServerRequest request) {
-        return request.bodyToMono(BuildCNCALettersReqDTO.class)
-                .map(BuildCNCALettersReqDTO::getOffer)
-                .flatMapMany(offerDTO -> buildCNCALettersUseCase.execute(offerDTO.getId(), offerDTO.getLoansId()))
+        String processId = request.pathVariable(PROCESS_ID);
+        return buildCNCALettersUseCase.execute(processId)
                 .map(FileResDTO::new)
                 .collectList()
                 .flatMap(HttpResponseUtil::Ok);
     }
 
     public Mono<ServerResponse> generateFileWithDocuments(ServerRequest request) {
+        String processId = request.pathVariable(PROCESS_ID);
         return request.bodyToMono(GenerateDocumentReqDTO.class)
                 .map(GenerateDocumentReqDTO::buildFileDataVO)
-                .flatMap(generateDocUseCase::getAsUrl)
+                .flatMap(req -> generateDocUseCase.getAsUrl(req, processId))
                 .map(GenerateDocumentResDTO::new)
                 .flatMap(HttpResponseUtil::Ok);
     }
 
     public Mono<ServerResponse> generateFileEncoded(ServerRequest request) {
+        String processId = request.pathVariable(PROCESS_ID);
         return request.bodyToMono(GenerateDocumentReqDTO.class)
                 .map(GenerateDocumentReqDTO::buildFileDataVO)
-                .flatMap(generateDocUseCase::getAsEncodedFile)
+                .flatMap(req -> generateDocUseCase.getAsEncodedFile(req, processId))
                 .map(GenerateDocumentResDTO::new)
                 .flatMap(HttpResponseUtil::Ok);
     }
 
     public Mono<ServerResponse> getAndUpload(ServerRequest request) {
+        String processId = request.pathVariable(PROCESS_ID);
         return request.bodyToMono(GetAndUploadDocumentReqDTO.class)
-                .flatMap(req -> generateDocUseCase.getAndUpload(req.getData(), req.getOfferId(), req.getFileName()))
+                .flatMap(req -> generateDocUseCase.getAndUpload(processId, req.getData(), req.getFileName()))
                 .map(FileResDTO::new)
                 .flatMap(HttpResponseUtil::Ok);
     }
 
     public Mono<ServerResponse> uploadAgreementFiles(ServerRequest request) {
-        String agreement = request.pathVariable(FilePathParams.AGREEMENT_NUMBER);
-        String offer = request.pathVariable(FilePathParams.OFFER_ID);
+        String processId = request.pathVariable(PROCESS_ID);
         return request.body(BodyExtractors.toParts())
                 .cast(FilePart.class)
                 .flatMap(this::buildFileUploadVO)
                 .collectList()
-                .flatMap(files -> uploadFilesAgreementUseCase.execute(agreement, offer, files))
+                .flatMap(files -> uploadFilesAgreementUseCase.execute(processId, files))
                 .flatMap(HttpResponseUtil::accepted);
     }
 

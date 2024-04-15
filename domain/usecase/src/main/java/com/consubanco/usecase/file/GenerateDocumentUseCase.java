@@ -1,11 +1,13 @@
 package com.consubanco.usecase.file;
 
 import com.consubanco.model.entities.file.File;
-import com.consubanco.model.entities.file.gateways.FileConvertGateway;
-import com.consubanco.model.entities.file.gateways.FileGateway;
-import com.consubanco.model.entities.file.gateways.FileRepository;
+import com.consubanco.model.entities.file.gateway.FileConvertGateway;
+import com.consubanco.model.entities.file.gateway.FileGateway;
+import com.consubanco.model.entities.file.gateway.FileRepository;
 import com.consubanco.model.entities.file.vo.FileDataVO;
+import com.consubanco.model.entities.process.Process;
 import com.consubanco.usecase.document.BuildPayloadUseCase;
+import com.consubanco.usecase.process.GetProcessByIdUseCase;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
@@ -19,23 +21,27 @@ public class GenerateDocumentUseCase {
     private final FileGateway fileGateway;
     private final FileConvertGateway fileConvertGateway;
     private final FileRepository fileRepository;
+    private final GetProcessByIdUseCase getProcessByIdUseCase;
 
-    public Mono<String> getAsUrl(FileDataVO fileData) {
-        return buildPayloadUseCase.execute()
+    public Mono<String> getAsUrl(FileDataVO fileData, String processId) {
+        return getProcessByIdUseCase.execute(processId)
+                .map(Process::getId)
+                .flatMap(buildPayloadUseCase::execute)
                 .flatMap(payload -> fileGateway.generate(fileData.getDocuments(), fileData.getAttachments(), payload));
     }
 
-    public Mono<String> getAsEncodedFile(FileDataVO fileData) {
-        return buildPayloadUseCase.execute()
-                .flatMap(payload -> fileGateway.generate(fileData.getDocuments(), fileData.getAttachments(), payload))
+    public Mono<String> getAsEncodedFile(FileDataVO fileData, String processId) {
+        return getAsUrl(fileData, processId)
                 .flatMap(fileConvertGateway::encodedFile);
     }
 
-    public Mono<File> getAndUpload(FileDataVO fileData, String offerId, String fileName) {
-        return buildPayloadUseCase.execute()
-                .flatMap(payload -> fileGateway.generate(fileData.getDocuments(), fileData.getAttachments(), payload))
-                .flatMap(fileConvertGateway::encodedFile)
-                .map(encodedFile -> buildFile(offerId, fileName, encodedFile))
+    public Mono<File> getAndUpload(String processId, FileDataVO fileData, String fileName) {
+        return getProcessByIdUseCase.execute(processId)
+                .map(Process::getOffer)
+                .flatMap(offer -> buildPayloadUseCase.execute(processId)
+                        .flatMap(payload -> fileGateway.generate(fileData.getDocuments(), fileData.getAttachments(), payload))
+                        .flatMap(fileConvertGateway::encodedFile)
+                        .map(encodedFile -> buildFile(offer.getId(), fileName, encodedFile)))
                 .flatMap(fileRepository::save);
     }
 

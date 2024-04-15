@@ -9,6 +9,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
+import reactor.util.function.Tuple3;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,28 +19,41 @@ public class PayloadDocumentAdapter implements PayloadDocumentGateway, Applicati
 
     private final String promoterId;
     private final CustomLogger logger;
-    private final PromoterService promoterService;
+    private final PromoterApiConsumer promoterApiConsumer;
+    private final CustomerApiConsumer customerApiConsumer;
+    private final OfferApiConsumer offerApiConsumer;
     private final ITemplateOperations templateOperations;
 
     public PayloadDocumentAdapter(final @Value("${app.init.promoter-id}") String promoterId,
                                   final CustomLogger logger,
-                                  final PromoterService promoterService,
+                                  final PromoterApiConsumer promoterApiConsumer,
+                                  final CustomerApiConsumer customerApiConsumer,
+                                  final OfferApiConsumer offerApiConsumer,
                                   final ITemplateOperations templateOperations) {
         this.promoterId = promoterId;
         this.logger = logger;
-        this.promoterService = promoterService;
+        this.promoterApiConsumer = promoterApiConsumer;
+        this.customerApiConsumer = customerApiConsumer;
+        this.offerApiConsumer = offerApiConsumer;
         this.templateOperations = templateOperations;
     }
 
     @Override
-    public Mono<Map<String, Object>> getAllData() {
-        return promoterService.getPromoterById(promoterId)
-                .map(promoter -> {
-                    Map<String, Object> data = new ConcurrentHashMap<>();
-                    data.put("promoter", promoter);
-                    return data;
-                })
+    public Mono<Map<String, Object>> getAllData(String processId) {
+        return Mono.zip(promoterApiConsumer.getPromoterById(promoterId),
+                        customerApiConsumer.customerDataByProcess(processId),
+                        offerApiConsumer.activeOfferByProcess(processId))
+                .map(PayloadDocumentAdapter::buildDataMap)
                 .doOnNext(data -> logger.info("Data used to build payload was consulted.", data));
+    }
+
+    private static Map<String, Object> buildDataMap(Tuple3<Map<String, Object>, Map<String, Object>, Map<String, Object>> tuple) {
+        Map<String, Object> data = new ConcurrentHashMap<>();
+        data.put("promoter", tuple.getT1());
+        data.put("customer", tuple.getT2());
+        data.put("offer", tuple.getT3());
+        data.put("agreement", null);
+        return data;
     }
 
     @Override
@@ -51,7 +65,7 @@ public class PayloadDocumentAdapter implements PayloadDocumentGateway, Applicati
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        promoterService.getPromoterById(promoterId)
+        promoterApiConsumer.getPromoterById(promoterId)
                 .doOnNext(data -> logger.info("Promoter data has been cached."))
                 .doOnError(error -> logger.error("Failed to load cached promoter.", error))
                 .subscribeOn(Schedulers.boundedElastic())

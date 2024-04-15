@@ -2,14 +2,16 @@ package com.consubanco.usecase.file;
 
 import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.consubanco.model.entities.agreement.Agreement;
-import com.consubanco.model.entities.agreement.gateways.AgreementGateway;
+import com.consubanco.model.entities.agreement.gateway.AgreementGateway;
 import com.consubanco.model.entities.document.gateway.PdfDocumentGateway;
 import com.consubanco.model.entities.file.File;
-import com.consubanco.model.entities.file.gateways.FileConvertGateway;
-import com.consubanco.model.entities.file.gateways.FileGateway;
-import com.consubanco.model.entities.file.gateways.FileRepository;
+import com.consubanco.model.entities.file.gateway.FileConvertGateway;
+import com.consubanco.model.entities.file.gateway.FileGateway;
+import com.consubanco.model.entities.file.gateway.FileRepository;
 import com.consubanco.model.entities.file.vo.FileUploadVO;
+import com.consubanco.model.entities.process.Process;
 import com.consubanco.usecase.document.BuildPayloadUseCase;
+import com.consubanco.usecase.process.GetProcessByIdUseCase;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -34,11 +36,13 @@ public class UploadAgreementFilesUseCase {
     private final FileGateway fileGateway;
     private final FileConvertGateway fileConvertGateway;
     private final PdfDocumentGateway pdfDocument;
+    private final GetProcessByIdUseCase getProcessByIdUseCase;
 
-    public Mono<Void> execute(String agreementNumber, String offerId, List<FileUploadVO> attachments) {
-        return agreementGateway.findByNumber(agreementNumber)
-                .flatMap(agreement -> checkAttachments(agreement.getAttachments(), attachments).thenReturn(agreement))
-                .flatMap(agreement -> uploadAllDocuments(offerId, attachments, agreement));
+    public Mono<Void> execute(String processId, List<FileUploadVO> attachments) {
+        return getProcessByIdUseCase.execute(processId)
+                .flatMap(process -> agreementGateway.findByNumber(process.getAgreementId())
+                        .flatMap(agreement -> checkAttachments(agreement.getAttachments(), attachments).thenReturn(agreement))
+                        .flatMap(agreement -> uploadAllDocuments(process, attachments, agreement)));
     }
 
     private Mono<Void> checkAttachments(List<Agreement.Document> requiredAttachments, List<FileUploadVO> attachmentsProvided) {
@@ -61,9 +65,9 @@ public class UploadAgreementFilesUseCase {
                 .collect(Collectors.toList());
     }
 
-    private Mono<Void> uploadAllDocuments(String offerId, List<FileUploadVO> attachments, Agreement agreement) {
-        Flux<File> uploadAttachments = uploadAttachments(attachments, offerId);
-        Flux<File> uploadGeneratedDocuments = uploadGeneratedDocuments(agreement.getDocuments(), offerId);
+    private Mono<Void> uploadAllDocuments(Process process, List<FileUploadVO> attachments, Agreement agreement) {
+        Flux<File> uploadAttachments = uploadAttachments(attachments, process.getOffer().getId());
+        Flux<File> uploadGeneratedDocuments = uploadGeneratedDocuments(process, agreement.getDocuments());
         Flux.merge(uploadAttachments, uploadGeneratedDocuments)
                 .subscribeOn(Schedulers.boundedElastic())
                 .subscribe();
@@ -102,10 +106,10 @@ public class UploadAgreementFilesUseCase {
                         .build());
     }
 
-    private Flux<File> uploadGeneratedDocuments(List<Agreement.Document> documents, String offerId) {
+    private Flux<File> uploadGeneratedDocuments(Process process, List<Agreement.Document> documents) {
         // TODO: DEBO TRABAJAR EN LA GENERACION DEL PEYLOAD Y DISMINUIR EL TIEMPO DE DE RESPUESTA
-        return buildPayloadUseCase.execute()
-                .flatMapMany(payload -> generatedDocuments(documents, payload, offerId))
+        return buildPayloadUseCase.execute(process.getId())
+                .flatMapMany(payload -> generatedDocuments(documents, payload, process.getOffer().getId()))
                 .parallel()
                 .runOn(Schedulers.parallel())
                 .flatMap(fileRepository::save)

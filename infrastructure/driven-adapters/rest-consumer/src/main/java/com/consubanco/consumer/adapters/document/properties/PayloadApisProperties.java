@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "adapter.rest-consumer.apis")
 public class PayloadApisProperties {
+
     private Renex renex;
     private ApiConnect apiConnect;
 
@@ -19,7 +20,10 @@ public class PayloadApisProperties {
 
     @Data
     public static class Renex {
-        private String preApplication;
+        private String apiHealthCustomer;
+        private String apiCustomerProcess;
+        private String apiActiveOffer;
+        private String apiHealthOffer;
     }
 
 }
