@@ -43,16 +43,16 @@ public class PayloadDocumentAdapter implements PayloadDocumentGateway, Applicati
         return Mono.zip(promoterApiConsumer.getPromoterById(promoterId),
                         customerApiConsumer.customerDataByProcess(processId),
                         offerApiConsumer.activeOfferByProcess(processId))
-                .map(PayloadDocumentAdapter::buildDataMap)
+                .map(this::buildDataMap)
                 .doOnNext(data -> logger.info("Data used to build payload was consulted.", data));
     }
 
-    private static Map<String, Object> buildDataMap(Tuple3<Map<String, Object>, Map<String, Object>, Map<String, Object>> tuple) {
+    private Map<String, Object> buildDataMap(Tuple3<Map<String, Object>, Map<String, Object>, Map<String, Object>> tuple) {
         Map<String, Object> data = new ConcurrentHashMap<>();
         data.put("promoter", tuple.getT1());
         data.put("customer", tuple.getT2());
         data.put("offer", tuple.getT3());
-        data.put("agreement", null);
+        data.put("agreement", "");
         return data;
     }
 

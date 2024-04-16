@@ -18,7 +18,8 @@ public class FileUseCase {
     public Flux<File> getFilesByOffer(String offerId) {
         return checkOfferId(offerId)
                 .map(FileConstants::offerDirectory)
-                .flatMapMany(fileRepository::listByFolder);
+                .flatMapMany(fileRepository::listByFolder)
+                .switchIfEmpty(ExceptionFactory.buildBusiness(FILES_NOT_FOUND));
     }
 
     public Mono<File> loadPayloadTemplate() {

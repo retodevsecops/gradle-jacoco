@@ -14,7 +14,7 @@ import java.util.Map;
 @Component
 public class CustomLogger {
 
-    private static final String MESSAGE_KEY = "message";
+    private static final String TITLE_KEY = "title";
     private static final String DATA_KEY = "data";
     private static final String FORMAT_STRING_DATA = "\"%s\"";
 
@@ -47,14 +47,14 @@ public class CustomLogger {
     }
 
     private <T> Map<String, Object> buildMap(String message, T data) {
-        return Map.of(MESSAGE_KEY, message, DATA_KEY, data);
+        return Map.of(TITLE_KEY, message, DATA_KEY, data);
     }
 
     private <T> void logDataInfo(T data) {
         try {
             logger.info((data instanceof String) ? String.format(FORMAT_STRING_DATA, data) : mapper.writeValueAsString(data));
         } catch (JsonProcessingException error) {
-            logger.error("Failed to serialize object to JSON", error);
+            logger.info("\""+data+"\"");
         }
     }
 
@@ -62,7 +62,7 @@ public class CustomLogger {
         try {
             logger.error((data instanceof String) ? String.format(FORMAT_STRING_DATA, data) : mapper.writeValueAsString(data));
         } catch (JsonProcessingException error) {
-            logger.error("Failed to serialize object to JSON", error);
+            logger.error("\"{}\"", data);
         }
     }
 

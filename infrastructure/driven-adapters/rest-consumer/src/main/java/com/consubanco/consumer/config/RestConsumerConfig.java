@@ -72,7 +72,6 @@ public class RestConsumerConfig {
     @Bean("ApiRenexClient")
     public WebClient buildClientRenex() {
         return WebClient.builder()
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .clientConnector(getClientHttpConnector())
                 .filter(webClientLoggingFilter)
                 .filter(authTokenRenexFilter)

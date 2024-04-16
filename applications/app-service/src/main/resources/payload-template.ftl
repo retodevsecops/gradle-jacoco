@@ -6,6 +6,15 @@
     current_date_timestamp = .now?long
 >
 {
+        "exceptionProtocol": {
+            "dateProtocol": 1707862220748,
+            "declined": false,
+            "exceptionProtocolWasSelected": true,
+            "extremity": true,
+            "officialFolio": "2024021312000",
+            "officialName": "SOLO SE AGREGO PARA PRUEBAS"
+        },
+
     "id": "100800009705",
     "created_at": "${current_date_timestamp?c}",
     "contactInformation": {
@@ -25,7 +34,6 @@
     "employmentData": {
         "numeroEmpleado": "111111"
     },
-    "exceptionProtocol": {},
     "idDocumentData": {
         "ocr": "1900091754271",
         "type": "INE O IFE"
@@ -37,6 +45,9 @@
                 "branch": {
                     "empresa": {
                         "businessName": "La Tenda México S.A. de C.V."
+                    },
+                    "distribuidor": {
+                        "distributorName": "SOLO LO AGREGUE PARA PRUEBAS"
                     }
                 },
                 "convenioId": "10000208"
