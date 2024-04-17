@@ -36,7 +36,7 @@ public class AgreementStorageAdapter implements AgreementConfigRepository {
         return Mono.justOrEmpty(storage.get(blobId))
                 .map(Blob::getContent)
                 .map(this::deserializeAgreementConfigList)
-                .flatMapMany(Flux.fromIterable())
+                .flatMapMany(Flux::fromIterable)
                 .onErrorMap(throwTechnicalError(FIND_FILE_ERROR));
     }
 
@@ -47,4 +47,5 @@ public class AgreementStorageAdapter implements AgreementConfigRepository {
             throw new RuntimeException("Error deserializing agreement config JSON", e);
         }
     }
+
 }
