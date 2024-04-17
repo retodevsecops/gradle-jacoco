@@ -32,6 +32,9 @@ public class AgreementStorageAdapter implements AgreementConfigRepository {
         /*return Mono.justOrEmpty(storage.get(blobId))
                 .map(Blob::getContent)
                 .map(String::new)
+                .map(json -> {
+                    return objectMapper.readValues(json, AgreementConfigVO[].class)
+                })
                 .onErrorMap(throwTechnicalError(FIND_FILE_ERROR));*/
         return Flux.empty();
     }
