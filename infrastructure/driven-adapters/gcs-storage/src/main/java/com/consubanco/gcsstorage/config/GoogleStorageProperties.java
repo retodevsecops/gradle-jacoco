@@ -26,6 +26,7 @@ public class GoogleStorageProperties {
     @AllArgsConstructor
     public static class FilesPath {
         private String payloadTemplate;
+        private String agreementsConfig;
     }
 
     public String payloadTemplatePath(){

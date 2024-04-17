@@ -25,7 +25,7 @@ adapter:
     timeout: ${REST_TIMEOUT:5000}
     apis:
       renex:
-        audience: ${API_RENEX_AUDIENCE:renovacion-dev}
+        audience: ${GCP_AUDIENCE:renovacion-dev}
         api-health-customer: ${API_HEALTH_CUSTOMER:http://localhost:3001/customers-api/puc-customers/actuator/health}
         api-customer-process: ${API_CUSTOMER_PROCESS:http://localhost:3001/customers-api/puc-customers/customer/process/{processId}}
         api-health-offer: ${API_HEALTH_OFFER:http://localhost:3001/offers-api/puc-offers/actuator/health}
@@ -44,10 +44,10 @@ adapter:
   gcs-storage:
     project-id: ${GCS_PROJECT_ID:csb-dev-venta-digital}
     bucket-name: ${GCS_BUCKET_NAME:csb-venta-digital}
-    public-url: ${GCS_PUBLIC_URL:https://storage.googleapis.com/%s/%s}
     sign-url-days: ${GCS_SIGN_URL_DAYS:1}
     files-path:
       payload-template: ${GCS_PAYLOAD_TEMPLATE_PATH:management/puc-loans-documents-msa/payload-template.ftl}
+      agreements-config: ${GCS_AGREEMENT_CONFIG:management/puc-loans-documents-msa/agreements-config.json}
 entry:
   api:
     open-api:
@@ -55,6 +55,7 @@ entry:
       version: 1.0.0
       description: Resolves loan document capabilities.
     path-services:
+      health: /healthz
       agreement: /agreement
       file: /file
 helpers:

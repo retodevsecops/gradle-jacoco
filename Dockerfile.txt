@@ -4,7 +4,7 @@ ARG ENV
 COPY . .
 RUN chmod +x gradlew
 RUN ./gradlew -P ENVIRONMENT_NAME=$ENV build -x validateStructure test
-RUN mv applications/app-service/build/libs/puc-customers.jar app.jar
+RUN mv applications/app-service/build/libs/vd-loans-documents-msa.jar app.jar
 
 FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /app

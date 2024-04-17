@@ -1,0 +1,20 @@
+[
+  {
+    "agreementNumber": "10000041",
+    "compound-documents": [
+      {
+        "name": "documentos-cobranza",
+        "documents": [
+          "formato-reserva",
+          "identificacion-oficial",
+          "carta-consentimiento",
+          "recibo-nomina",
+          "formato-solicitud-gratuita",
+          "formato-unico-caratula",
+          "contrato-servicios-digitales",
+          "pagare"
+        ]
+      }
+    ]
+  }
+]
