@@ -35,6 +35,10 @@ public class FileUseCase {
                 .flatMap(file -> fileRepository.getPayloadTemplate());
     }
 
+    public Mono<File> uploadAgreementsConfig(String contentFile) {
+        return fileRepository.uploadAgreementsConfigFile(contentFile);
+    }
+
     private Mono<String> checkOfferId(String offerId) {
         return Mono.justOrEmpty(offerId)
                 .switchIfEmpty(ExceptionFactory.buildBusiness(OFFER_ID_IS_NULL));

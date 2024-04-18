@@ -96,4 +96,14 @@ public class FileOpenAPI {
                 .response(responseInternalError());
     }
 
+    public static Consumer<Builder> uploadAgreementsConfig() {
+        return ops -> ops.tag(TAG_MANAGEMENT)
+                .operationId("uploadAgreementsConfig")
+                .description("Upload the configuration file of the agreements to storage.")
+                .summary("Upload agreements configuration file.")
+                .response(responseOk(FileResDTO.class))
+                .response(responseBusinessException())
+                .response(responseInternalError());
+    }
+
 }

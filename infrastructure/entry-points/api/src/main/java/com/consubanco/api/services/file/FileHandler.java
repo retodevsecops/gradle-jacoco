@@ -2,9 +2,9 @@ package com.consubanco.api.services.file;
 
 import com.consubanco.api.commons.util.FilePartUtil;
 import com.consubanco.api.commons.util.HttpResponseUtil;
-import com.consubanco.api.services.agreement.constants.AgreementPathParams;
 import com.consubanco.api.services.file.constants.FilePathParams;
 import com.consubanco.api.services.file.dto.*;
+import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.vo.FileUploadVO;
 import com.consubanco.usecase.file.BuildCNCALettersUseCase;
 import com.consubanco.usecase.file.FileUseCase;
@@ -18,6 +18,8 @@ import org.springframework.web.reactive.function.BodyExtractors;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
+
+import java.util.function.Function;
 
 import static com.consubanco.api.services.file.constants.FilePathParams.*;
 
@@ -92,11 +94,19 @@ public class FileHandler {
     }
 
     public Mono<ServerResponse> uploadPayloadTemplate(ServerRequest request) {
+        return processUploadCase(request, fileUseCase::uploadPayloadTemplate);
+    }
+
+    public Mono<ServerResponse> uploadAgreementsConfig(ServerRequest request) {
+        return processUploadCase(request, fileUseCase::uploadAgreementsConfig);
+    }
+
+    private Mono<ServerResponse> processUploadCase(ServerRequest request, Function<String, Mono<File>> useCase) {
         return request.body(BodyExtractors.toParts())
                 .ofType(FilePart.class)
                 .next()
                 .flatMap(FilePartUtil::fileToBase64)
-                .flatMap(fileUseCase::uploadPayloadTemplate)
+                .flatMap(useCase)
                 .map(FileResDTO::new)
                 .flatMap(HttpResponseUtil::Ok);
     }

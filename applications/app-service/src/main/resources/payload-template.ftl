@@ -24,12 +24,12 @@
         "phoneWork": "3333333333"
     },
     "dataSeller": {
-        "apellidoMaterno": "${promoter.lastname2}",
-        "apellidoPaterno": "${promoter.lastname1}",
-        "bpId": "${promoter.bpId}",
-        "nombre1": "${promoter.name1}",
-        "nombre2": "${promoter.name2}",
-        "rfc": "${promoter.rfc}"
+        "apellidoMaterno": "${promoter_data.lastname2}",
+        "apellidoPaterno": "${promoter_data.lastname1}",
+        "bpId": "${promoter_data.bpId}",
+        "nombre1": "${promoter_data.name1}",
+        "nombre2": "${promoter_data.name2}",
+        "rfc": "${promoter_data.rfc}"
     },
     "employmentData": {
         "numeroEmpleado": "111111"
@@ -50,16 +50,16 @@
                         "distributorName": "SOLO LO AGREGUE PARA PRUEBAS"
                     }
                 },
-                "convenioId": "10000208"
+                "convenioId": "${offer_data.offer.agreement.key}"
             },
-            "amount": 45000,
+            "amount": ${offer_data.offer.amount},
             "annualTI": 51.74999999999999,
             "currentDiscount": 1186.78,
             "discountAmount": 1186.78,
-            "frequencyDescription": "Quincenal",
+            "frequencyDescription": "${offer_data.offer.frequency}",
             "monthlyTI": 4.312499999999999,
             "openingCommissionPercentage": "1.000",
-            "plazo": 120,
+            "plazo": ${offer_data.offer.term},
             "requestedAmount": 45000,
             "totalAmount": 142413.6
         }

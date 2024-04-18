@@ -11,4 +11,5 @@ public interface FileRepository {
     Mono<File> getPayloadTemplate();
     Mono<String> getLocalPayloadTemplate();
     Mono<File> uploadPayloadTemplate(String contentFile);
+    Mono<File> uploadAgreementsConfigFile(String contentFile);
 }

@@ -49,10 +49,10 @@ public class PayloadDocumentAdapter implements PayloadDocumentGateway, Applicati
 
     private Map<String, Object> buildDataMap(Tuple3<Map<String, Object>, Map<String, Object>, Map<String, Object>> tuple) {
         Map<String, Object> data = new ConcurrentHashMap<>();
-        data.put("promoter", tuple.getT1());
-        data.put("customer", tuple.getT2());
-        data.put("offer", tuple.getT3());
-        data.put("agreement", "");
+        data.put("promoter_data", tuple.getT1());
+        data.put("customer_data", tuple.getT2());
+        data.put("offer_data", tuple.getT3());
+        data.put("agreement_data", "");
         return data;
     }
 

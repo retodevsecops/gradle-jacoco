@@ -48,7 +48,7 @@ public class FileStorageAdapter implements FileRepository {
         return Mono.zip(blob, contentFile)
                 .map(tuple -> storage.create(tuple.getT1(), tuple.getT2()))
                 .map(blobInfo -> file.toBuilder()
-                        .url(properties.getPublicUrl(blobInfo.getName()))
+                        .url(blobInfo.getSelfLink())
                         .size(FileUtil.getSize(blobInfo))
                         .build())
                 .onErrorMap(throwTechnicalError(STORAGE_ERROR));
@@ -86,14 +86,9 @@ public class FileStorageAdapter implements FileRepository {
         return Mono.just(properties.payloadTemplatePath())
                 .map(FileUtil::getFileName)
                 .map(ClassPathResource::new)
-                .map(resource -> {
-                    try {
-                        return FileCopyUtils.copyToByteArray(resource.getInputStream());
-                    } catch (IOException exception) {
-                        throw ExceptionFactory.buildTechnical(exception, LOCAL_TEMPLATE_ERROR);
-                    }
-                })
+                .map(FileUtil::getContentFromResource)
                 .map(Base64::encodeBase64String)
+                .onErrorMap(throwTechnicalError(LOCAL_TEMPLATE_ERROR))
                 .doOnTerminate(() -> logger.info("Payload template was get from local source."));
     }
 
@@ -106,6 +101,18 @@ public class FileStorageAdapter implements FileRepository {
                 .map(isValid -> File.builder()
                         .name(FileUtil.getFileName(properties.payloadTemplatePath()))
                         .directoryPath(FileUtil.getDirectory(properties.payloadTemplatePath()))
+                        .content(contentFile)
+                        .build())
+                .flatMap(this::save);
+    }
+
+    @Override
+    @CacheEvict(cacheNames = "AgreementConfig", allEntries = true)
+    public Mono<File> uploadAgreementsConfigFile(String contentFile) {
+        return Mono.just(properties.getFilesPath().getAgreementsConfig())
+                .map(path -> File.builder()
+                        .name(FileUtil.getFileName(path))
+                        .directoryPath(FileUtil.getDirectory(path))
                         .content(contentFile)
                         .build())
                 .flatMap(this::save);

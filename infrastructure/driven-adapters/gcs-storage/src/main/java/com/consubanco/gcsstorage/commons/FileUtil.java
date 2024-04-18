@@ -1,13 +1,19 @@
 package com.consubanco.gcsstorage.commons;
 
+import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import lombok.experimental.UtilityClass;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.util.unit.DataSize;
 import reactor.core.publisher.Mono;
 
+import java.io.IOException;
 import java.util.Base64;
+
+import static com.consubanco.model.entities.agreement.message.AgreementTechnicalMessage.FAIL_GET_CONFIG_LOCAL;
 
 @UtilityClass
 public class FileUtil {
@@ -23,6 +29,14 @@ public class FileUtil {
     public String getFileName(String documentPath) {
         String[] parts = documentPath.split("/");
         return parts[parts.length - 1];
+    }
+
+    public byte[] getContentFromResource(ClassPathResource resource) {
+        try {
+            return FileCopyUtils.copyToByteArray(resource.getInputStream());
+        } catch (IOException exception) {
+            throw new RuntimeException("Error getting resource content.", exception);
+        }
     }
 
     public String getDirectory(String documentPath) {

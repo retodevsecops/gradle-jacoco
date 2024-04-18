@@ -17,10 +17,6 @@ public class GoogleStorageProperties {
     private int signUrlDays;
     private FilesPath filesPath;
 
-    public String getPublicUrl(String blobName) {
-        return String.format(this.publicUrl, this.getBucketName(), blobName);
-    }
-
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

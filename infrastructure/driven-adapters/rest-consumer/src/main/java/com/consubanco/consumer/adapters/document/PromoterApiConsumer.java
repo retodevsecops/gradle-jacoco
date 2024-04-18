@@ -6,6 +6,8 @@ import com.consubanco.logger.CustomLogger;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -45,14 +47,14 @@ public class PromoterApiConsumer {
                 .bodyValue(request)
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
-                .filter(response -> getResponseCode(response).equals("200"))
+                .filter(response -> getResponseCode(response).equals(HttpStatus.OK.value()))
                 .flatMap(this::getDataInterlocutor)
                 .onErrorMap(throwTechnicalError(API_SEARCH_INTERLOCUTOR_ERROR));
     }
 
-    private String getResponseCode(Map<String, Object> response) {
+    private Integer getResponseCode(Map<String, Object> response) {
         Map<String, Object> resBO = (Map<String, Object>) response.get("searchInterlocutorResBO");
-        return (String) resBO.get("code");
+        return Integer.parseInt((String) resBO.get("code"));
     }
 
     private Mono<Map<String, Object>> getDataInterlocutor(Map<String, Object> response) {

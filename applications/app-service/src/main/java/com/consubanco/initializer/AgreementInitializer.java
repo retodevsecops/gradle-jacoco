@@ -2,6 +2,7 @@ package com.consubanco.initializer;
 
 import com.consubanco.logger.CustomLogger;
 import com.consubanco.usecase.agreement.AgreementUseCase;
+import com.consubanco.usecase.agreement.LoadAgreementsUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -17,9 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AgreementInitializer implements ApplicationListener<ApplicationReadyEvent> {
 
-    @Value("${app.init.agreements}")
-    private final List<String> agreements;
-    private final AgreementUseCase agreementUseCase;
+    private final LoadAgreementsUseCase loadAgreementsUseCase;
     private final CustomLogger logger;
 
     @Override
@@ -28,15 +27,9 @@ public class AgreementInitializer implements ApplicationListener<ApplicationRead
     }
 
     public void loadAgreementsInCache() {
-        Mono.just(agreements)
-                .doOnNext(list -> logger.info("Starting loading of cached agreements..." + list.toString()))
-                .flatMapMany(Flux::fromIterable)
-                .parallel()
-                .runOn(Schedulers.parallel())
-                .flatMap(agreementUseCase::findByNumber)
-                .doOnError(logger::error)
-                .sequential()
-                .doFinally(e -> logger.info("Loading of cached agreements completed successfully."))
+        loadAgreementsUseCase.execute()
+                .doOnNext(agreement -> logger.info("Agreement "+agreement.getNumber()+" has loaded into cache."))
+                .doOnError(error -> logger.error("Error when caching agreements.", error))
                 .subscribeOn(Schedulers.boundedElastic())
                 .subscribe();
     }
