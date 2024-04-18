@@ -1,18 +1,12 @@
 package com.consubanco.initializer;
 
 import com.consubanco.logger.CustomLogger;
-import com.consubanco.usecase.agreement.AgreementUseCase;
 import com.consubanco.usecase.agreement.LoadAgreementsUseCase;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor

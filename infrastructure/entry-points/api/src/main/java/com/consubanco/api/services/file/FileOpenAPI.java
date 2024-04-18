@@ -3,7 +3,10 @@ package com.consubanco.api.services.file;
 import com.consubanco.api.commons.swagger.ParamsOpenAPI;
 import com.consubanco.api.commons.swagger.RequestsOpenAPI;
 import com.consubanco.api.services.file.constants.FilePathParams;
-import com.consubanco.api.services.file.dto.*;
+import com.consubanco.api.services.file.dto.FileResDTO;
+import com.consubanco.api.services.file.dto.GenerateDocumentReqDTO;
+import com.consubanco.api.services.file.dto.GenerateDocumentResDTO;
+import com.consubanco.api.services.file.dto.GetAndUploadDocumentReqDTO;
 import org.springdoc.core.fn.builders.operation.Builder;
 
 import java.util.function.Consumer;

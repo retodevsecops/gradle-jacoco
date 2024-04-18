@@ -34,33 +34,4 @@ sonar {
     }
 }
 
-version = '1.0.1-SNAPSHOT'
-kubernetes {
-    buildStrategy = "docker"
-    images {
-        image {
-            name = "us-west1-docker.pkg.dev/csb-images/csb-repository-docker/${project.name}:${project.version}"
-            alias = "${project.name}:${project.version}"
-            build {
-                from = "openjdk:17"
-                assembly {
-                    targetDir = "/deployments"
-                }
-                env {
-                    JAVA_LIB_DIR = "/deployments"
-                    ACTIVE_PROFILE = "${ENVIRONMENT_NAME:'dev'}"
-                }
-                cmd {
-                    exec = ["java","-jar","-Dspring.profiles.active=${ACTIVE_PROFILE:'dev'}","/deployments/${project.name}-${project.version}.jar"]
-                }
-                ports = ['8066']
-            }
-        }
-    }
-    resources {
-        namespace = 'puc-backend'
-        imagePullPolicy = 'Always'
-    }
-}
-
 apply from: './main.gradle'

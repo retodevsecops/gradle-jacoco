@@ -6,7 +6,6 @@ import com.consubanco.gcsstorage.commons.FileUtil;
 import com.consubanco.gcsstorage.config.GoogleStorageProperties;
 import com.consubanco.logger.CustomLogger;
 import com.consubanco.model.commons.exception.TechnicalException;
-import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.gateway.FileRepository;
 import com.google.api.gax.paging.Page;
@@ -20,12 +19,10 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.FileCopyUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 

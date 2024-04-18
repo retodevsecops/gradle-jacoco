@@ -1,9 +1,5 @@
 package com.consubanco.api.services.health;
 
-import com.consubanco.api.commons.swagger.ParamsOpenAPI;
-import com.consubanco.api.services.agreement.constants.AgreementPathParams;
-import com.consubanco.api.services.agreement.dto.AttachmentResDTO;
-import com.consubanco.api.services.agreement.dto.GetAgreementResponseDTO;
 import org.springdoc.core.fn.builders.operation.Builder;
 
 import java.util.function.Consumer;

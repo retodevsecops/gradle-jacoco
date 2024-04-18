@@ -1,6 +1,5 @@
 package com.consubanco.gcsstorage.commons;
 
-import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
@@ -12,8 +11,6 @@ import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.util.Base64;
-
-import static com.consubanco.model.entities.agreement.message.AgreementTechnicalMessage.FAIL_GET_CONFIG_LOCAL;
 
 @UtilityClass
 public class FileUtil {

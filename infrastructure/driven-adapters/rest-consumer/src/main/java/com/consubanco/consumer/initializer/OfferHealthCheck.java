@@ -1,6 +1,5 @@
 package com.consubanco.consumer.initializer;
 
-import com.consubanco.consumer.adapters.document.CustomerApiConsumer;
 import com.consubanco.consumer.adapters.document.OfferApiConsumer;
 import com.consubanco.logger.CustomLogger;
 import lombok.RequiredArgsConstructor;

@@ -3,7 +3,10 @@ package com.consubanco.api.services.file;
 import com.consubanco.api.commons.util.FilePartUtil;
 import com.consubanco.api.commons.util.HttpResponseUtil;
 import com.consubanco.api.services.file.constants.FilePathParams;
-import com.consubanco.api.services.file.dto.*;
+import com.consubanco.api.services.file.dto.FileResDTO;
+import com.consubanco.api.services.file.dto.GenerateDocumentReqDTO;
+import com.consubanco.api.services.file.dto.GenerateDocumentResDTO;
+import com.consubanco.api.services.file.dto.GetAndUploadDocumentReqDTO;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.vo.FileUploadVO;
 import com.consubanco.usecase.file.BuildCNCALettersUseCase;
@@ -21,7 +24,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.function.Function;
 
-import static com.consubanco.api.services.file.constants.FilePathParams.*;
+import static com.consubanco.api.services.file.constants.FilePathParams.PROCESS_ID;
 
 @Component
 @RequiredArgsConstructor
