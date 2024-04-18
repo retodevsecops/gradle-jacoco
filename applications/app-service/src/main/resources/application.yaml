@@ -17,7 +17,7 @@ spring:
     include: null
 app:
   init:
-    promoter-id: ${APP_INIT_PROMOTER_ID:0010007540}
+    promoter-id: ${INIT_PROMOTER_ID:0010007540}
 
 adapter:
   rest-consumer:
