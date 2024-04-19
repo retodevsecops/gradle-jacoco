@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "adapter.gcs-storage")
 public class GoogleStorageProperties {
 
-    private String projectId;
     private String bucketName;
     private String publicUrl;
     private int signUrlDays;

@@ -10,13 +10,9 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class GoogleCloudStorageConfig {
 
-    private final GoogleStorageProperties storageProperties;
-
-
     @Bean
     public Storage getStorage() {
         return StorageOptions.newBuilder()
-                .setProjectId(storageProperties.getProjectId())
                 .build()
                 .getService();
     }
