@@ -15,3 +15,7 @@ Configuration:
       level: "${sys:LOG_LEVEL:-info}"
       AppenderRef:
         - ref: STDOUT
+    Logger:
+      - name: org.springframework.web
+        level: info
+        additivity: false

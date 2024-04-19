@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
 import static com.consubanco.model.entities.file.message.FileTechnicalMessage.*;
+import static com.google.cloud.storage.Storage.SignUrlOption.withV4Signature;
 
 @Service
 @RequiredArgsConstructor
@@ -122,7 +123,7 @@ public class FileStorageAdapter implements FileRepository {
 
     private Mono<String> signUrl(String blobName) {
         return FileUtil.buildBlob(properties.getBucketName(), blobName)
-                .map(blobInfo -> storage.signUrl(blobInfo, properties.getSignUrlDays(), TimeUnit.DAYS))
+                .map(blobInfo -> storage.signUrl(blobInfo, properties.getSignUrlDays(), TimeUnit.DAYS, withV4Signature()))
                 .map(URL::toString)
                 .onErrorMap(throwTechnicalError(SIGN_URL_ERROR));
     }
