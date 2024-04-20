@@ -1,5 +1,6 @@
 package com.consubanco.usecase.file;
 
+import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.consubanco.model.entities.agreement.gateway.AgreementConfigRepository;
 import com.consubanco.model.entities.agreement.vo.AgreementConfigVO;
 import com.consubanco.model.entities.file.File;
@@ -7,6 +8,8 @@ import com.consubanco.model.entities.process.Process;
 import com.consubanco.usecase.process.GetProcessByIdUseCase;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
+
+import static com.consubanco.model.entities.agreement.message.AgreementBusinessMessage.AGREEMENT_CONFIG_NOT_FOUND;
 
 @RequiredArgsConstructor
 public class GetCustomerVisibleFilesUseCase {
@@ -22,6 +25,7 @@ public class GetCustomerVisibleFilesUseCase {
 
     private Flux<File> processAgreementConfig(Process process) {
         return agreementConfigRepository.getConfigByAgreement(process.getAgreementNumber())
+                .switchIfEmpty(ExceptionFactory.buildBusiness(AGREEMENT_CONFIG_NOT_FOUND))
                 .flatMapMany(agreementConfigVO -> getFiles(agreementConfigVO, process.getOffer().getId()));
     }
 
