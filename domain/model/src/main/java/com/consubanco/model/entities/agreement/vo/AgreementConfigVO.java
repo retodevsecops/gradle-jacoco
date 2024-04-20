@@ -34,7 +34,7 @@ public class AgreementConfigVO {
     }
 
     public AgreementConfigVO checkCustomerVisibleDocuments() {
-        if (Objects.isNull(compoundDocuments) || compoundDocuments.isEmpty()){
+        if (Objects.isNull(customerVisibleDocuments) || customerVisibleDocuments.isEmpty()){
             ExceptionFactory.buildBusiness(DOCUMENTS_VISIBLE_NOT_CONFIG);
         }
         return this;
