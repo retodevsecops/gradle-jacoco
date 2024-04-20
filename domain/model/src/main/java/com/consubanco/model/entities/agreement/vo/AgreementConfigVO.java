@@ -11,6 +11,7 @@ import static com.consubanco.model.entities.agreement.message.AgreementBusinessM
 
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)

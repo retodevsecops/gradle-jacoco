@@ -2,7 +2,7 @@
   {
     "agreement": "cdmx - csb",
     "agreementNumber": "10000041",
-    "compound-documents": [
+    "compoundDocuments": [
       {
         "name": "documentos-cobranza",
         "documents": [
@@ -17,7 +17,7 @@
         ]
       }
     ],
-    "customer-visible-documents": [
+    "customerVisibleDocuments": [
       "formato-unico-caratula",
       "formato-solicitud-gratuita",
       "carta-de-liquidacion"
@@ -26,7 +26,7 @@
   {
     "agreement": "gem - csp",
     "agreementNumber": "10000080",
-    "compound-documents": [
+    "compoundDocuments": [
       {
         "name": "documentos-cobranza",
         "documents": [
