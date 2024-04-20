@@ -16,6 +16,11 @@
           "pagare"
         ]
       }
+    ],
+    "customer-visible-documents": [
+      "formato-unico-caratula",
+      "formato-solicitud-gratuita",
+      "carta-de-liquidacion"
     ]
   },
   {

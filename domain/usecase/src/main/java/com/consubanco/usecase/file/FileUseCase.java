@@ -2,10 +2,8 @@ package com.consubanco.usecase.file;
 
 import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.consubanco.model.entities.file.File;
-import com.consubanco.model.entities.file.constant.FileConstants;
 import com.consubanco.model.entities.file.gateway.FileRepository;
 import lombok.RequiredArgsConstructor;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static com.consubanco.model.entities.file.message.FileBusinessMessage.*;
@@ -14,13 +12,6 @@ import static com.consubanco.model.entities.file.message.FileBusinessMessage.*;
 public class FileUseCase {
 
     private final FileRepository fileRepository;
-
-    public Flux<File> getFilesByOffer(String offerId) {
-        return checkOfferId(offerId)
-                .map(FileConstants::offerDirectory)
-                .flatMapMany(fileRepository::listByFolder)
-                .switchIfEmpty(ExceptionFactory.buildBusiness(FILES_NOT_FOUND));
-    }
 
     public Mono<File> loadPayloadTemplate() {
         return fileRepository.getPayloadTemplate()

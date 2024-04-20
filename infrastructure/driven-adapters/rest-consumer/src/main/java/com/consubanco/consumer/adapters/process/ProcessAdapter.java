@@ -24,10 +24,10 @@ public class ProcessAdapter implements ProcessGateway {
     public Mono<Process> getProcessById(String id) {
         return offerApiConsumer.activeOfferByProcess(id)
                 .map(processMap -> {
-                    String agreementId = getAgreementId(processMap);
+                    String agreementNumber = getAgreement(processMap);
                     String offerId = getOfferId(processMap);
                     List<String> loansId = getLoansFromOffer(processMap);
-                    return new Process(id, agreementId, offerId, loansId);
+                    return new Process(id, agreementNumber, offerId, loansId);
                 });
     }
 
@@ -48,7 +48,7 @@ public class ProcessAdapter implements ProcessGateway {
                 .toList();
     }
 
-    private String getAgreementId(Map<String, Object> process) {
+    private String getAgreement(Map<String, Object> process) {
         return Optional.ofNullable(process)
                 .map(map -> (Map<String, Object>) map.get("offer"))
                 .map(offerMap -> (Map<String, Object>) offerMap.get("agreement"))

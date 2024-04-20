@@ -2,7 +2,6 @@ package com.consubanco.api.services.file;
 
 import com.consubanco.api.commons.util.FilePartUtil;
 import com.consubanco.api.commons.util.HttpResponseUtil;
-import com.consubanco.api.services.file.constants.FilePathParams;
 import com.consubanco.api.services.file.dto.FileResDTO;
 import com.consubanco.api.services.file.dto.GenerateDocumentReqDTO;
 import com.consubanco.api.services.file.dto.GenerateDocumentResDTO;
@@ -77,14 +76,6 @@ public class FileHandler {
                 .collectList()
                 .flatMap(files -> uploadFilesAgreementUseCase.execute(processId, files))
                 .flatMap(HttpResponseUtil::accepted);
-    }
-
-    public Mono<ServerResponse> getFilesByOffer(ServerRequest request) {
-        String offerId = request.pathVariable(FilePathParams.OFFER_ID);
-        return fileUseCase.getFilesByOffer(offerId)
-                .map(FileResDTO::new)
-                .collectList()
-                .flatMap(HttpResponseUtil::Ok);
     }
 
     private Mono<FileUploadVO> buildFileUploadVO(FilePart filePart) {

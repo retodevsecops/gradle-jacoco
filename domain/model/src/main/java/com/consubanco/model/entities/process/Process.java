@@ -12,7 +12,7 @@ import java.util.List;
 public class Process {
 
     private String id;
-    private String agreementId;
+    private String agreementNumber;
     private Offer offer;
 
     @Getter
@@ -26,9 +26,9 @@ public class Process {
 
     }
 
-    public Process(String id, String agreementId, String offerId, List<String> loansId) {
+    public Process(String id, String agreementNumber, String offerId, List<String> loansId) {
         this.id = id;
-        this.agreementId = agreementId;
+        this.agreementNumber = agreementNumber;
         this.offer = new Offer(offerId, loansId);
     }
 }

@@ -13,6 +13,7 @@ public class AgreementConfigVO {
 
     private String agreementNumber;
     private List<CompoundDocument> compoundDocuments;
+    private List<String> customerVisibleDocuments;
 
     @Data
     public static class CompoundDocument {

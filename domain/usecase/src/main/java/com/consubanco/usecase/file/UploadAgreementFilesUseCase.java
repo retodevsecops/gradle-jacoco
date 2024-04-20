@@ -40,7 +40,7 @@ public class UploadAgreementFilesUseCase {
 
     public Mono<Void> execute(String processId, List<FileUploadVO> attachments) {
         return getProcessByIdUseCase.execute(processId)
-                .flatMap(process -> agreementGateway.findByNumber(process.getAgreementId())
+                .flatMap(process -> agreementGateway.findByNumber(process.getAgreementNumber())
                         .flatMap(agreement -> checkAttachments(agreement.getAttachments(), attachments).thenReturn(agreement))
                         .flatMap(agreement -> uploadAllDocuments(process, attachments, agreement)));
     }

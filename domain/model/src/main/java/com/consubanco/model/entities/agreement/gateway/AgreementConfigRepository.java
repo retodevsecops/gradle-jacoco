@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface AgreementConfigRepository {
     Mono<List<AgreementConfigVO>> getAgreementsConfig();
+    Mono<AgreementConfigVO> getConfigByAgreement(String agreementNumber);
 }

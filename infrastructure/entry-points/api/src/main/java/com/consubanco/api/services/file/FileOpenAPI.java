@@ -89,6 +89,17 @@ public class FileOpenAPI {
                 .response(responseInternalError());
     }
 
+    public static Consumer<Builder> getCustomerVisibleFiles() {
+        return ops -> ops.tag(TAG_OFFER)
+                .operationId("getCustomerVisibleFiles")
+                .description("Get all files that the customer can view.")
+                .summary("Get customer visible files.")
+                .parameter(ParamsOpenAPI.path(FilePathParams.PROCESS_ID, "Process identifier"))
+                .response(responseOkWithList(FileResDTO.class))
+                .response(responseBusinessException())
+                .response(responseInternalError());
+    }
+
     public static Consumer<Builder> uploadPayloadTemplate() {
         return ops -> ops.tag(TAG_MANAGEMENT)
                 .operationId("uploadPayloadTemplate")

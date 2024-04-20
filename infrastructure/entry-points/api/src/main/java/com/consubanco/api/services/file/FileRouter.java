@@ -1,5 +1,6 @@
 package com.consubanco.api.services.file;
 
+import com.consubanco.api.services.file.handlers.OfferFileHandler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +22,7 @@ public class FileRouter {
     private String fileServicesPath;
 
     @Bean
-    public RouterFunction<ServerResponse> fileRoutes(FileHandler handler) {
+    public RouterFunction<ServerResponse> fileRoutes(FileHandler handler, OfferFileHandler offerFileHandler) {
         return RouterFunctions.nest(
                 path(fileServicesPath).and(accept(APPLICATION_JSON)),
                 route()
@@ -30,10 +31,11 @@ public class FileRouter {
                     .POST(GENERATE_DOCUMENT_ENCODED_PATH, handler::generateFileEncoded, generateFileEncoded())
                     .POST(GET_AND_UPLOAD_DOCUMENT_PATH, handler::getAndUpload, getAndUpload())
                     .POST(DOCUMENTS_AGREEMENT_PATH, contentType(MULTIPART_FORM_DATA), handler::uploadAgreementFiles, uploadAgreementFiles())
-                    .GET(DOCUMENTS_OFFER_PATH, handler::getFilesByOffer, getFilesByOffer())
+                    .GET(FILES_OFFER_PATH, offerFileHandler::getFilesByOffer, getFilesByOffer())
+                    .GET(FILES_CUSTOMER_VIEW_PATH, offerFileHandler::getCustomerVisibleFiles, getCustomerVisibleFiles())
                     .POST(PAYLOAD_TEMPLATE_PATH, contentType(MULTIPART_FORM_DATA), handler::uploadPayloadTemplate, uploadPayloadTemplate())
                     .POST(AGREEMENTS_CONFIG_PATH, contentType(MULTIPART_FORM_DATA), handler::uploadAgreementsConfig, uploadAgreementsConfig())
-                        .build()
+               .build()
         );
     }
 

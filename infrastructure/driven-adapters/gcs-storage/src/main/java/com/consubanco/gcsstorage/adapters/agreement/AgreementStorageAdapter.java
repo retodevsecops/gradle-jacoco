@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
@@ -39,6 +40,15 @@ public class AgreementStorageAdapter implements AgreementConfigRepository {
         return getAgreementsConfigFromStorage()
                 .switchIfEmpty(localAgreementsConfig)
                 .map(this::deserializeAgreementConfigList);
+    }
+
+    @Override
+    @Cacheable("AgreementsConfigById")
+    public Mono<AgreementConfigVO> getConfigByAgreement(String agreementNumber) {
+        return getAgreementsConfig()
+                .flatMapMany(Flux::fromIterable)
+                .filter(agreementConfigVO -> agreementConfigVO.getAgreementNumber().equalsIgnoreCase(agreementNumber))
+                .next();
     }
 
     private Mono<byte[]> getAgreementsConfigFromStorage() {
@@ -73,8 +83,7 @@ public class AgreementStorageAdapter implements AgreementConfigRepository {
 
     private List<AgreementConfigVO> deserializeAgreementConfigList(byte[] content) {
         try {
-            return objectMapper.readValue(content, new TypeReference<List<AgreementConfigVO>>() {
-            });
+            return objectMapper.readValue(content, new TypeReference<List<AgreementConfigVO>>() {});
         } catch (IOException exception) {
             throw buildTechnical(exception, STRUCTURE_INVALID);
         }
