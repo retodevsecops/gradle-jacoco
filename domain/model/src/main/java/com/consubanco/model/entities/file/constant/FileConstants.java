@@ -11,6 +11,7 @@ public class FileConstants {
     private final static String DOCUMENTS_DIRECTORY_PATH = OFFER_DIRECTORY_PATH.concat("documents/");
 
     private final static String CNCA_LETTERS_DIRECTORY_PATH = OFFER_DIRECTORY_PATH.concat("cnca/");
+    public final static String MANAGEMENT_DIRECTORY_PATH = "management/puc-loans-documents-msa";
 
     public static String pdfFormat(String fileName) {
         return String.format(PDF_FORMAT, fileName);

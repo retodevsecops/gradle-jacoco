@@ -14,6 +14,12 @@ public class File {
     private String url;
     private String directoryPath;
     private String size;
+    private String extension;
+
+    public File(String content, String extension) {
+        this.content = content;
+        this.extension = extension;
+    }
 
     public String fullPath() {
         String directory = this.directoryPath;

@@ -10,8 +10,8 @@ public class FilePaths {
     public static final String CNCA_PATH = "/offer/cnca/{processId}";
     public static final String DOCUMENTS_AGREEMENT_PATH = "/offer/process/{processId}";
     public static final String FILES_OFFER_PATH = "/offer/{offerId}";
-
     public static final String FILES_CUSTOMER_VIEW_PATH = "/offer/customer-view/{processId}";
     public static final String PAYLOAD_TEMPLATE_PATH = "/management/upload-payload-template";
     public static final String AGREEMENTS_CONFIG_PATH = "/management/upload-agreements-config";
+    public static final String MANAGEMENT_PATH = "/management";
 }

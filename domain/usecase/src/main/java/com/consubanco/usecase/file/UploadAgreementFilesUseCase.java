@@ -5,9 +5,11 @@ import com.consubanco.model.entities.agreement.Agreement;
 import com.consubanco.model.entities.agreement.gateway.AgreementGateway;
 import com.consubanco.model.entities.document.gateway.PdfDocumentGateway;
 import com.consubanco.model.entities.file.File;
+import com.consubanco.model.entities.file.constant.FileExtensions;
 import com.consubanco.model.entities.file.gateway.FileConvertGateway;
 import com.consubanco.model.entities.file.gateway.FileGateway;
 import com.consubanco.model.entities.file.gateway.FileRepository;
+import com.consubanco.model.entities.file.util.FileUtil;
 import com.consubanco.model.entities.file.vo.FileUploadVO;
 import com.consubanco.model.entities.process.Process;
 import com.consubanco.usecase.document.BuildPayloadUseCase;
@@ -46,11 +48,11 @@ public class UploadAgreementFilesUseCase {
     }
 
     private Mono<Void> checkAttachments(List<Agreement.Document> requiredAttachments, List<FileUploadVO> attachmentsProvided) {
-        List<String> providedNames = nameAttachments(attachmentsProvided);
+        List<String> namesAttachmentsProvided = nameAttachments(attachmentsProvided);
         return Flux.fromIterable(requiredAttachments)
                 .filter(Agreement.Document::getIsRequired)
                 .map(Agreement.Document::getTechnicalName)
-                .filter(required -> !providedNames.contains(required))
+                .filter(required -> !namesAttachmentsProvided.contains(required))
                 .collectList()
                 .filter(list -> !list.isEmpty())
                 .map(list -> {
@@ -90,6 +92,7 @@ public class UploadAgreementFilesUseCase {
                         .name(fileUploadVO.getName())
                         .content(fileUploadVO.getContent())
                         .directoryPath(attachmentsDirectory(offerId))
+                        .extension(fileUploadVO.getExtension())
                         .build());
     }
 
@@ -103,11 +106,11 @@ public class UploadAgreementFilesUseCase {
                         .name(OFFICIAL_ID)
                         .content(officialID)
                         .directoryPath(attachmentsDirectory(offerId))
+                        .extension(FileExtensions.PDF)
                         .build());
     }
 
     private Flux<File> uploadGeneratedDocuments(Process process, List<Agreement.Document> documents) {
-        // TODO: DEBO TRABAJAR EN LA GENERACION DEL PEYLOAD Y DISMINUIR EL TIEMPO DE DE RESPUESTA
         return buildPayloadUseCase.execute(process.getId())
                 .flatMapMany(payload -> generatedDocuments(documents, payload, process.getOffer().getId()))
                 .parallel()
@@ -132,15 +135,11 @@ public class UploadAgreementFilesUseCase {
         return fileGateway.generate(documentPath, payload)
                 .flatMap(fileConvertGateway::encodedFile)
                 .map(documentContent -> File.builder()
-                        .name(getDocumentName(documentPath))
+                        .name(FileUtil.getFileNameFromPath(documentPath))
                         .content(documentContent)
                         .directoryPath(documentsDirectory(offerId))
+                        .extension(FileExtensions.PDF)
                         .build());
-    }
-
-    private String getDocumentName(String documentPath) {
-        String[] parts = documentPath.split("/");
-        return parts[parts.length - 1];
     }
 
 }

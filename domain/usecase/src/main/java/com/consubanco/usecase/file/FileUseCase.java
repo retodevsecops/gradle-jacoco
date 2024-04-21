@@ -2,8 +2,12 @@ package com.consubanco.usecase.file;
 
 import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.consubanco.model.entities.file.File;
+import com.consubanco.model.entities.file.constant.FileConstants;
+import com.consubanco.model.entities.file.constant.FileExtensions;
 import com.consubanco.model.entities.file.gateway.FileRepository;
+import com.consubanco.model.entities.file.vo.FileUploadVO;
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static com.consubanco.model.entities.file.message.FileBusinessMessage.*;
@@ -20,19 +24,26 @@ public class FileUseCase {
                         .flatMap(this::uploadPayloadTemplate));
     }
 
-    public Mono<File> uploadPayloadTemplate(String contentFile) {
-        return fileRepository.uploadPayloadTemplate(contentFile)
+    public Mono<File> uploadPayloadTemplate(FileUploadVO fileUploadVO) {
+        return Mono.just(fileUploadVO)
+                .filter(vo -> vo.getExtension().equalsIgnoreCase(FileExtensions.FTL))
+                .switchIfEmpty(ExceptionFactory.buildBusiness(FILE_NOT_FTL))
+                .flatMap(fileRepository::uploadPayloadTemplate)
                 .switchIfEmpty(ExceptionFactory.buildBusiness(PAYLOAD_TEMPLATE_INCORRECT))
                 .flatMap(file -> fileRepository.getPayloadTemplate());
     }
 
-    public Mono<File> uploadAgreementsConfig(String contentFile) {
-        return fileRepository.uploadAgreementsConfigFile(contentFile);
+    public Mono<File> uploadAgreementsConfig(FileUploadVO fileUploadVO) {
+        return Mono.just(fileUploadVO.getExtension())
+                .filter(extension -> extension.equalsIgnoreCase(FileExtensions.JSON))
+                .switchIfEmpty(ExceptionFactory.buildBusiness(FILE_NOT_JSON))
+                .map(extension -> new File(extension, fileUploadVO.getContent()))
+                .flatMap(fileRepository::uploadAgreementsConfigFile);
     }
 
-    private Mono<String> checkOfferId(String offerId) {
-        return Mono.justOrEmpty(offerId)
-                .switchIfEmpty(ExceptionFactory.buildBusiness(OFFER_ID_IS_NULL));
+    public Flux<File> getManagementFiles(){
+        return fileRepository.listByFolder(FileConstants.MANAGEMENT_DIRECTORY_PATH);
     }
+
 
 }

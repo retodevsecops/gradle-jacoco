@@ -24,6 +24,9 @@ public class GoogleStorageProperties {
         private String agreementsConfig;
     }
 
+    public String agreementsConfigPath(){
+        return this.getFilesPath().getAgreementsConfig();
+    }
     public String payloadTemplatePath(){
         return this.getFilesPath().getPayloadTemplate();
     }

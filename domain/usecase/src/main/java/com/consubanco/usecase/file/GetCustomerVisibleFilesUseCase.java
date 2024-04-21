@@ -24,11 +24,9 @@ public class GetCustomerVisibleFilesUseCase {
     }
 
     private Flux<File> processAgreementConfig(Process process) {
-        System.out.println(process.getAgreementNumber());
         return agreementConfigRepository.getConfigByAgreement(process.getAgreementNumber())
                 .switchIfEmpty(ExceptionFactory.buildBusiness(AGREEMENT_CONFIG_NOT_FOUND))
                 .map(AgreementConfigVO::checkCustomerVisibleDocuments)
-                .doOnNext(e -> System.out.println(e.toString()))
                 .flatMapMany(agreementConfigVO -> getFiles(agreementConfigVO, process.getOffer().getId()));
     }
 

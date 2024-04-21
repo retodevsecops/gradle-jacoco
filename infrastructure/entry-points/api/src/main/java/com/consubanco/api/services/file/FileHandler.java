@@ -11,11 +11,9 @@ import com.consubanco.model.entities.file.vo.FileUploadVO;
 import com.consubanco.usecase.file.BuildCNCALettersUseCase;
 import com.consubanco.usecase.file.FileUseCase;
 import com.consubanco.usecase.file.GenerateDocumentUseCase;
-import com.consubanco.usecase.file.UploadAgreementFilesUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.BodyExtractors;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -32,7 +30,6 @@ public class FileHandler {
     private final FileUseCase fileUseCase;
     private final BuildCNCALettersUseCase buildCNCALettersUseCase;
     private final GenerateDocumentUseCase generateDocUseCase;
-    private final UploadAgreementFilesUseCase uploadFilesAgreementUseCase;
 
     public Mono<ServerResponse> buildCNCALetters(ServerRequest request) {
         String processId = request.pathVariable(PROCESS_ID);
@@ -68,25 +65,6 @@ public class FileHandler {
                 .flatMap(HttpResponseUtil::Ok);
     }
 
-    public Mono<ServerResponse> uploadAgreementFiles(ServerRequest request) {
-        String processId = request.pathVariable(PROCESS_ID);
-        return request.body(BodyExtractors.toParts())
-                .cast(FilePart.class)
-                .flatMap(this::buildFileUploadVO)
-                .collectList()
-                .flatMap(files -> uploadFilesAgreementUseCase.execute(processId, files))
-                .flatMap(HttpResponseUtil::accepted);
-    }
-
-    private Mono<FileUploadVO> buildFileUploadVO(FilePart filePart) {
-        return FilePartUtil.fileToBase64(filePart)
-                .map(fileInBase63 -> FileUploadVO.builder()
-                        .name(filePart.name())
-                        .extension(StringUtils.getFilenameExtension(filePart.filename()))
-                        .content(fileInBase63)
-                        .build());
-    }
-
     public Mono<ServerResponse> uploadPayloadTemplate(ServerRequest request) {
         return processUploadCase(request, fileUseCase::uploadPayloadTemplate);
     }
@@ -95,11 +73,18 @@ public class FileHandler {
         return processUploadCase(request, fileUseCase::uploadAgreementsConfig);
     }
 
-    private Mono<ServerResponse> processUploadCase(ServerRequest request, Function<String, Mono<File>> useCase) {
+    public Mono<ServerResponse> getManagementFiles(ServerRequest request){
+        return fileUseCase.getManagementFiles()
+                .map(FileResDTO::new)
+                .collectList()
+                .flatMap(HttpResponseUtil::Ok);
+    }
+
+    private Mono<ServerResponse> processUploadCase(ServerRequest request, Function<FileUploadVO, Mono<File>> useCase) {
         return request.body(BodyExtractors.toParts())
                 .ofType(FilePart.class)
                 .next()
-                .flatMap(FilePartUtil::fileToBase64)
+                .flatMap(FilePartUtil::buildFileUploadVOFromFilePart)
                 .flatMap(useCase)
                 .map(FileResDTO::new)
                 .flatMap(HttpResponseUtil::Ok);

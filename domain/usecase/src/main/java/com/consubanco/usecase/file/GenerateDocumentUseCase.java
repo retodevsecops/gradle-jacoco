@@ -1,6 +1,7 @@
 package com.consubanco.usecase.file;
 
 import com.consubanco.model.entities.file.File;
+import com.consubanco.model.entities.file.constant.FileExtensions;
 import com.consubanco.model.entities.file.gateway.FileConvertGateway;
 import com.consubanco.model.entities.file.gateway.FileGateway;
 import com.consubanco.model.entities.file.gateway.FileRepository;
@@ -50,6 +51,7 @@ public class GenerateDocumentUseCase {
                 .name(pdfFormat(fileName))
                 .content(encodedFile)
                 .directoryPath(documentsDirectory(offerId))
+                .extension(FileExtensions.PDF)
                 .build();
     }
 

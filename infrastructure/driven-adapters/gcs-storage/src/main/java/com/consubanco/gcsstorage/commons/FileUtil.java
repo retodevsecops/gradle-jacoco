@@ -1,11 +1,13 @@
 package com.consubanco.gcsstorage.commons;
 
+import com.consubanco.model.entities.file.vo.FileUploadVO;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import lombok.experimental.UtilityClass;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.util.unit.DataSize;
 import reactor.core.publisher.Mono;
 
@@ -36,15 +38,32 @@ public class FileUtil {
         }
     }
 
+    public Mono<String> getContentInBase64FromResource(ClassPathResource resource) {
+        return Mono.just(resource)
+                .map(FileUtil::getContentFromResource)
+                .map(Base64.getEncoder()::encodeToString);
+    }
+
+    public Mono<FileUploadVO> buildFileUploadVOFromResource(ClassPathResource resource) {
+        return getContentInBase64FromResource(resource)
+                .map(content -> FileUploadVO.builder()
+                        .name(resource.getFilename())
+                        .content(content)
+                        .extension(StringUtils.getFilenameExtension(resource.getFilename()))
+                        .build());
+    }
+
     public String getDirectory(String documentPath) {
         int lastSlashIndex = documentPath.lastIndexOf('/');
         if (lastSlashIndex != -1) return documentPath.substring(0, lastSlashIndex);
         return "/";
     }
 
-    public Mono<BlobInfo> buildBlob(String bucketName, String nameFile) {
+    public Mono<BlobInfo> buildBlob(String bucketName, String nameFile, String contentType) {
         return Mono.just(BlobId.of(bucketName, nameFile))
-                .map(blobId -> Blob.newBuilder(blobId).build());
+                .map(blobId -> Blob.newBuilder(blobId)
+                        .setContentType(contentType)
+                        .build());
     }
 
     public Mono<byte[]> base64ToBytes(String contentFileBase64) {
@@ -56,7 +75,6 @@ public class FileUtil {
         byte[] decodedBytes = Base64.getDecoder().decode(base64);
         return new String(decodedBytes);
     }
-
 
 
 }

@@ -30,11 +30,12 @@ public class FileRouter {
                     .POST(GENERATE_DOCUMENT_PATH, handler::generateFileWithDocuments, generateFileWithDocuments())
                     .POST(GENERATE_DOCUMENT_ENCODED_PATH, handler::generateFileEncoded, generateFileEncoded())
                     .POST(GET_AND_UPLOAD_DOCUMENT_PATH, handler::getAndUpload, getAndUpload())
-                    .POST(DOCUMENTS_AGREEMENT_PATH, contentType(MULTIPART_FORM_DATA), handler::uploadAgreementFiles, uploadAgreementFiles())
+                    .POST(DOCUMENTS_AGREEMENT_PATH, contentType(MULTIPART_FORM_DATA), offerFileHandler::uploadAgreementFiles, uploadAgreementFiles())
                     .GET(FILES_OFFER_PATH, offerFileHandler::getFilesByOffer, getFilesByOffer())
                     .GET(FILES_CUSTOMER_VIEW_PATH, offerFileHandler::getCustomerVisibleFiles, getCustomerVisibleFiles())
                     .POST(PAYLOAD_TEMPLATE_PATH, contentType(MULTIPART_FORM_DATA), handler::uploadPayloadTemplate, uploadPayloadTemplate())
                     .POST(AGREEMENTS_CONFIG_PATH, contentType(MULTIPART_FORM_DATA), handler::uploadAgreementsConfig, uploadAgreementsConfig())
+                    .GET(MANAGEMENT_PATH, handler::getManagementFiles, getManagementFiles())
                .build()
         );
     }

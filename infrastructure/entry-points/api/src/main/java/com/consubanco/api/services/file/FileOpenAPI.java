@@ -66,7 +66,6 @@ public class FileOpenAPI {
                 .response(responseBusinessException())
                 .response(responseInternalError());
     }
-
     public static Consumer<Builder> uploadAgreementFiles() {
         return ops -> ops.tag(TAG_OFFER)
                 .operationId("uploadAgreementFiles")
@@ -77,7 +76,6 @@ public class FileOpenAPI {
                 .response(responseBusinessException())
                 .response(responseInternalError());
     }
-
     public static Consumer<Builder> getFilesByOffer() {
         return ops -> ops.tag(TAG_OFFER)
                 .operationId("getFilesByOffer")
@@ -88,7 +86,6 @@ public class FileOpenAPI {
                 .response(responseBusinessException())
                 .response(responseInternalError());
     }
-
     public static Consumer<Builder> getCustomerVisibleFiles() {
         return ops -> ops.tag(TAG_OFFER)
                 .operationId("getCustomerVisibleFiles")
@@ -116,6 +113,16 @@ public class FileOpenAPI {
                 .description("Upload the configuration file of the agreements to storage.")
                 .summary("Upload agreements configuration file.")
                 .response(responseOk(FileResDTO.class))
+                .response(responseBusinessException())
+                .response(responseInternalError());
+    }
+
+    public static Consumer<Builder> getManagementFiles() {
+        return ops -> ops.tag(TAG_MANAGEMENT)
+                .operationId("getManagementFiles")
+                .description("Get all the configuration files of the microservice.")
+                .summary("Get all management files.")
+                .response(responseOkWithList(FileResDTO.class))
                 .response(responseBusinessException())
                 .response(responseInternalError());
     }

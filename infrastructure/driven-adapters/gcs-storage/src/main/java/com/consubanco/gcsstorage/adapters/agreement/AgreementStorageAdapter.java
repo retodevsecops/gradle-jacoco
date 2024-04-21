@@ -1,10 +1,12 @@
 package com.consubanco.gcsstorage.adapters.agreement;
 
+import com.consubanco.gcsstorage.commons.ContentTypeResolver;
 import com.consubanco.gcsstorage.commons.FileUtil;
 import com.consubanco.gcsstorage.config.GoogleStorageProperties;
 import com.consubanco.logger.CustomLogger;
 import com.consubanco.model.entities.agreement.gateway.AgreementConfigRepository;
 import com.consubanco.model.entities.agreement.vo.AgreementConfigVO;
+import com.consubanco.model.entities.file.constant.FileExtensions;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.storage.Blob;
@@ -69,7 +71,8 @@ public class AgreementStorageAdapter implements AgreementConfigRepository {
     }
 
     private Mono<Blob> uploadToStorage(byte[] contentFile) {
-        return FileUtil.buildBlob(properties.getBucketName(), properties.getFilesPath().getAgreementsConfig())
+        String contentType = ContentTypeResolver.getFromFileExtension(FileExtensions.JSON);
+        return FileUtil.buildBlob(properties.getBucketName(), properties.agreementsConfigPath(), contentType)
                 .map(blobInfo -> storage.create(blobInfo, contentFile))
                 .onErrorMap(throwTechnicalError(FAIL_UPLOAD_CONFIG))
                 .doOnTerminate(() -> logger.info("The local agreements configuration file was upload to google storage."));
