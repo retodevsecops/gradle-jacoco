@@ -36,6 +36,7 @@ public class FileRouter {
                     .POST(PAYLOAD_TEMPLATE_PATH, contentType(MULTIPART_FORM_DATA), handler::uploadPayloadTemplate, uploadPayloadTemplate())
                     .POST(AGREEMENTS_CONFIG_PATH, contentType(MULTIPART_FORM_DATA), handler::uploadAgreementsConfig, uploadAgreementsConfig())
                     .GET(MANAGEMENT_PATH, handler::getManagementFiles, getManagementFiles())
+                    .GET(PAYLOAD_DATA_PATH, offerFileHandler::getPayloadData, getPayloadData())
                .build()
         );
     }

@@ -4,6 +4,7 @@ import com.consubanco.api.commons.util.FilePartUtil;
 import com.consubanco.api.commons.util.HttpResponseUtil;
 import com.consubanco.api.services.file.dto.FileResDTO;
 import com.consubanco.model.entities.file.File;
+import com.consubanco.usecase.document.GetPayloadDataUseCase;
 import com.consubanco.usecase.file.GetCustomerVisibleFilesUseCase;
 import com.consubanco.usecase.file.GetFilesByOfferUseCase;
 import com.consubanco.usecase.file.UploadAgreementFilesUseCase;
@@ -28,6 +29,7 @@ public class OfferFileHandler {
     private final GetFilesByOfferUseCase getFilesByOfferUseCase;
     private final GetCustomerVisibleFilesUseCase getCustomerVisibleFilesUseCase;
     private final UploadAgreementFilesUseCase uploadFilesAgreementUseCase;
+    private final GetPayloadDataUseCase getPayloadDataUseCase;
 
     public Mono<ServerResponse> getFilesByOffer(ServerRequest request) {
         return executeUseCase(request.pathVariable(OFFER_ID), getFilesByOfferUseCase::execute);
@@ -45,6 +47,12 @@ public class OfferFileHandler {
                 .collectList()
                 .flatMap(files -> uploadFilesAgreementUseCase.execute(processId, files))
                 .flatMap(HttpResponseUtil::accepted);
+    }
+
+    public Mono<ServerResponse> getPayloadData(ServerRequest request) {
+        String processId = request.pathVariable(PROCESS_ID);
+        return getPayloadDataUseCase.execute(processId)
+                .flatMap(HttpResponseUtil::Ok);
     }
 
     private Mono<ServerResponse> executeUseCase(String parameter, Function<String, Flux<File>> useCase) {

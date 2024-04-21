@@ -9,6 +9,7 @@ import com.consubanco.api.services.file.dto.GenerateDocumentResDTO;
 import com.consubanco.api.services.file.dto.GetAndUploadDocumentReqDTO;
 import org.springdoc.core.fn.builders.operation.Builder;
 
+import java.util.Map;
 import java.util.function.Consumer;
 
 import static com.consubanco.api.commons.swagger.ResponsesOpenAPI.*;
@@ -123,6 +124,16 @@ public class FileOpenAPI {
                 .description("Get all the configuration files of the microservice.")
                 .summary("Get all management files.")
                 .response(responseOkWithList(FileResDTO.class))
+                .response(responseBusinessException())
+                .response(responseInternalError());
+    }
+
+    public static Consumer<Builder> getPayloadData() {
+        return ops -> ops.tag(TAG_OFFER)
+                .operationId("getPayloadData")
+                .description("Get all the payload data with which the documents are constructed.")
+                .summary("Get payload data.")
+                .response(responseOkWithList(Map.class))
                 .response(responseBusinessException())
                 .response(responseInternalError());
     }

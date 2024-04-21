@@ -14,4 +14,5 @@ public class FilePaths {
     public static final String PAYLOAD_TEMPLATE_PATH = "/management/upload-payload-template";
     public static final String AGREEMENTS_CONFIG_PATH = "/management/upload-agreements-config";
     public static final String MANAGEMENT_PATH = "/management";
+    public static final String PAYLOAD_DATA_PATH = "/offer/payload-data/{processId}";
 }
