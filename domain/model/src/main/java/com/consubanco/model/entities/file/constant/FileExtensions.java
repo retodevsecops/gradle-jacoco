@@ -6,5 +6,5 @@ import lombok.experimental.UtilityClass;
 public class FileExtensions {
     public final static String JSON = "json";
     public final static String FTL = "ftl";
-    public final static String PDF = "PDF";
+    public final static String PDF = "pdf";
 }

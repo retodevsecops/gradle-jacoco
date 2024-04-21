@@ -1,6 +1,7 @@
 package com.consubanco.usecase.file;
 
 import com.consubanco.model.entities.file.File;
+import com.consubanco.model.entities.file.constant.FileExtensions;
 import com.consubanco.model.entities.file.gateway.FileGateway;
 import com.consubanco.model.entities.file.gateway.FileRepository;
 import com.consubanco.model.entities.process.Process;
@@ -48,6 +49,7 @@ public class BuildCNCALettersUseCase {
                         .name(cncaFormatName(loanId))
                         .content(contentCNCALetter)
                         .directoryPath(cncaDirectory(offerId))
+                        .extension(FileExtensions.PDF)
                         .build());
     }
 
