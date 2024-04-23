@@ -37,7 +37,7 @@ public class FileUseCase {
         return Mono.just(fileUploadVO.getExtension())
                 .filter(extension -> extension.equalsIgnoreCase(FileExtensions.JSON))
                 .switchIfEmpty(ExceptionFactory.buildBusiness(FILE_NOT_JSON))
-                .map(extension -> new File(extension, fileUploadVO.getContent()))
+                .map(extension -> new File(fileUploadVO.getContent(), extension))
                 .flatMap(fileRepository::uploadAgreementsConfigFile);
     }
 

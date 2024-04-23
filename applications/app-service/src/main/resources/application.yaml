@@ -101,4 +101,4 @@ springdoc:
     path: /api-docs
   swagger-ui:
     disable-swagger-default-url: true
-    path: /swagger.html
+    path: </swagger.html>

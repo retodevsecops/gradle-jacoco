@@ -42,7 +42,8 @@ public class AuthTokenRenexFilter implements ExchangeFilterFunction {
     public Mono<ClientResponse> filter(ClientRequest request, ExchangeFunction next) {
         return getAuthToken()
                 .map(token -> injectTokenToRequest(request, token))
-                .flatMap(next::exchange);
+                .flatMap(next::exchange)
+                .doOnError(error -> logger.error("Error generating the renex authentication token.", error));
     }
 
     private Mono<String> getAuthToken() {
@@ -61,9 +62,7 @@ public class AuthTokenRenexFilter implements ExchangeFilterFunction {
     private void defineCache(Date expirationTime) {
         Instant expirationInstant = expirationTime.toInstant();
         Duration duration = Duration.between(Instant.now(), expirationInstant);
-        this.cache = Caffeine.newBuilder()
-                .expireAfterWrite(duration)
-                .build();
+        this.cache = Caffeine.newBuilder().expireAfterWrite(duration).build();
         logger.info("The cache for renex authorization token has a " + duration.toMinutes() + " minutes expiration time.");
     }
 
