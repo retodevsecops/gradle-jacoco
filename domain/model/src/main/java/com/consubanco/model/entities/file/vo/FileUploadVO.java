@@ -12,4 +12,5 @@ public class FileUploadVO {
     private String name;
     private String content;
     private String extension;
+    private Double sizeInMB;
 }

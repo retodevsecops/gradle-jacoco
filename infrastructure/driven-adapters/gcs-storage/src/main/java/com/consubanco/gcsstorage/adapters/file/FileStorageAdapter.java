@@ -117,6 +117,11 @@ public class FileStorageAdapter implements FileRepository {
                 .flatMap(this::save);
     }
 
+    @Override
+    public Double getMaxSizeOfFileInMBAllowed() {
+        return properties.getMaxFileSizeMB();
+    }
+
     private Mono<File> buildFileEntityFromBlob(Blob blob) {
         return signUrl(blob)
                 .map(signUrl -> FileFactoryUtil.buildFromBlobWithUrl(blob, signUrl));

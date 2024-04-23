@@ -13,4 +13,5 @@ public interface FileRepository {
     Mono<FileUploadVO> getLocalPayloadTemplate();
     Mono<File> uploadPayloadTemplate(FileUploadVO fileUploadVO);
     Mono<File> uploadAgreementsConfigFile(File file);
+    Double getMaxSizeOfFileInMBAllowed();
 }

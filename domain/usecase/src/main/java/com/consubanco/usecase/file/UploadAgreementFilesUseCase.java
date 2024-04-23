@@ -1,6 +1,5 @@
 package com.consubanco.usecase.file;
 
-import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.consubanco.model.entities.agreement.Agreement;
 import com.consubanco.model.entities.agreement.gateway.AgreementGateway;
 import com.consubanco.model.entities.document.gateway.PdfDocumentGateway;
@@ -21,13 +20,13 @@ import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.consubanco.model.entities.document.constant.DocumentNames.OFFICIAL_ID;
 import static com.consubanco.model.entities.document.constant.DocumentNames.PARTS_OFFICIAL_ID;
 import static com.consubanco.model.entities.file.constant.FileConstants.attachmentsDirectory;
 import static com.consubanco.model.entities.file.constant.FileConstants.documentsDirectory;
-import static com.consubanco.model.entities.file.message.FileBusinessMessage.MISSING_ATTACHMENT;
+import static com.consubanco.model.entities.file.util.AttachmentValidatorUtil.checkAttachments;
+import static com.consubanco.model.entities.file.util.AttachmentValidatorUtil.checkAttachmentsSize;
 
 @RequiredArgsConstructor
 public class UploadAgreementFilesUseCase {
@@ -40,40 +39,21 @@ public class UploadAgreementFilesUseCase {
     private final PdfDocumentGateway pdfDocument;
     private final GetProcessByIdUseCase getProcessByIdUseCase;
 
-    public Mono<Void> execute(String processId, List<FileUploadVO> attachments) {
-        return getProcessByIdUseCase.execute(processId)
+    public Mono<Map<String, String>> execute(String processId, List<FileUploadVO> attachments) {
+        return checkAttachmentsSize(attachments, fileRepository.getMaxSizeOfFileInMBAllowed())
+                .then(getProcessByIdUseCase.execute(processId))
                 .flatMap(process -> agreementGateway.findByNumber(process.getAgreementNumber())
                         .flatMap(agreement -> checkAttachments(agreement.getAttachments(), attachments).thenReturn(agreement))
                         .flatMap(agreement -> uploadAllDocuments(process, attachments, agreement)));
     }
 
-    private Mono<Void> checkAttachments(List<Agreement.Document> requiredAttachments, List<FileUploadVO> attachmentsProvided) {
-        List<String> namesAttachmentsProvided = nameAttachments(attachmentsProvided);
-        return Flux.fromIterable(requiredAttachments)
-                .filter(Agreement.Document::getIsRequired)
-                .map(Agreement.Document::getTechnicalName)
-                .filter(required -> !namesAttachmentsProvided.contains(required))
-                .collectList()
-                .filter(list -> !list.isEmpty())
-                .map(list -> {
-                    throw ExceptionFactory.buildBusiness((String.join(", ", list)), MISSING_ATTACHMENT);
-                })
-                .then();
-    }
-
-    private List<String> nameAttachments(List<FileUploadVO> attachments) {
-        return attachments.stream()
-                .map(FileUploadVO::getName)
-                .collect(Collectors.toList());
-    }
-
-    private Mono<Void> uploadAllDocuments(Process process, List<FileUploadVO> attachments, Agreement agreement) {
+    private Mono<Map<String, String>> uploadAllDocuments(Process process, List<FileUploadVO> attachments, Agreement agreement) {
         Flux<File> uploadAttachments = uploadAttachments(attachments, process.getOffer().getId());
         Flux<File> uploadGeneratedDocuments = uploadGeneratedDocuments(process, agreement.getDocuments());
         Flux.merge(uploadAttachments, uploadGeneratedDocuments)
                 .subscribeOn(Schedulers.boundedElastic())
                 .subscribe();
-        return Mono.empty();
+        return Mono.just(Map.of("message", "The validations were successful, the file uploading process starts..."));
     }
 
     private Flux<File> uploadAttachments(List<FileUploadVO> attachments, String offerId) {

@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "adapter.gcs-storage")
 public class GoogleStorageProperties {
 
+    private Double maxFileSizeMB;
     private String bucketName;
     private String publicUrl;
     private int signUrlDays;

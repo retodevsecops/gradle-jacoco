@@ -29,12 +29,26 @@ public class FilePartUtil {
     }
 
     public Mono<FileUploadVO> buildFileUploadVOFromFilePart(FilePart filePart) {
-        return FilePartUtil.fileToBase64(filePart)
-                .map(fileInBase63 -> FileUploadVO.builder()
+        return Mono.zip(FilePartUtil.fileToBase64(filePart), FilePartUtil.getSizeFileInMB(filePart))
+                .map(tuple -> FileUploadVO.builder()
                         .name(filePart.name())
                         .extension(StringUtils.getFilenameExtension(filePart.filename()))
-                        .content(fileInBase63)
+                        .content(tuple.getT1())
+                        .sizeInMB(tuple.getT2())
                         .build());
+    }
+
+    public Mono<Double> getSizeFileInMB(FilePart filePart) {
+        return filePart.content()
+                .map(buffer -> (long) buffer.readableByteCount())
+                .reduce(0L, Long::sum)
+                .map(FilePartUtil::bytesToMB)
+                .cast(Double.class);
+    }
+
+    public double bytesToMB(long bytes) {
+        double megabytes = bytes / 1048576.0;
+        return Math.round(megabytes * 100.0) / 100.0;
     }
 
 }

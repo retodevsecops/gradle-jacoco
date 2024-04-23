@@ -41,6 +41,7 @@ adapter:
         api-search-interlocutor: ${API_SEARCH_INTERLOCUTOR:https://apic.consubanco.com/csb/qa/common-crm-service/searchInterlocutor}
 
   gcs-storage:
+    max-file-size-mb: ${GCS_MAX_FILE_SIZE_IN_MB:0.5}
     bucket-name: ${GCS_BUCKET_NAME:csb-venta-digital}
     sign-url-days: ${GCS_SIGN_URL_DAYS:1}
     files-path:

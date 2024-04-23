@@ -5,6 +5,7 @@ import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.constant.FileConstants;
 import com.consubanco.model.entities.file.constant.FileExtensions;
 import com.consubanco.model.entities.file.gateway.FileRepository;
+import com.consubanco.model.entities.file.message.FileMessage;
 import com.consubanco.model.entities.file.vo.FileUploadVO;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
@@ -25,7 +26,7 @@ public class FileUseCase {
     }
 
     public Mono<File> uploadPayloadTemplate(FileUploadVO fileUploadVO) {
-        return Mono.just(fileUploadVO)
+        return checkFileSize(fileUploadVO)
                 .filter(vo -> vo.getExtension().equalsIgnoreCase(FileExtensions.FTL))
                 .switchIfEmpty(ExceptionFactory.buildBusiness(FILE_NOT_FTL))
                 .flatMap(fileRepository::uploadPayloadTemplate)
@@ -34,15 +35,27 @@ public class FileUseCase {
     }
 
     public Mono<File> uploadAgreementsConfig(FileUploadVO fileUploadVO) {
-        return Mono.just(fileUploadVO.getExtension())
+        return checkFileSize(fileUploadVO)
+                .map(FileUploadVO::getExtension)
                 .filter(extension -> extension.equalsIgnoreCase(FileExtensions.JSON))
                 .switchIfEmpty(ExceptionFactory.buildBusiness(FILE_NOT_JSON))
                 .map(extension -> new File(fileUploadVO.getContent(), extension))
                 .flatMap(fileRepository::uploadAgreementsConfigFile);
     }
 
-    public Flux<File> getManagementFiles(){
+    public Flux<File> getManagementFiles() {
         return fileRepository.listByFolder(FileConstants.MANAGEMENT_DIRECTORY_PATH);
+    }
+
+    private Mono<FileUploadVO> checkFileSize(FileUploadVO fileUploadVO) {
+        Double maxSize = fileRepository.getMaxSizeOfFileInMBAllowed();
+        return Mono.just(fileUploadVO.getSizeInMB())
+                .filter(sizeInMB -> sizeInMB > maxSize)
+                .map(list -> {
+                    String detail = FileMessage.maxSize(maxSize);
+                    throw ExceptionFactory.buildBusiness(detail, ATTACHMENT_INVALID_SIZE);
+                })
+                .thenReturn(fileUploadVO);
     }
 
 
