@@ -27,18 +27,40 @@ public class AttachmentValidatorUtil {
                 .then();
     }
 
-    public Mono<Void> checkAttachments(List<Agreement.Document> attachmentsRequired, List<FileUploadVO> attachmentsProvided) {
-        return checkRequiredAttachments(attachmentsRequired, attachmentsProvided)
-                .then(checkValidTypes(attachmentsProvided, attachmentsRequired));
+    public Mono<List<FileUploadVO>> checkAttachments(List<Agreement.Document> attachmentsRequired, List<FileUploadVO> attachmentsProvided) {
+        List<String> requiredAttachmentNames = requiredAttachmentNames(attachmentsRequired);
+        List<FileUploadVO> filteredAttachments = filteredAttachments(requiredAttachmentNames, attachmentsProvided);
+        List<String> providedAttachmentNames = providedAttachmentNames(filteredAttachments);
+        return checkRequiredAttachments(attachmentsRequired, providedAttachmentNames)
+                .then(checkValidTypes(filteredAttachments, attachmentsRequired))
+                .thenReturn(filteredAttachments);
+    }
+
+    private List<String> requiredAttachmentNames(List<Agreement.Document> attachmentsRequired) {
+        return attachmentsRequired.stream()
+                .map(Agreement.Document::getTechnicalName)
+                .collect(Collectors.toList());
+    }
+
+    private List<FileUploadVO> filteredAttachments(List<String> requiredAttachmentNames,
+                                                   List<FileUploadVO> attachmentsProvided) {
+        return attachmentsProvided.stream()
+                .filter(uploadVO -> requiredAttachmentNames.contains(uploadVO.getName()))
+                .collect(Collectors.toList());
+    }
+
+    private List<String> providedAttachmentNames(List<FileUploadVO> attachmentsProvided) {
+        return attachmentsProvided.stream()
+                .map(FileUploadVO::getName)
+                .collect(Collectors.toList());
     }
 
     private Mono<Void> checkRequiredAttachments(List<Agreement.Document> attachmentsRequired,
-                                                List<FileUploadVO> attachmentsProvided) {
-        List<String> namesAttachmentsProvided = extractAttachmentNames(attachmentsProvided);
+                                                List<String> providedAttachmentNames) {
         return Flux.fromIterable(attachmentsRequired)
                 .filter(Agreement.Document::getIsRequired)
                 .map(Agreement.Document::getTechnicalName)
-                .filter(attachmentRequired -> !namesAttachmentsProvided.contains(attachmentRequired))
+                .filter(attachmentRequired -> !providedAttachmentNames.contains(attachmentRequired))
                 .collectList()
                 .filter(list -> !list.isEmpty())
                 .map(list -> {
@@ -70,12 +92,6 @@ public class AttachmentValidatorUtil {
                 .flatMap(document -> document.getTypeFile().stream())
                 .map(String::toLowerCase)
                 .toList();
-    }
-
-    private List<String> extractAttachmentNames(List<FileUploadVO> attachments) {
-        return attachments.stream()
-                .map(FileUploadVO::getName)
-                .collect(Collectors.toList());
     }
 
 }

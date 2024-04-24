@@ -6,7 +6,6 @@ import lombok.*;
 import java.util.List;
 import java.util.Objects;
 
-import static com.consubanco.model.entities.agreement.message.AgreementBusinessMessage.DOCUMENTS_COMPOUND_NOT_CONFIG;
 import static com.consubanco.model.entities.agreement.message.AgreementBusinessMessage.DOCUMENTS_VISIBLE_NOT_CONFIG;
 
 @Getter
@@ -24,14 +23,17 @@ public class AgreementConfigVO {
     @Data
     public static class CompoundDocument {
         private String name;
-        private List<String> documents;
+        private List<DocumentData> documents;
     }
 
-    public AgreementConfigVO checkCompoundDocuments() {
-        if (Objects.isNull(compoundDocuments) || compoundDocuments.isEmpty()){
-            ExceptionFactory.buildBusiness(DOCUMENTS_COMPOUND_NOT_CONFIG);
-        }
-        return this;
+    @Data
+    public static class DocumentData {
+        private String name;
+        private Integer page;
+    }
+
+    public boolean checkCompoundDocuments() {
+        return  !(Objects.isNull(compoundDocuments) || compoundDocuments.isEmpty());
     }
 
     public AgreementConfigVO checkCustomerVisibleDocuments() {

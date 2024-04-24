@@ -2,16 +2,14 @@ package com.consubanco.usecase.file;
 
 import com.consubanco.model.entities.agreement.Agreement;
 import com.consubanco.model.entities.agreement.gateway.AgreementGateway;
-import com.consubanco.model.entities.document.gateway.PdfDocumentGateway;
+import com.consubanco.model.entities.document.gateway.PDFDocumentGateway;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.constant.FileExtensions;
-import com.consubanco.model.entities.file.gateway.FileConvertGateway;
-import com.consubanco.model.entities.file.gateway.FileGateway;
 import com.consubanco.model.entities.file.gateway.FileRepository;
-import com.consubanco.model.entities.file.util.FileUtil;
 import com.consubanco.model.entities.file.vo.FileUploadVO;
 import com.consubanco.model.entities.process.Process;
-import com.consubanco.usecase.document.BuildPayloadUseCase;
+import com.consubanco.usecase.document.BuildAgreementDocumentsUseCase;
+import com.consubanco.usecase.document.BuildCompoundDocumentsUseCase;
 import com.consubanco.usecase.process.GetProcessByIdUseCase;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
@@ -24,33 +22,37 @@ import java.util.Map;
 import static com.consubanco.model.entities.document.constant.DocumentNames.OFFICIAL_ID;
 import static com.consubanco.model.entities.document.constant.DocumentNames.PARTS_OFFICIAL_ID;
 import static com.consubanco.model.entities.file.constant.FileConstants.attachmentsDirectory;
-import static com.consubanco.model.entities.file.constant.FileConstants.documentsDirectory;
 import static com.consubanco.model.entities.file.util.AttachmentValidatorUtil.checkAttachments;
 import static com.consubanco.model.entities.file.util.AttachmentValidatorUtil.checkAttachmentsSize;
 
 @RequiredArgsConstructor
 public class UploadAgreementFilesUseCase {
 
-    private final BuildPayloadUseCase buildPayloadUseCase;
     private final AgreementGateway agreementGateway;
     private final FileRepository fileRepository;
-    private final FileGateway fileGateway;
-    private final FileConvertGateway fileConvertGateway;
-    private final PdfDocumentGateway pdfDocument;
+    private final PDFDocumentGateway pdfDocument;
     private final GetProcessByIdUseCase getProcessByIdUseCase;
+    private final BuildAgreementDocumentsUseCase buildAgreementDocumentsUseCase;
+    private final BuildCompoundDocumentsUseCase buildCompoundDocumentsUseCase;
 
     public Mono<Map<String, String>> execute(String processId, List<FileUploadVO> attachments) {
         return checkAttachmentsSize(attachments, fileRepository.getMaxSizeOfFileInMBAllowed())
                 .then(getProcessByIdUseCase.execute(processId))
-                .flatMap(process -> agreementGateway.findByNumber(process.getAgreementNumber())
-                        .flatMap(agreement -> checkAttachments(agreement.getAttachments(), attachments).thenReturn(agreement))
-                        .flatMap(agreement -> uploadAllDocuments(process, attachments, agreement)));
+                .flatMap(process -> startProcess(attachments, process));
+    }
+
+    private Mono<Map<String, String>> startProcess(List<FileUploadVO> attachments, Process process) {
+        return agreementGateway.findByNumber(process.getAgreementNumber())
+                .flatMap(agreement -> checkAttachments(agreement.getAttachments(), attachments)
+                        .flatMap(validAttachments -> uploadAllDocuments(process, validAttachments, agreement)));
     }
 
     private Mono<Map<String, String>> uploadAllDocuments(Process process, List<FileUploadVO> attachments, Agreement agreement) {
         Flux<File> uploadAttachments = uploadAttachments(attachments, process.getOffer().getId());
-        Flux<File> uploadGeneratedDocuments = uploadGeneratedDocuments(process, agreement.getDocuments());
+        Flux<File> uploadGeneratedDocuments = buildAgreementDocumentsUseCase.execute(process, agreement.getDocuments());
         Flux.merge(uploadAttachments, uploadGeneratedDocuments)
+                .collectList()
+                .flatMap(files -> buildCompoundDocumentsUseCase.execute(process, files))
                 .subscribeOn(Schedulers.boundedElastic())
                 .subscribe();
         return Mono.just(Map.of("message", "The validations were successful, the file uploading process starts..."));
@@ -86,38 +88,6 @@ public class UploadAgreementFilesUseCase {
                         .name(OFFICIAL_ID)
                         .content(officialID)
                         .directoryPath(attachmentsDirectory(offerId))
-                        .extension(FileExtensions.PDF)
-                        .build());
-    }
-
-    private Flux<File> uploadGeneratedDocuments(Process process, List<Agreement.Document> documents) {
-        return buildPayloadUseCase.execute(process.getId())
-                .flatMapMany(payload -> generatedDocuments(documents, payload, process.getOffer().getId()))
-                .parallel()
-                .runOn(Schedulers.parallel())
-                .flatMap(fileRepository::save)
-                .sequential();
-    }
-
-    private Flux<File> generatedDocuments(List<Agreement.Document> documents, Map<String, Object> payload, String offerId) {
-        return Flux.fromIterable(documents)
-                .flatMap(document -> Flux.fromIterable(document.getFields()))
-                .map(Agreement.Document.Field::getTechnicalName)
-                .distinct()
-                .parallel()
-                .runOn(Schedulers.parallel())
-                .map("csb/"::concat)
-                .flatMap(documentPath -> generateDocument(documentPath, payload, offerId))
-                .sequential();
-    }
-
-    private Mono<File> generateDocument(String documentPath, Map<String, Object> payload, String offerId) {
-        return fileGateway.generate(documentPath, payload)
-                .flatMap(fileConvertGateway::encodedFile)
-                .map(documentContent -> File.builder()
-                        .name(FileUtil.getFileNameFromPath(documentPath))
-                        .content(documentContent)
-                        .directoryPath(documentsDirectory(offerId))
                         .extension(FileExtensions.PDF)
                         .build());
     }

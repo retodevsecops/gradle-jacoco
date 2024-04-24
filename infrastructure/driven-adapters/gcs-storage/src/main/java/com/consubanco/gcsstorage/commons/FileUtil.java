@@ -50,7 +50,18 @@ public class FileUtil {
                         .name(resource.getFilename())
                         .content(content)
                         .extension(StringUtils.getFilenameExtension(resource.getFilename()))
+                        .sizeInMB(getSizeFromResource(resource))
                         .build());
+    }
+
+    public double getSizeFromResource(ClassPathResource resource) {
+        try {
+            double megabytes = resource.contentLength() / 1048576.0;
+            return Math.round(megabytes * 100.0) / 100.0;
+        } catch (IOException exception) {
+            throw new RuntimeException("Error obtaining resource size: ", exception);
+        }
+
     }
 
     public String getDirectory(String documentPath) {

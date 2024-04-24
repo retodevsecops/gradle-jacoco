@@ -11,6 +11,10 @@ import java.util.function.Function;
 @UtilityClass
 public class ExceptionFactory {
 
+    public static <T> Mono<T> monoBusiness(IExceptionMessage exceptionMessage, String detail) {
+        return Mono.error(new BusinessException(detail, exceptionMessage));
+    }
+
     public static <T> Mono<T> buildBusiness(IExceptionMessage exceptionMessage) {
         return Mono.error(new BusinessException(exceptionMessage));
     }

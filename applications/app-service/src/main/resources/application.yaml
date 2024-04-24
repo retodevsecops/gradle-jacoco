@@ -31,7 +31,7 @@ adapter:
         api-active-offer: ${API_ACTIVE_OFFER:http://localhost:3001/offers-api/puc-offers/offers/active-offering?processId={processId}}
       promoter:
         auth-token: ${API_PROMOTER_AUTH_TOKEN}
-        channel: ${API_GET_AGREEMENT_CHANNEL:ECSB}
+        channel: ${API_GET_AGREEMENT_CHANNEL:RENEX}
         api-generate-document: ${API_GENERATE_DOCUMENT_ENDPOINT:https://documents.qa.masnominadigital.com/api/generate/csb}
         api-get-agreement: ${API_GET_AGREEMENT_ENDPOINT:https://it-api-gateway.qa.masnominadigital.com/convenios/getDetail}
       api-connect:

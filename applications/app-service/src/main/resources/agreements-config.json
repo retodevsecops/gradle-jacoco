@@ -2,48 +2,62 @@
   {
     "agreement": "cdmx - csb",
     "agreementNumber": "10000041",
+    "attachmentsDocuments": [
+      {
+        "name": "identificacion-oficial-anverso",
+        "max": "1",
+        "typeFile": [
+          "JPG",
+          "PDF"
+        ]
+      }
+    ],
     "compoundDocuments": [
+      {
+        "name": "contrato-cliente",
+        "documents": [
+          {
+            "name": "formato-unico-caratula"
+          },
+          {
+            "name": "formato-unico-contrato-credito"
+          }
+        ]
+      },
       {
         "name": "documentos-cobranza",
         "documents": [
-          "formato-reserva",
-          "identificacion-oficial",
-          "carta-consentimiento",
-          "recibo-nomina",
-          "formato-solicitud-gratuita",
-          "formato-unico-caratula",
-          "contrato-servicios-digitales",
-          "pagare"
+          {
+            "name": "formato-reserva"
+          },
+          {
+            "name": "identificacion-oficial"
+          },
+          {
+            "name": "carta-consentimiento"
+          },
+          {
+            "name": "recibo-nomina"
+          },
+          {
+            "name": "formato-solicitud-gratuita"
+          },
+          {
+            "name": "formato-unico-caratula"
+          },
+          {
+            "name": "contrato-servicios-digitales",
+            "page": -1
+          },
+          {
+            "name": "pagare"
+          }
         ]
       }
     ],
     "customerVisibleDocuments": [
       "formato-solicitud-gratuita",
-      "formato-unico-caratula",
-      "carta-de-liquidacion"
-    ]
-  },
-  {
-    "agreement": "gem - csp",
-    "agreementNumber": "10000080",
-    "compoundDocuments": [
-      {
-        "name": "documentos-cobranza",
-        "documents": [
-          "formato-reserva",
-          "identificacion-oficial",
-          "carta-consentimiento",
-          "recibo-nomina",
-          "formato-solicitud-gratuita",
-          "formato-unico-caratula",
-          "contrato-servicios-digitales",
-          "pagare"
-        ]
-      }
-    ],
-    "customerVisibleDocuments": [
-      "formato-solicitud-gratuita",
-      "formato-unico-caratula",
+      "contrato-cliente",
       "carta-de-liquidacion"
     ]
   }
