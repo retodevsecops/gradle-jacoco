@@ -4,8 +4,94 @@
     "agreementNumber": "10000041",
     "attachmentsDocuments": [
       {
-        "name": "identificacion-oficial-anverso",
+        "name": "identificacion-oficial",
         "max": "1",
+        "isOcr": true,
+        "isRecoverable": true,
+        "typeFile": [
+          "JPG",
+          "PDF"
+        ]
+      },
+      {
+        "name": "recibo-nomina",
+        "max": "1",
+        "isOcr": true,
+        "isRecoverable": true,
+        "typeFile": [
+          "JPG",
+          "PDF"
+        ]
+      }
+    ],
+    "compoundDocuments": [
+      {
+        "name": "contrato-cliente",
+        "documents": [
+          {
+            "name": "formato-unico-caratula"
+          },
+          {
+            "name": "formato-unico-contrato-credito"
+          }
+        ]
+      },
+      {
+        "name": "documentos-cobranza",
+        "documents": [
+          {
+            "name": "formato-reserva"
+          },
+          {
+            "name": "identificacion-oficial"
+          },
+          {
+            "name": "carta-consentimiento"
+          },
+          {
+            "name": "recibo-nomina"
+          },
+          {
+            "name": "formato-solicitud-gratuita"
+          },
+          {
+            "name": "formato-unico-caratula"
+          },
+          {
+            "name": "contrato-servicios-digitales",
+            "page": -1
+          },
+          {
+            "name": "pagare"
+          }
+        ]
+      }
+    ],
+    "customerVisibleDocuments": [
+      "formato-solicitud-gratuita",
+      "contrato-cliente",
+      "carta-de-liquidacion"
+    ]
+  },
+  {
+    "agreement": "cdmx - csb",
+    "agreementNumber": "10000041",
+    "attachmentsDocuments": [
+      {
+        "name": "identificacion-oficial",
+        "max": "1",
+        "ocr": true,
+        "isRecoverable": true,
+        "typeFile": [
+          "JPG",
+          "PDF"
+        ]
+      },
+      {
+        "name": "recibo-nomina",
+        "max": "1",
+        "ocr": true,
+        "isRecoverable": true,
         "typeFile": [
           "JPG",
           "PDF"

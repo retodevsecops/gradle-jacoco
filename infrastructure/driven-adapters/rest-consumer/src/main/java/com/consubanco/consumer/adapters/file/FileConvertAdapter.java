@@ -23,7 +23,7 @@ public class FileConvertAdapter implements FileConvertGateway {
     }
 
     @Override
-    public Mono<String> encodedFile(String fileUrl) {
+    public Mono<String> getFileContentAsBase64(String fileUrl) {
         return clientGetFiles.get()
                 .uri(fileUrl)
                 .accept(MediaType.APPLICATION_PDF)

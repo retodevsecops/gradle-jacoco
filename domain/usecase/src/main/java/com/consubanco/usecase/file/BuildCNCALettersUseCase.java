@@ -1,8 +1,8 @@
 package com.consubanco.usecase.file;
 
+import com.consubanco.model.entities.document.gateway.DocumentGateway;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.constant.FileExtensions;
-import com.consubanco.model.entities.file.gateway.FileGateway;
 import com.consubanco.model.entities.file.gateway.FileRepository;
 import com.consubanco.model.entities.process.Process;
 import com.consubanco.usecase.process.GetProcessByIdUseCase;
@@ -19,7 +19,7 @@ import static com.consubanco.model.entities.file.constant.FileConstants.cncaForm
 @RequiredArgsConstructor
 public class BuildCNCALettersUseCase {
 
-    private final FileGateway fileGateway;
+    private final DocumentGateway documentGateway;
     private final FileRepository fileRepository;
     private final GetProcessByIdUseCase getProcessByIdUseCase;
 
@@ -44,7 +44,7 @@ public class BuildCNCALettersUseCase {
     }
 
     private Mono<File> getCNCALetter(String offerId, String loanId) {
-        return fileGateway.getContentCNCALetter(loanId)
+        return documentGateway.getContentCNCALetter(loanId)
                 .map(contentCNCALetter -> File.builder()
                         .name(cncaFormatName(loanId))
                         .content(contentCNCALetter)

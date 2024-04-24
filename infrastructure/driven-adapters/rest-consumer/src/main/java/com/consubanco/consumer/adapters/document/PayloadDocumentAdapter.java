@@ -5,6 +5,7 @@ import com.consubanco.logger.CustomLogger;
 import com.consubanco.model.entities.document.gateway.PayloadDocumentGateway;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -39,6 +40,7 @@ public class PayloadDocumentAdapter implements PayloadDocumentGateway, Applicati
     }
 
     @Override
+    @Cacheable("payload-data")
     public Mono<Map<String, Object>> getAllData(String processId) {
         return Mono.zip(promoterApiConsumer.getPromoterById(promoterId),
                         customerApiConsumer.customerDataByProcess(processId),

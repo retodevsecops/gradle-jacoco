@@ -1,4 +1,4 @@
-package com.consubanco.consumer.adapters.file.dto;
+package com.consubanco.consumer.adapters.document.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

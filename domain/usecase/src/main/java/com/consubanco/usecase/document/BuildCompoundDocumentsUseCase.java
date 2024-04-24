@@ -39,7 +39,6 @@ public class BuildCompoundDocumentsUseCase {
                                                AgreementConfigVO.CompoundDocument compoundDocument) {
         return getContentCompoundDocument(compoundDocument, files)
                 .map(content -> buildCompundDocumentFile(offerId, compoundDocument.getName(), content))
-                .doOnNext(e -> System.out.println(e.getContent()))
                 .flatMap(fileRepository::save);
     }
 

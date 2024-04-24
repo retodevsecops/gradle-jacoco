@@ -1,16 +1,15 @@
-package com.consubanco.consumer.adapters.file;
+package com.consubanco.consumer.adapters.document;
 
-import com.consubanco.consumer.adapters.file.dto.GenerateDocumentRequestDTO;
-import com.consubanco.consumer.adapters.file.dto.GenerateDocumentResponseDTO;
-import com.consubanco.consumer.adapters.file.dto.GetCNCALetterRequestDTO;
-import com.consubanco.consumer.adapters.file.dto.GetCNCALetterResponseDTO;
-import com.consubanco.consumer.adapters.file.properties.FileApisProperties;
-import com.consubanco.freemarker.ITemplateOperations;
-import com.consubanco.logger.CustomLogger;
+import com.consubanco.consumer.adapters.document.dto.GenerateDocumentRequestDTO;
+import com.consubanco.consumer.adapters.document.dto.GenerateDocumentResponseDTO;
+import com.consubanco.consumer.adapters.document.dto.GetCNCALetterRequestDTO;
+import com.consubanco.consumer.adapters.document.dto.GetCNCALetterResponseDTO;
+import com.consubanco.consumer.adapters.document.properties.DocumentApisProperties;
 import com.consubanco.model.commons.exception.TechnicalException;
-import com.consubanco.model.entities.file.gateway.FileGateway;
+import com.consubanco.model.entities.document.gateway.DocumentGateway;
 import com.consubanco.model.entities.file.vo.AttachmentVO;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -23,21 +22,17 @@ import static com.consubanco.model.commons.exception.factory.ExceptionFactory.th
 import static com.consubanco.model.entities.file.message.FileTechnicalMessage.*;
 
 @Service
-public class FileAdapter implements FileGateway {
+public class DocumentAdapter implements DocumentGateway {
 
-    private final CustomLogger logger;
     private final WebClient apiConnectClient;
     private final WebClient apiPromoterClient;
-    private final FileApisProperties apis;
+    private final DocumentApisProperties apis;
 
-    public FileAdapter(final @Qualifier("ApiConnectClient") WebClient apiConnectClient,
-                       final @Qualifier("ApiPromoterClient") WebClient apiPromoterClient,
-                       final FileApisProperties apisProperties,
-                       final CustomLogger customLogger,
-                       final ITemplateOperations templateOperations) {
+    public DocumentAdapter(final @Qualifier("ApiConnectClient") WebClient apiConnectClient,
+                           final @Qualifier("ApiPromoterClient") WebClient apiPromoterClient,
+                           final DocumentApisProperties apisProperties) {
         this.apiConnectClient = apiConnectClient;
         this.apiPromoterClient = apiPromoterClient;
-        this.logger = customLogger;
         this.apis = apisProperties;
     }
 
@@ -57,6 +52,16 @@ public class FileAdapter implements FileGateway {
     @Override
     public Mono<String> generate(String document, Map<String, Object> payload) {
         return generate(List.of(document), null, payload);
+    }
+
+    @Override
+    public Mono<Map<String, String>> generateMultiple(List<String> documents, Map<String, Object> payload) {
+        return this.apiPromoterClient.post()
+                .uri(apis.generateDocumentApiEndpoint())
+                .bodyValue(new GenerateDocumentRequestDTO(documents, payload))
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {})
+                .onErrorMap(throwTechnicalError(API_PROMOTER_ERROR));
     }
 
     @Override

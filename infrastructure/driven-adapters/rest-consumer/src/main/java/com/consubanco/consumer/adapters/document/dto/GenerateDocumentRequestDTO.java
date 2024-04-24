@@ -1,4 +1,4 @@
-package com.consubanco.consumer.adapters.file.dto;
+package com.consubanco.consumer.adapters.document.dto;
 
 import com.consubanco.model.entities.file.vo.AttachmentVO;
 import lombok.AllArgsConstructor;
@@ -20,7 +20,12 @@ public class GenerateDocumentRequestDTO {
 
     public GenerateDocumentRequestDTO(List<String> documents, List<AttachmentVO> attachments, Map<String, Object> payload) {
         this.documents = documentsToDTO(documents);
-        this.payload = completePayload(payload, attachments);
+        this.payload = addAttachmentsToPayload(payload, attachments);
+    }
+
+    public GenerateDocumentRequestDTO(List<String> documents, Map<String, Object> payload) {
+        this.documents = documentsToDTO(documents);
+        this.payload = enableIndividualDocumentsInPayload(payload);
     }
 
     @Data
@@ -48,11 +53,16 @@ public class GenerateDocumentRequestDTO {
         private String url;
     }
 
-    private Map<String, Object> completePayload(Map<String, Object> payload, List<AttachmentVO> attachmentsList) {
+    private Map<String, Object> addAttachmentsToPayload(Map<String, Object> payload, List<AttachmentVO> attachmentsList) {
         if (Objects.nonNull(attachmentsList) && !attachmentsList.isEmpty()) {
             List<AttachmentDTO> attachments = attachmentsList.stream().map(this::getAttachmentDTO).toList();
             payload.put("documents", attachments);
         }
+        return payload;
+    }
+
+    private Map<String, Object> enableIndividualDocumentsInPayload(Map<String, Object> payload) {
+        payload.put("detach", true);
         return payload;
     }
 

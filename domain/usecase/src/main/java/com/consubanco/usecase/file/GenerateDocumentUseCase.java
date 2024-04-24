@@ -1,9 +1,9 @@
 package com.consubanco.usecase.file;
 
+import com.consubanco.model.entities.document.gateway.DocumentGateway;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.constant.FileExtensions;
 import com.consubanco.model.entities.file.gateway.FileConvertGateway;
-import com.consubanco.model.entities.file.gateway.FileGateway;
 import com.consubanco.model.entities.file.gateway.FileRepository;
 import com.consubanco.model.entities.file.vo.FileDataVO;
 import com.consubanco.model.entities.process.Process;
@@ -19,7 +19,7 @@ import static com.consubanco.model.entities.file.constant.FileConstants.pdfForma
 public class GenerateDocumentUseCase {
 
     private final BuildPayloadUseCase buildPayloadUseCase;
-    private final FileGateway fileGateway;
+    private final DocumentGateway documentGateway;
     private final FileConvertGateway fileConvertGateway;
     private final FileRepository fileRepository;
     private final GetProcessByIdUseCase getProcessByIdUseCase;
@@ -28,20 +28,20 @@ public class GenerateDocumentUseCase {
         return getProcessByIdUseCase.execute(processId)
                 .map(Process::getId)
                 .flatMap(buildPayloadUseCase::execute)
-                .flatMap(payload -> fileGateway.generate(fileData.getDocuments(), fileData.getAttachments(), payload));
+                .flatMap(payload -> documentGateway.generate(fileData.getDocuments(), fileData.getAttachments(), payload));
     }
 
     public Mono<String> getAsEncodedFile(FileDataVO fileData, String processId) {
         return getAsUrl(fileData, processId)
-                .flatMap(fileConvertGateway::encodedFile);
+                .flatMap(fileConvertGateway::getFileContentAsBase64);
     }
 
     public Mono<File> getAndUpload(String processId, FileDataVO fileData, String fileName) {
         return getProcessByIdUseCase.execute(processId)
                 .map(Process::getOffer)
                 .flatMap(offer -> buildPayloadUseCase.execute(processId)
-                        .flatMap(payload -> fileGateway.generate(fileData.getDocuments(), fileData.getAttachments(), payload))
-                        .flatMap(fileConvertGateway::encodedFile)
+                        .flatMap(payload -> documentGateway.generate(fileData.getDocuments(), fileData.getAttachments(), payload))
+                        .flatMap(fileConvertGateway::getFileContentAsBase64)
                         .map(encodedFile -> buildFile(offer.getId(), fileName, encodedFile)))
                 .flatMap(fileRepository::save);
     }

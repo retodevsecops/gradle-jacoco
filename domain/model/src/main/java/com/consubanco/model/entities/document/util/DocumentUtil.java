@@ -1,11 +1,11 @@
-package com.consubanco.model.entities.file.util;
+package com.consubanco.model.entities.document.util;
 
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class FileUtil {
+public class DocumentUtil {
 
-    public String getFileNameFromPath(String documentPath) {
+    public String getDocumentNameFromPath(String documentPath) {
         String[] parts = documentPath.split("/");
         return parts[parts.length - 1];
     }

@@ -1,4 +1,4 @@
-package com.consubanco.consumer.adapters.file.properties;
+package com.consubanco.consumer.adapters.document.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 @Data
 @Configuration
 @ConfigurationProperties(prefix = "adapter.rest-consumer.apis")
-public class FileApisProperties {
+public class DocumentApisProperties {
 
     private Promoter promoter;
     private ApiConnect apiConnect;
