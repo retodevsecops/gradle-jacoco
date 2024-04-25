@@ -30,8 +30,8 @@ public class BuildCompoundDocumentsUseCase {
     public Mono<Void> execute(Process process, List<File> files) {
         String directory = FileConstants.documentsDirectory(process.getOffer().getId());
         String agreementNumber = process.getAgreementNumber();
-        return createApplicantRecord(files, directory)
-                .flatMapMany(e -> createConfiguredCompoundDocuments(agreementNumber, files, directory))
+        return Mono.zip(createApplicantRecord(files, directory),
+                        createConfiguredCompoundDocuments(agreementNumber, files, directory).collectList())
                 .then();
     }
 
@@ -50,7 +50,7 @@ public class BuildCompoundDocumentsUseCase {
                                                List<File> files,
                                                String directory) {
         return getContentCompoundDocument(compoundDocument, files)
-                .map(content -> buildCompundDocumentFile(directory, compoundDocument.getName(), content))
+                .map(content -> buildCompundDocumentFile(compoundDocument.getName(), content, directory))
                 .flatMap(fileRepository::save);
     }
 

@@ -8,62 +8,35 @@
         "max": "1",
         "isOcr": true,
         "isRecoverable": true,
-        "typeFile": [
-          "JPG",
-          "PDF"
-        ]
+        "typeFile": ["JPG", "PDF"]
       },
       {
         "name": "recibo-nomina",
         "max": "1",
         "isOcr": true,
         "isRecoverable": true,
-        "typeFile": [
-          "JPG",
-          "PDF"
-        ]
+        "typeFile": ["JPG", "PDF"]
       }
     ],
     "compoundDocuments": [
       {
         "name": "contrato-cliente",
         "documents": [
-          {
-            "name": "formato-unico-caratula"
-          },
-          {
-            "name": "formato-unico-contrato-credito"
-          }
+          {"name": "formato-unico-caratula"},
+          {"name": "formato-unico-contrato-credito"}
         ]
       },
       {
         "name": "documentos-cobranza",
         "documents": [
-          {
-            "name": "formato-reserva"
-          },
-          {
-            "name": "identificacion-oficial"
-          },
-          {
-            "name": "carta-consentimiento"
-          },
-          {
-            "name": "recibo-nomina"
-          },
-          {
-            "name": "formato-solicitud-gratuita"
-          },
-          {
-            "name": "formato-unico-caratula"
-          },
-          {
-            "name": "contrato-servicios-digitales",
-            "page": -1
-          },
-          {
-            "name": "pagare"
-          }
+          {"name": "formato-reserva"},
+          {"name": "identificacion-oficial"},
+          {"name": "carta-consentimiento"},
+          {"name": "recibo-nomina"},
+          {"name": "formato-solicitud-gratuita"},
+          {"name": "formato-unico-caratula"},
+          {"name": "contrato-servicios-digitales", "page": -1},
+          {"name": "pagare"}
         ]
       }
     ],
