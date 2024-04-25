@@ -5,18 +5,20 @@ import com.consubanco.model.entities.agreement.gateway.AgreementConfigRepository
 import com.consubanco.model.entities.agreement.vo.AgreementConfigVO;
 import com.consubanco.model.entities.document.gateway.PDFDocumentGateway;
 import com.consubanco.model.entities.file.File;
+import com.consubanco.model.entities.file.constant.FileConstants;
 import com.consubanco.model.entities.file.constant.FileExtensions;
 import com.consubanco.model.entities.file.gateway.FileRepository;
 import com.consubanco.model.entities.process.Process;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
 
+import static com.consubanco.model.entities.document.constant.DocumentNames.APPLICANT_RECORD;
 import static com.consubanco.model.entities.document.message.DocumentBusinessMessage.DOCUMENT_NOT_FOUND;
 import static com.consubanco.model.entities.document.message.DocumentMessage.documentNotFound;
-import static com.consubanco.model.entities.file.constant.FileConstants.documentsDirectory;
 
 @RequiredArgsConstructor
 public class BuildCompoundDocumentsUseCase {
@@ -26,38 +28,38 @@ public class BuildCompoundDocumentsUseCase {
     private final FileRepository fileRepository;
 
     public Mono<Void> execute(Process process, List<File> files) {
-        return agreementConfigRepository.getConfigByAgreement(process.getAgreementNumber())
-                .filter(AgreementConfigVO::checkCompoundDocuments)
-                .map(AgreementConfigVO::getCompoundDocuments)
-                .flatMapMany(Flux::fromIterable)
-                .flatMap(document -> processCompoundDocument(process.getOffer().getId(), files, document))
+        String directory = FileConstants.documentsDirectory(process.getOffer().getId());
+        String agreementNumber = process.getAgreementNumber();
+        return createApplicantRecord(files, directory)
+                .flatMapMany(e -> createConfiguredCompoundDocuments(agreementNumber, files, directory))
                 .then();
     }
 
-    private Mono<File> processCompoundDocument(String offerId,
+    private Flux<File> createConfiguredCompoundDocuments(String agreementNumber, List<File> files, String directory) {
+        return agreementConfigRepository.getConfigByAgreement(agreementNumber)
+                .filter(AgreementConfigVO::checkCompoundDocuments)
+                .map(AgreementConfigVO::getCompoundDocuments)
+                .flatMapMany(Flux::fromIterable)
+                .parallel()
+                .runOn(Schedulers.parallel())
+                .flatMap(document -> processCompoundDocument(document, files, directory))
+                .sequential();
+    }
+
+    private Mono<File> processCompoundDocument(AgreementConfigVO.CompoundDocument compoundDocument,
                                                List<File> files,
-                                               AgreementConfigVO.CompoundDocument compoundDocument) {
+                                               String directory) {
         return getContentCompoundDocument(compoundDocument, files)
-                .map(content -> buildCompundDocumentFile(offerId, compoundDocument.getName(), content))
+                .map(content -> buildCompundDocumentFile(directory, compoundDocument.getName(), content))
                 .flatMap(fileRepository::save);
     }
 
     private Mono<String> getContentCompoundDocument(AgreementConfigVO.CompoundDocument compoundDocument,
                                                     List<File> files) {
-        // TODO: SE DEBE TRABAJAR EN EL MERGE DE DOCUMENTOS IDENTIFICAR CUANDO ES PDF Y CUANDO IMAGEN
         return Flux.fromIterable(compoundDocument.getDocuments())
                 .flatMap(documentData -> getFileContentByName(documentData, files))
                 .collectList()
                 .flatMap(pdfDocumentGateway::merge);
-    }
-
-    private File buildCompundDocumentFile(String offerId, String name, String content) {
-        return File.builder()
-                .name(name)
-                .content(content)
-                .directoryPath(documentsDirectory(offerId))
-                .extension(FileExtensions.PDF)
-                .build();
     }
 
     private Mono<String> getFileContentByName(AgreementConfigVO.DocumentData documentData, List<File> files) {
@@ -76,6 +78,22 @@ public class BuildCompoundDocumentsUseCase {
         return Mono.justOrEmpty(pageNumber)
                 .flatMap(page -> pdfDocumentGateway.getPageFromPDF(file.getContent(), page))
                 .defaultIfEmpty(file.getContent());
+    }
+
+    private Mono<File> createApplicantRecord(List<File> files, String directory) {
+        List<String> base64Documents = files.stream().map(File::getContent).toList();
+        return pdfDocumentGateway.merge(base64Documents)
+                .map(documentContent -> buildCompundDocumentFile(APPLICANT_RECORD, documentContent, directory))
+                .flatMap(fileRepository::save);
+    }
+
+    private File buildCompundDocumentFile(String name, String content, String directory) {
+        return File.builder()
+                .name(name)
+                .content(content)
+                .directoryPath(directory)
+                .extension(FileExtensions.PDF)
+                .build();
     }
 
 }

@@ -30,7 +30,7 @@ public class UploadAgreementFilesUseCase {
 
     private final AgreementGateway agreementGateway;
     private final FileRepository fileRepository;
-    private final PDFDocumentGateway pdfDocument;
+    private final PDFDocumentGateway pdfDocumentGateway;
     private final GetProcessByIdUseCase getProcessByIdUseCase;
     private final BuildAgreementDocumentsUseCase buildAgreementDocumentsUseCase;
     private final BuildCompoundDocumentsUseCase buildCompoundDocumentsUseCase;
@@ -70,12 +70,22 @@ public class UploadAgreementFilesUseCase {
     private Flux<File> buildAttachmentList(List<FileUploadVO> attachments, String offerId) {
         return Flux.fromIterable(attachments)
                 .filter(attachment -> !PARTS_OFFICIAL_ID.contains(attachment.getName()))
-                .map(fileUploadVO -> File.builder()
-                        .name(fileUploadVO.getName())
-                        .content(fileUploadVO.getContent())
-                        .directoryPath(attachmentsDirectory(offerId))
-                        .extension(fileUploadVO.getExtension())
-                        .build());
+                .flatMap(fileUploadVO -> convertAttachmentToPDF(fileUploadVO)
+                        .map(pdf -> File.builder()
+                                .name(fileUploadVO.getName())
+                                .content(pdf)
+                                .directoryPath(attachmentsDirectory(offerId))
+                                .extension(FileExtensions.PDF)
+                                .build()));
+    }
+
+    private Mono<String> convertAttachmentToPDF(FileUploadVO fileUploadVO) {
+        return Mono.just(fileUploadVO.getExtension())
+                .filter(extension -> !FileExtensions.PDF.equalsIgnoreCase(extension))
+                .defaultIfEmpty(fileUploadVO.getContent())
+                .map(extension -> fileUploadVO.getContent())
+                .map(List::of)
+                .flatMap(pdfDocumentGateway::generatePdfWithImages);
     }
 
     private Mono<File> generateOfficialIdPdf(List<FileUploadVO> attachments, String offerId) {
@@ -83,7 +93,7 @@ public class UploadAgreementFilesUseCase {
                 .filter(attachment -> PARTS_OFFICIAL_ID.contains(attachment.getName()))
                 .map(FileUploadVO::getContent)
                 .collectList()
-                .flatMap(pdfDocument::generatePdfWithImages)
+                .flatMap(pdfDocumentGateway::generatePdfWithImages)
                 .map(officialID -> File.builder()
                         .name(OFFICIAL_ID)
                         .content(officialID)

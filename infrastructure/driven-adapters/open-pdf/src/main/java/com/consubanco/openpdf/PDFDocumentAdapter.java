@@ -29,6 +29,7 @@ public class PDFDocumentAdapter implements PDFDocumentGateway {
                     addImageToPdf(document, imageInBase64);
                 });
             } catch (Exception e) {
+                throw new RuntimeException("Error generate PDF with images.", e);
             }
             return Base64.getEncoder().encodeToString(outputStream.toByteArray());
         });
@@ -92,7 +93,7 @@ public class PDFDocumentAdapter implements PDFDocumentGateway {
         if (pageAbsolute > numberOfPagesPDF)
             throw new IndexOutOfBoundsException("The required page exceeds the number of pages in the pdf file.");
         if (pageRequired > 0) return pageRequired;
-        return numberOfPagesPDF - pageAbsolute;
+        return numberOfPagesPDF - (pageAbsolute-1);
     }
 
     private void addImageToPdf(Document document, String imageBase64) {
