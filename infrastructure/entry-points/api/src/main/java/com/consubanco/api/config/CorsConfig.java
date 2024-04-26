@@ -1,28 +1,23 @@
 package com.consubanco.api.config;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.reactive.CorsConfigurationSource;
-import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
-
-import java.util.List;
+import org.springframework.web.reactive.config.CorsRegistry;
+import org.springframework.web.reactive.config.EnableWebFlux;
+import org.springframework.web.reactive.config.WebFluxConfigurer;
 
 @Configuration
-public class CorsConfig {
+@EnableWebFlux
+public class CorsConfig implements WebFluxConfigurer {
 
-    @Bean
-    @Primary
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.setAllowedOrigins(List.of("*"));
-        corsConfig.setAllowedMethods(List.of("*"));
-        corsConfig.setAllowedHeaders(List.of("*"));
-        corsConfig.setMaxAge(3600L);
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfig);
-        return source;
+    private static final String PATHS = "/**";
+    private static final String ALL = "*";
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping(PATHS)
+                .allowedOrigins(ALL)
+                .allowedMethods(ALL)
+                .allowedHeaders(ALL)
+                .maxAge(3600);
     }
-
 }
