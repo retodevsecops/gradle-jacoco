@@ -57,6 +57,7 @@ entry:
       health: /healthz
       agreement: /agreement
       file: /file
+      loans: /loans
 helpers:
   caffeine:
     expire-after-write: ${CACHE_EXPIRE_TIME_MINUTES:60}
@@ -102,4 +103,4 @@ springdoc:
     path: /api-docs
   swagger-ui:
     disable-swagger-default-url: true
-    path: </swagger.html>
+    path: /swagger.html>
