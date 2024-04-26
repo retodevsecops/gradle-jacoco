@@ -5,16 +5,26 @@
     "attachmentsDocuments": [
       {
         "name": "identificacion-oficial",
-        "max": "1",
+        "maxFiles": 1,
         "isOcr": true,
         "isRecoverable": true,
+        "isRequired": true,
         "typeFile": ["JPG", "PDF"]
       },
       {
         "name": "recibo-nomina",
-        "max": "1",
+        "maxFiles": 2,
         "isOcr": true,
         "isRecoverable": true,
+        "isRequired": true,
+        "typeFile": ["JPG", "PDF"]
+      },
+      {
+        "name": "comprobante-domicilio",
+        "maxFiles": 1,
+        "isOcr": true,
+        "isRecoverable": true,
+        "isRequired": true,
         "typeFile": ["JPG", "PDF"]
       }
     ],

@@ -19,6 +19,7 @@ public class AgreementConfigVO {
     private String agreementNumber;
     private List<CompoundDocument> compoundDocuments;
     private List<String> customerVisibleDocuments;
+    private List<Attachment> attachments;
 
     @Data
     public static class CompoundDocument {
@@ -30,6 +31,17 @@ public class AgreementConfigVO {
     public static class DocumentData {
         private String name;
         private Integer page;
+    }
+
+    @Data
+    public static class Attachment {
+        // TODO: puede llegar a suceder que un documento adjunto sea opcional?
+        private String name;
+        private Integer maxFiles;
+        private Boolean isOcr;
+        private Boolean isRecoverable;
+        private Boolean isRequired;
+        private List<String> typeFile;
     }
 
     public boolean checkCompoundDocuments() {
