@@ -1,5 +1,7 @@
 package com.consubanco.api.services.loans;
 
+import com.consubanco.api.commons.swagger.ParamsOpenAPI;
+import com.consubanco.api.services.file.constants.FilePathParams;
 import org.springdoc.core.fn.builders.operation.Builder;
 
 import java.util.function.Consumer;
@@ -15,6 +17,7 @@ public class LoansOpenAPI {
                 .operationId("createApplication")
                 .description("Create loan application.")
                 .summary("Create loan application.")
+                .parameter(ParamsOpenAPI.path(FilePathParams.PROCESS_ID, "Process identifier"))
                 .response(responseOk(String.class))
                 .response(responseBusinessException())
                 .response(responseInternalError());

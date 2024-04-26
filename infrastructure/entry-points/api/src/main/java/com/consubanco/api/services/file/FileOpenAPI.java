@@ -133,6 +133,7 @@ public class FileOpenAPI {
                 .operationId("getPayloadData")
                 .description("Get all the payload data with which the documents are constructed.")
                 .summary("Get payload data.")
+                .parameter(ParamsOpenAPI.path(FilePathParams.PROCESS_ID, "Process identifier"))
                 .response(responseOkWithList(Map.class))
                 .response(responseBusinessException())
                 .response(responseInternalError());
