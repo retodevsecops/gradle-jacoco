@@ -13,12 +13,13 @@ public class CorsConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("*"));
-        config.setAllowedMethods(List.of("*"));
-        config.setAllowedHeaders(List.of("*"));
+        CorsConfiguration corsConfig = new CorsConfiguration();
+        corsConfig.setAllowedOrigins(List.of("*"));
+        corsConfig.setAllowedMethods(List.of("*"));
+        corsConfig.setAllowedHeaders(List.of("*"));
+        corsConfig.setMaxAge(3600L);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
+        source.registerCorsConfiguration("/**", corsConfig);
         return source;
     }
 
