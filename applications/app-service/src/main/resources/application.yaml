@@ -39,7 +39,6 @@ adapter:
         application-id: ${API_CONNECT_APPLICATION_ID:CSB-CTE-APP}
         api-get-cnca: ${API_GET_CNCA:https://apic.consubanco.com/csb/qa/opc-service/getCNCALetter}
         api-search-interlocutor: ${API_SEARCH_INTERLOCUTOR:https://apic.consubanco.com/csb/qa/common-crm-service/searchInterlocutor}
-
   gcs-storage:
     max-file-size-mb: ${GCS_MAX_FILE_SIZE_IN_MB:0.5}
     bucket-name: ${GCS_BUCKET_NAME:csb-venta-digital}
