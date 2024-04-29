@@ -42,7 +42,6 @@ public class GetAgreementResponseDTO {
     private List<Catalog> positions;
     private Boolean videoTaskIsRequired;
     private List<Document> documents;
-    private List<Document>  attachments;
 
     @Data
     @NoArgsConstructor

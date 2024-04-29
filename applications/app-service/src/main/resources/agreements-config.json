@@ -4,7 +4,8 @@
     "agreementNumber": "10000041",
     "attachmentsDocuments": [
       {
-        "name": "identificacion-oficial",
+        "name": "Identificacion oficial",
+        "technicalName": "identificacion-oficial",
         "maxFiles": 1,
         "isOcr": true,
         "isRecoverable": true,
@@ -12,7 +13,8 @@
         "typeFile": ["JPG", "PDF"]
       },
       {
-        "name": "recibo-nomina",
+        "name": "Recibos de nomina",
+        "technicalName": "recibo-nomina",
         "maxFiles": 2,
         "isOcr": true,
         "isRecoverable": true,
@@ -20,7 +22,8 @@
         "typeFile": ["JPG", "PDF"]
       },
       {
-        "name": "comprobante-domicilio",
+        "name": "Comprobante de domicilio",
+        "technicalName": "comprobante-domicilio",
         "maxFiles": 1,
         "isOcr": true,
         "isRecoverable": true,

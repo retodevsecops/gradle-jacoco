@@ -19,7 +19,7 @@ public class AgreementConfigVO {
     private String agreementNumber;
     private List<CompoundDocument> compoundDocuments;
     private List<String> customerVisibleDocuments;
-    private List<Attachment> attachments;
+    private List<Attachment> attachmentsDocuments;
 
     @Data
     public static class CompoundDocument {
@@ -35,8 +35,8 @@ public class AgreementConfigVO {
 
     @Data
     public static class Attachment {
-        // TODO: puede llegar a suceder que un documento adjunto sea opcional?
         private String name;
+        private String technicalName;
         private Integer maxFiles;
         private Boolean isOcr;
         private Boolean isRecoverable;

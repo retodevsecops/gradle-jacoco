@@ -5,6 +5,7 @@ import com.consubanco.api.services.agreement.constants.AgreementPathParams;
 import com.consubanco.api.services.agreement.dto.AttachmentResDTO;
 import com.consubanco.api.services.agreement.dto.GetAgreementResponseDTO;
 import com.consubanco.usecase.agreement.AgreementUseCase;
+import com.consubanco.usecase.agreement.GetAttachmentsByAgreementUseCase;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ import reactor.core.publisher.Mono;
 public class AgreementHandler {
 
     private final AgreementUseCase agreementUseCase;
+    private final GetAttachmentsByAgreementUseCase getAttachmentsByAgreementUseCase;
     private final ModelMapper mapper;
 
     public Mono<ServerResponse> findByNumber(ServerRequest serverRequest) {
@@ -27,9 +29,11 @@ public class AgreementHandler {
     }
 
     public Mono<ServerResponse> getAttachments(ServerRequest serverRequest) {
-        String agreementNumber = serverRequest.pathVariable(AgreementPathParams.AGREEMENT_NUMBER);
-        return agreementUseCase.getAttachments(agreementNumber)
-                .map(document -> mapper.map(document, AttachmentResDTO.class))
+        return Mono.just(AgreementPathParams.PROCESS_ID)
+                .map(serverRequest::pathVariable)
+                .flatMapMany(getAttachmentsByAgreementUseCase::execute)
+                .doOnNext(e -> System.out.println(e.toString()))
+                .map(attachment -> mapper.map(attachment, AttachmentResDTO.class))
                 .collectList()
                 .flatMap(HttpResponseUtil::Ok);
     }

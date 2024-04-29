@@ -5,4 +5,5 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class AgreementPathParams {
     public static final String AGREEMENT_NUMBER = "agreementNumber";
+    public static final String PROCESS_ID = "processId";
 }
