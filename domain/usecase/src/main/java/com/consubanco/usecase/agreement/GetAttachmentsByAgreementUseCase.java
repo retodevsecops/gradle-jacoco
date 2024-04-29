@@ -19,7 +19,6 @@ public class GetAttachmentsByAgreementUseCase {
         return getProcessByIdUseCase.execute(processId)
                 .map(Process::getAgreementNumber)
                 .flatMap(agreementConfigRepository::getConfigByAgreement)
-                .doOnNext(e -> System.out.println(e.toString()))
                 .map(AgreementConfigVO::getAttachmentsDocuments)
                 .flatMapMany(Flux::fromIterable);
     }
