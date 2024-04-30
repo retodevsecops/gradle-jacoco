@@ -42,7 +42,7 @@ public class AttachmentValidatorUtil {
                 .collect(Collectors.toList());
     }
 
-    //TODO: ojo! estoy trabajando solo con los adjuntos requeridos y se deben trabajar tambien con los adjuntos opcionales.
+    // TODO: ojo! estoy trabajando solo con los adjuntos requeridos y se deben trabajar tambien con los adjuntos opcionales.
     // TODO: debo validar adjuntos requeridos y luego obtener todos los adjuntos del convenio y trabajar es con esos si en load
     // TODO: si en los adjuntos proveidos vienen unos que no son del convenio, se descarta.
     private List<FileUploadVO> filteredAttachments(List<String> requiredAttachmentNames,

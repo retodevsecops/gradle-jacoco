@@ -10,7 +10,7 @@
         "isOcr": true,
         "isRecoverable": true,
         "isRequired": true,
-        "typeFile": ["JPG", "PDF"]
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF"]
       },
       {
         "name": "Recibos de nomina",
@@ -19,7 +19,7 @@
         "isOcr": true,
         "isRecoverable": true,
         "isRequired": true,
-        "typeFile": ["JPG", "PDF"]
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF"]
       },
       {
         "name": "Comprobante de domicilio",
@@ -28,7 +28,7 @@
         "isOcr": true,
         "isRecoverable": true,
         "isRequired": true,
-        "typeFile": ["JPG", "PDF"]
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF"]
       }
     ],
     "compoundDocuments": [

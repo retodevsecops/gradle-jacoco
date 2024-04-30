@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
+import java.util.Objects;
 
 import static com.consubanco.consumer.commons.Constants.AUTH_BEARER_VALUE;
 
@@ -41,6 +42,7 @@ public class AuthTokenRenexFilter implements ExchangeFilterFunction {
     @Override
     public Mono<ClientResponse> filter(ClientRequest request, ExchangeFunction next) {
         return getAuthToken()
+                .doOnNext(e -> logger.info("se obtuvo el token de autenticacion."))
                 .map(token -> injectTokenToRequest(request, token))
                 .flatMap(next::exchange)
                 .doOnError(error -> logger.error("Error generating the renex authentication token.", error));
@@ -49,6 +51,7 @@ public class AuthTokenRenexFilter implements ExchangeFilterFunction {
     private Mono<String> getAuthToken() {
         return Mono.just(Constants.TOKEN_RENEX_CACHE_KEY)
                 .map(cache::getIfPresent)
+                .doOnNext(e -> System.out.println("El token se obtuvo de la cache"))
                 .switchIfEmpty(generateToken());
     }
 
@@ -71,7 +74,14 @@ public class AuthTokenRenexFilter implements ExchangeFilterFunction {
             try {
                 IdTokenProvider tokenProvider = getTokenProvider();
                 IdTokenCredentials idTokenCredentials = buildTokenCredentials(tokenProvider);
-                sink.success(idTokenCredentials.refreshAccessToken());
+                AccessToken accessToken = idTokenCredentials.refreshAccessToken();
+                if(Objects.isNull(accessToken)){
+                    logger.info("ojo! el token que se intento generar es null");
+                    sink.error(new RuntimeException("No se pudo obtener un nuevo token de acceso"));
+                }else {
+                    logger.info("el token que se genero es valido y no es null");
+                    sink.success(accessToken);
+                }
             } catch (Exception e) {
                 sink.error(e);
             }
