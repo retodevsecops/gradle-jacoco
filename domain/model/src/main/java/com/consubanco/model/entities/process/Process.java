@@ -6,13 +6,13 @@ import java.util.List;
 
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class Process {
 
     private String id;
-    private String agreementNumber;
     private Offer offer;
 
     @Getter
@@ -22,13 +22,13 @@ public class Process {
     @Builder(toBuilder = true)
     public static class Offer {
         private String id;
+        private String agreementNumber;
+        private String previousApplicationId;
         private List<String> loansId;
-
     }
 
-    public Process(String id, String agreementNumber, String offerId, List<String> loansId) {
-        this.id = id;
-        this.agreementNumber = agreementNumber;
-        this.offer = new Offer(offerId, loansId);
+    public String getAgreementNumber() {
+        return this.getOffer().getAgreementNumber();
     }
+
 }

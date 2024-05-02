@@ -25,10 +25,10 @@ adapter:
     apis:
       renex:
         audience: ${GCP_AUDIENCE:renovacion-dev}
-        api-health-customer: ${API_HEALTH_CUSTOMER:http://localhost:3001/customers-api/puc-customers/actuator/health}
-        api-customer-process: ${API_CUSTOMER_PROCESS:http://localhost:3001/customers-api/puc-customers/customer/process/{processId}}
-        api-health-offer: ${API_HEALTH_OFFER:https://vd-dev.csbservicios.com/offers-api/puc-offers/actuator/health}
-        api-active-offer: ${API_ACTIVE_OFFER:http://localhost:3001/offers-api/puc-offers/offers/active-offering?processId={processId}}
+        api-health-customer: ${API_HEALTH_CUSTOMER:http://localhost:3001/customers-api/actuator/health}
+        api-customer-process: ${API_CUSTOMER_PROCESS:http://localhost:3001/customers-api/customer/all-info/{processId}}
+        api-health-offer: ${API_HEALTH_OFFER:http://localhost:3001/offers-api/offers/actuator/health}
+        api-active-offer: ${API_ACTIVE_OFFER:http://localhost:3001/offers-api/offers/offers/active-offering?processId={processId}}
       promoter:
         auth-token: ${API_PROMOTER_AUTH_TOKEN}
         channel: ${API_GET_AGREEMENT_CHANNEL:RENEX}

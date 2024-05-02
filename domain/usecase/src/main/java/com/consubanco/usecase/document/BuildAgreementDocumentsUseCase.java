@@ -32,7 +32,9 @@ public class BuildAgreementDocumentsUseCase {
         List<String> documentsToGenerate = getListDocumentsToGenerate(documents);
         String directory = FileConstants.documentsDirectory(process.getOffer().getId());
         return buildPayloadUseCase.execute(process.getId())
+                .doOnNext(e -> System.out.println("construyo el payload"))
                 .flatMap(payload -> documentGateway.generateMultiple(documentsToGenerate, payload))
+                .doOnNext(e -> System.out.println("genero multiples documentos"))
                 .flatMapMany(documentUrlsMap -> generateFilesFromUrls(documentUrlsMap, documentsToGenerate, directory))
                 .parallel()
                 .runOn(Schedulers.parallel())

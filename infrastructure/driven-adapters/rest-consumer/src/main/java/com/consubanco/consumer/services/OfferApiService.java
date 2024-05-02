@@ -1,4 +1,4 @@
-package com.consubanco.consumer.adapters.document;
+package com.consubanco.consumer.services;
 
 import com.consubanco.consumer.adapters.document.properties.PayloadApisProperties;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -16,13 +16,13 @@ import static com.consubanco.model.entities.document.message.DocumentTechnicalMe
 import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.OFFER_HEALTH_ERROR;
 
 @Service
-public class OfferApiConsumer {
+public class OfferApiService {
 
     private final WebClient renexClient;
     private final PayloadApisProperties apis;
 
-    public OfferApiConsumer(final @Qualifier("ApiRenexClient") WebClient renexClient,
-                            final PayloadApisProperties apisProperties) {
+    public OfferApiService(final @Qualifier("ApiRenexClient") WebClient renexClient,
+                           final PayloadApisProperties apisProperties) {
         this.renexClient = renexClient;
         this.apis = apisProperties;
     }

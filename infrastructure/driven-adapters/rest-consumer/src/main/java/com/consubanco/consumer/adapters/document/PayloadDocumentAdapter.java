@@ -1,5 +1,6 @@
 package com.consubanco.consumer.adapters.document;
 
+import com.consubanco.consumer.services.OfferApiService;
 import com.consubanco.freemarker.ITemplateOperations;
 import com.consubanco.logger.CustomLogger;
 import com.consubanco.model.entities.document.gateway.PayloadDocumentGateway;
@@ -22,20 +23,20 @@ public class PayloadDocumentAdapter implements PayloadDocumentGateway, Applicati
     private final CustomLogger logger;
     private final PromoterApiConsumer promoterApiConsumer;
     private final CustomerApiConsumer customerApiConsumer;
-    private final OfferApiConsumer offerApiConsumer;
+    private final OfferApiService offerApiService;
     private final ITemplateOperations templateOperations;
 
     public PayloadDocumentAdapter(final @Value("${app.init.promoter-id}") String promoterId,
                                   final CustomLogger logger,
                                   final PromoterApiConsumer promoterApiConsumer,
                                   final CustomerApiConsumer customerApiConsumer,
-                                  final OfferApiConsumer offerApiConsumer,
+                                  final OfferApiService offerApiService,
                                   final ITemplateOperations templateOperations) {
         this.promoterId = promoterId;
         this.logger = logger;
         this.promoterApiConsumer = promoterApiConsumer;
         this.customerApiConsumer = customerApiConsumer;
-        this.offerApiConsumer = offerApiConsumer;
+        this.offerApiService = offerApiService;
         this.templateOperations = templateOperations;
     }
 
@@ -44,7 +45,8 @@ public class PayloadDocumentAdapter implements PayloadDocumentGateway, Applicati
     public Mono<Map<String, Object>> getAllData(String processId) {
         return Mono.zip(promoterApiConsumer.getPromoterById(promoterId),
                         customerApiConsumer.customerDataByProcess(processId),
-                        offerApiConsumer.activeOfferByProcess(processId))
+                        offerApiService.activeOfferByProcess(processId))
+                .doOnNext(e -> System.out.println("ENTRO1212"))
                 .map(this::buildDataMap)
                 .doOnNext(data -> logger.info("Data used to build payload was consulted.", data));
     }
@@ -61,6 +63,7 @@ public class PayloadDocumentAdapter implements PayloadDocumentGateway, Applicati
     @Override
     public Mono<Map<String, Object>> buildPayload(String template, Map<String, Object> data) {
         return templateOperations.process(template, data, Map.class)
+                .doOnNext(e -> System.out.println("construyo el payload"))
                 .map(map -> (Map<String, Object>) map)
                 .doOnNext(payload -> logger.info("Built payload.", payload));
     }

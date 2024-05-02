@@ -6,12 +6,15 @@ import com.consubanco.consumer.adapters.document.dto.GetCNCALetterRequestDTO;
 import com.consubanco.consumer.adapters.document.dto.GetCNCALetterResponseDTO;
 import com.consubanco.consumer.adapters.document.properties.DocumentApisProperties;
 import com.consubanco.model.commons.exception.TechnicalException;
+import com.consubanco.model.entities.agreement.vo.AttachmentConfigVO;
 import com.consubanco.model.entities.document.gateway.DocumentGateway;
+import com.consubanco.model.entities.document.vo.PreviousDocumentVO;
 import com.consubanco.model.entities.file.vo.AttachmentVO;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -62,6 +65,11 @@ public class DocumentAdapter implements DocumentGateway {
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {})
                 .onErrorMap(throwTechnicalError(API_PROMOTER_ERROR));
+    }
+
+    @Override
+    public Flux<PreviousDocumentVO> getDocsFromPreviousApplication(String previousApplicationId, List<AttachmentConfigVO> ra) {
+        return Flux.empty();
     }
 
     @Override

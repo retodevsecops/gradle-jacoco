@@ -17,7 +17,8 @@ public class BuildPayloadUseCase {
 
     public Mono<Map<String, Object>> execute(String processId) {
         return Mono.zip(getPayloadTemplate(), payloadGateway.getAllData(processId))
-                .flatMap(TupleUtils.function(payloadGateway::buildPayload));
+                .flatMap(TupleUtils.function(payloadGateway::buildPayload))
+                .doOnNext(e -> System.out.println("termino el payload"));
     }
 
     private Mono<String> getPayloadTemplate() {

@@ -1,7 +1,9 @@
 package com.consubanco.usecase.file;
 
 import com.consubanco.model.entities.agreement.Agreement;
+import com.consubanco.model.entities.agreement.gateway.AgreementConfigRepository;
 import com.consubanco.model.entities.agreement.gateway.AgreementGateway;
+import com.consubanco.model.entities.agreement.vo.AgreementConfigVO;
 import com.consubanco.model.entities.document.gateway.PDFDocumentGateway;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.constant.FileExtensions;
@@ -29,6 +31,7 @@ import static com.consubanco.model.entities.file.util.AttachmentValidatorUtil.ch
 public class UploadAgreementFilesUseCase {
 
     private final AgreementGateway agreementGateway;
+    private final AgreementConfigRepository agreementConfigRepository;
     private final FileRepository fileRepository;
     private final PDFDocumentGateway pdfDocumentGateway;
     private final GetProcessByIdUseCase getProcessByIdUseCase;
@@ -42,9 +45,11 @@ public class UploadAgreementFilesUseCase {
     }
 
     private Mono<Map<String, String>> startProcess(List<FileUploadVO> attachments, Process process) {
-        return agreementGateway.findByNumber(process.getAgreementNumber())
-                .flatMap(agreement -> checkAttachments(agreement.getAttachments(), attachments)
-                        .flatMap(validAttachments -> uploadAllDocuments(process, validAttachments, agreement)));
+        Mono<Agreement> agreement = agreementGateway.findByNumber(process.getAgreementNumber());
+        Mono<AgreementConfigVO> agreementConfig = agreementConfigRepository.getConfigByAgreement(process.getAgreementNumber());
+        return Mono.zip(agreement, agreementConfig)
+                .flatMap(tuple -> checkAttachments(tuple.getT2().getAttachmentsDocuments(), attachments)
+                        .flatMap(validAttachments -> uploadAllDocuments(process, validAttachments, tuple.getT1())));
     }
 
     private Mono<Map<String, String>> uploadAllDocuments(Process process, List<FileUploadVO> attachments, Agreement agreement) {

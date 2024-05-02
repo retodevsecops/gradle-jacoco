@@ -19,7 +19,7 @@ public class AgreementConfigVO {
     private String agreementNumber;
     private List<CompoundDocument> compoundDocuments;
     private List<String> customerVisibleDocuments;
-    private List<Attachment> attachmentsDocuments;
+    private List<AttachmentConfigVO> attachmentsDocuments;
 
     @Data
     public static class CompoundDocument {
@@ -31,17 +31,6 @@ public class AgreementConfigVO {
     public static class DocumentData {
         private String name;
         private Integer page;
-    }
-
-    @Data
-    public static class Attachment {
-        private String name;
-        private String technicalName;
-        private Integer maxFiles;
-        private Boolean isOcr;
-        private Boolean isRecoverable;
-        private Boolean isRequired;
-        private List<String> typeFile;
     }
 
     public boolean checkCompoundDocuments() {

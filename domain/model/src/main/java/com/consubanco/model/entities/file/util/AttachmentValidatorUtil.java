@@ -1,7 +1,7 @@
 package com.consubanco.model.entities.file.util;
 
 import com.consubanco.model.commons.exception.factory.ExceptionFactory;
-import com.consubanco.model.entities.agreement.Agreement;
+import com.consubanco.model.entities.agreement.vo.AttachmentConfigVO;
 import com.consubanco.model.entities.file.vo.FileUploadVO;
 import lombok.experimental.UtilityClass;
 import reactor.core.publisher.Flux;
@@ -27,24 +27,21 @@ public class AttachmentValidatorUtil {
                 .then();
     }
 
-    public Mono<List<FileUploadVO>> checkAttachments(List<Agreement.Document> attachmentsRequired, List<FileUploadVO> attachmentsProvided) {
-        List<String> requiredAttachmentNames = requiredAttachmentNames(attachmentsRequired);
-        List<FileUploadVO> filteredAttachments = filteredAttachments(requiredAttachmentNames, attachmentsProvided);
+    public Mono<List<FileUploadVO>> checkAttachments(List<AttachmentConfigVO> attachmentsByAgreement, List<FileUploadVO> attachmentsProvided) {
+        List<String> attachmentNames = attachmentNames(attachmentsByAgreement);
+        List<FileUploadVO> filteredAttachments = filteredAttachments(attachmentNames, attachmentsProvided);
         List<String> providedAttachmentNames = providedAttachmentNames(filteredAttachments);
-        return checkRequiredAttachments(attachmentsRequired, providedAttachmentNames)
-                .then(checkValidTypes(filteredAttachments, attachmentsRequired))
+        return checkRequiredAttachments(attachmentsByAgreement, providedAttachmentNames)
+                .then(checkValidTypes(filteredAttachments, attachmentsByAgreement))
                 .thenReturn(filteredAttachments);
     }
 
-    private List<String> requiredAttachmentNames(List<Agreement.Document> attachmentsRequired) {
-        return attachmentsRequired.stream()
-                .map(Agreement.Document::getTechnicalName)
+    private List<String> attachmentNames(List<AttachmentConfigVO> attachmentsByAgreement) {
+        return attachmentsByAgreement.stream()
+                .map(AttachmentConfigVO::getTechnicalName)
                 .collect(Collectors.toList());
     }
 
-    // TODO: ojo! estoy trabajando solo con los adjuntos requeridos y se deben trabajar tambien con los adjuntos opcionales.
-    // TODO: debo validar adjuntos requeridos y luego obtener todos los adjuntos del convenio y trabajar es con esos si en load
-    // TODO: si en los adjuntos proveidos vienen unos que no son del convenio, se descarta.
     private List<FileUploadVO> filteredAttachments(List<String> requiredAttachmentNames,
                                                    List<FileUploadVO> attachmentsProvided) {
         return attachmentsProvided.stream()
@@ -58,11 +55,11 @@ public class AttachmentValidatorUtil {
                 .collect(Collectors.toList());
     }
 
-    private Mono<Void> checkRequiredAttachments(List<Agreement.Document> attachmentsRequired,
+    private Mono<Void> checkRequiredAttachments(List<AttachmentConfigVO> attachmentsByAgreement,
                                                 List<String> providedAttachmentNames) {
-        return Flux.fromIterable(attachmentsRequired)
-                .filter(Agreement.Document::getIsRequired)
-                .map(Agreement.Document::getTechnicalName)
+        return Flux.fromIterable(attachmentsByAgreement)
+                .filter(AttachmentConfigVO::shouldBeValidated)
+                .map(AttachmentConfigVO::getTechnicalName)
                 .filter(attachmentRequired -> !providedAttachmentNames.contains(attachmentRequired))
                 .collectList()
                 .filter(list -> !list.isEmpty())
@@ -73,10 +70,10 @@ public class AttachmentValidatorUtil {
     }
 
     private Mono<Void> checkValidTypes(List<FileUploadVO> attachmentsProvided,
-                                       List<Agreement.Document> attachmentsRequired) {
+                                       List<AttachmentConfigVO> attachmentsByAgreement) {
         return Flux.fromIterable(attachmentsProvided)
                 .filter(fileUploadVO -> {
-                    List<String> validTypes = getValidTypesByFile(attachmentsRequired, fileUploadVO);
+                    List<String> validTypes = getValidTypesByFile(attachmentsByAgreement, fileUploadVO);
                     return !validTypes.contains(fileUploadVO.getExtension().toLowerCase());
                 })
                 .map(FileUploadVO::getName)
@@ -89,10 +86,10 @@ public class AttachmentValidatorUtil {
 
     }
 
-    private List<String> getValidTypesByFile(List<Agreement.Document> attachmentsRequired, FileUploadVO fileUpload) {
-        return attachmentsRequired.stream()
-                .filter(document -> document.getTechnicalName().equalsIgnoreCase(fileUpload.getName()))
-                .flatMap(document -> document.getTypeFile().stream())
+    private List<String> getValidTypesByFile(List<AttachmentConfigVO> attachmentsByAgreement, FileUploadVO fileUpload) {
+        return attachmentsByAgreement.stream()
+                .filter(attachment -> attachment.getTechnicalName().equalsIgnoreCase(fileUpload.getName()))
+                .flatMap(attachment -> attachment.getTypeFile().stream())
                 .map(String::toLowerCase)
                 .toList();
     }

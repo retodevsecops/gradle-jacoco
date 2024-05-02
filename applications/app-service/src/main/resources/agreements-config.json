@@ -8,7 +8,8 @@
         "technicalName": "identificacion-oficial",
         "maxFiles": 1,
         "isOcr": true,
-        "isRecoverable": true,
+        "isRecoverable": false,
+        "name-previous-document": "IDENTIFICACIONOFICIAL",
         "isRequired": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF"]
       },
@@ -18,6 +19,7 @@
         "maxFiles": 2,
         "isOcr": true,
         "isRecoverable": true,
+        "name-previous-document": "RECIBO-NOMINA",
         "isRequired": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF"]
       },
@@ -27,6 +29,7 @@
         "maxFiles": 1,
         "isOcr": true,
         "isRecoverable": true,
+        "name-previous-document": "IDENTIFICACIONOFICIAL",
         "isRequired": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF"]
       }

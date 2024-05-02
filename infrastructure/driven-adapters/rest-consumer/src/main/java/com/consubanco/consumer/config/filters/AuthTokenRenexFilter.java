@@ -51,7 +51,7 @@ public class AuthTokenRenexFilter implements ExchangeFilterFunction {
     private Mono<String> getAuthToken() {
         return Mono.just(Constants.TOKEN_RENEX_CACHE_KEY)
                 .map(cache::getIfPresent)
-                .doOnNext(e -> System.out.println("El token se obtuvo de la cache"))
+                .doOnNext(e -> logger.info("El token se obtuvo de la cache"))
                 .switchIfEmpty(generateToken());
     }
 
