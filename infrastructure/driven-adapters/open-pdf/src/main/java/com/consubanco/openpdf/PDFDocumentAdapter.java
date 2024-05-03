@@ -1,11 +1,13 @@
 package com.consubanco.openpdf;
 
+import com.consubanco.logger.CustomLogger;
 import com.consubanco.model.entities.document.gateway.PDFDocumentGateway;
 import com.lowagie.text.Document;
 import com.lowagie.text.Image;
 import com.lowagie.text.pdf.PdfCopy;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfWriter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -16,7 +18,10 @@ import java.util.Base64;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class PDFDocumentAdapter implements PDFDocumentGateway {
+
+    private final CustomLogger logger;
 
     @Override
     public Mono<String> generatePdfWithImages(List<String> imagesInBase64) {
@@ -32,7 +37,7 @@ public class PDFDocumentAdapter implements PDFDocumentGateway {
                 throw new RuntimeException("Error generate PDF with images.", e);
             }
             return Base64.getEncoder().encodeToString(outputStream.toByteArray());
-        });
+        }).doOnError(logger::error);
     }
 
     @Override
@@ -53,7 +58,7 @@ public class PDFDocumentAdapter implements PDFDocumentGateway {
             } catch (IOException e) {
                 throw new RuntimeException("Error processing PDF", e);
             }
-        });
+        }).doOnError(logger::error);
     }
 
     @Override
@@ -77,7 +82,7 @@ public class PDFDocumentAdapter implements PDFDocumentGateway {
                 throw new RuntimeException("Error merging PDFs", e);
             }
             return Base64.getEncoder().encodeToString(mergedPdfStream.toByteArray());
-        });
+        }).doOnError(logger::error);
     }
 
     /**
@@ -114,7 +119,8 @@ public class PDFDocumentAdapter implements PDFDocumentGateway {
             image.setAbsolutePosition(positionX, positionY);
             document.add(image);
         } catch (IOException exception) {
-
+            throw new RuntimeException("Error adding image to pdf.", exception);
         }
     }
+
 }

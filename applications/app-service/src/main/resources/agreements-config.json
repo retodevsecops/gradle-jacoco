@@ -8,7 +8,7 @@
         "technicalName": "identificacion-oficial",
         "maxFiles": 1,
         "isOcr": true,
-        "isRecoverable": false,
+        "isRecoverable": true,
         "name-previous-document": "IDENTIFICACIONOFICIAL",
         "isRequired": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF"]

@@ -1,5 +1,6 @@
 dependencies {
     implementation project(':model')
+    implementation project(":custom-logger")
     implementation 'com.github.librepdf:openpdf:2.0.2'
     implementation 'org.springframework:spring-context'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'

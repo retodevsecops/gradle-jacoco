@@ -87,10 +87,9 @@ public class UploadAgreementFilesUseCase {
     private Mono<String> convertAttachmentToPDF(FileUploadVO fileUploadVO) {
         return Mono.just(fileUploadVO.getExtension())
                 .filter(extension -> !FileExtensions.PDF.equalsIgnoreCase(extension))
-                .defaultIfEmpty(fileUploadVO.getContent())
-                .map(extension -> fileUploadVO.getContent())
                 .map(List::of)
-                .flatMap(pdfDocumentGateway::generatePdfWithImages);
+                .flatMap(pdfDocumentGateway::generatePdfWithImages)
+                .defaultIfEmpty(fileUploadVO.getContent());
     }
 
     private Mono<File> generateOfficialIdPdf(List<FileUploadVO> attachments, String offerId) {
@@ -98,6 +97,7 @@ public class UploadAgreementFilesUseCase {
                 .filter(attachment -> PARTS_OFFICIAL_ID.contains(attachment.getName()))
                 .map(FileUploadVO::getContent)
                 .collectList()
+                .filter(list -> !list.isEmpty())
                 .flatMap(pdfDocumentGateway::generatePdfWithImages)
                 .map(officialID -> File.builder()
                         .name(OFFICIAL_ID)

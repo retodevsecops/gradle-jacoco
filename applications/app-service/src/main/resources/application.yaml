@@ -28,7 +28,7 @@ adapter:
         api-health-customer: ${API_HEALTH_CUSTOMER:http://localhost:3001/customers-api/actuator/health}
         api-customer-process: ${API_CUSTOMER_PROCESS:http://localhost:3001/customers-api/customer/all-info/{processId}}
         api-health-offer: ${API_HEALTH_OFFER:http://localhost:3001/offers-api/offers/actuator/health}
-        api-active-offer: ${API_ACTIVE_OFFER:http://localhost:3001/offers-api/offers/offers/active-offering?processId={processId}}
+        api-active-offer: ${API_ACTIVE_OFFER:http://localhost:3001/offers-api/offers/active-offering?processId={processId}}
       promoter:
         auth-token: ${API_PROMOTER_AUTH_TOKEN}
         channel: ${API_GET_AGREEMENT_CHANNEL:RENEX}
@@ -38,7 +38,7 @@ adapter:
         client-id: ${API_CONNECT_CLIENT_ID}
         application-id: ${API_CONNECT_APPLICATION_ID:CSB-CTE-APP}
         api-get-cnca: ${API_GET_CNCA:https://apic.consubanco.com/csb/qa/opc-service/getCNCALetter}
-        api-search-interlocutor: ${API_SEARCH_INTERLOCUTOR:https://apic.consubanco.com/csb/qa/common-crm-service/searchInterlocutor}
+        api-search-interlocutor: ${API_SEARCH_INTERLOCUTOR:http://localhost:3001/csb/qa/common-crm-service/searchInterlocutor}
   gcs-storage:
     max-file-size-mb: ${GCS_MAX_FILE_SIZE_IN_MB:0.5}
     bucket-name: ${GCS_BUCKET_NAME:csb-venta-digital}

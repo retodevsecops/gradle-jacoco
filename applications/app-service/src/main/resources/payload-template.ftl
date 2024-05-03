@@ -6,15 +6,6 @@
     current_date_timestamp = .now?long
 >
 {
-        "exceptionProtocol": {
-            "dateProtocol": 1707862220748,
-            "declined": false,
-            "exceptionProtocolWasSelected": true,
-            "extremity": true,
-            "officialFolio": "2024021312000",
-            "officialName": "SOLO SE AGREGO PARA PRUEBAS"
-        },
-
     "id": "100800009705",
     "created_at": "${current_date_timestamp?c}",
     "contactInformation": {
@@ -24,8 +15,8 @@
         "phoneWork": "3333333333"
     },
     "dataSeller": {
-        "apellidoMaterno": "${promoter_data.lastname2}",
         "apellidoPaterno": "${promoter_data.lastname1}",
+        "apellidoMaterno": "${promoter_data.lastname2}",
         "bpId": "${promoter_data.bpId}",
         "nombre1": "${promoter_data.name1}",
         "nombre2": "${promoter_data.name2}",
@@ -44,7 +35,7 @@
             "agreemen": {
                 "branch": {
                     "empresa": {
-                        "businessName": "La Tenda México S.A. de C.V."
+                        "businessName": "La Tenda Mexico S.A. de C.V."
                     },
                     "distribuidor": {
                         "distributorName": "SOLO LO AGREGUE PARA PRUEBAS"
@@ -52,7 +43,7 @@
                 },
                 "convenioId": "${offer_data.offer.agreement.key}"
             },
-            "amount": ${offer_data.offer.amount},
+            "amount": "${offer_data.offer.amount?string}",
             "annualTI": 51.74999999999999,
             "currentDiscount": 1186.78,
             "discountAmount": 1186.78,

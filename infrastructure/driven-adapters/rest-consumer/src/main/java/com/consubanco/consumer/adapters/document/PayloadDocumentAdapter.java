@@ -46,7 +46,6 @@ public class PayloadDocumentAdapter implements PayloadDocumentGateway, Applicati
         return Mono.zip(promoterApiConsumer.getPromoterById(promoterId),
                         customerApiConsumer.customerDataByProcess(processId),
                         offerApiService.activeOfferByProcess(processId))
-                .doOnNext(e -> System.out.println("ENTRO1212"))
                 .map(this::buildDataMap)
                 .doOnNext(data -> logger.info("Data used to build payload was consulted.", data));
     }
@@ -63,7 +62,6 @@ public class PayloadDocumentAdapter implements PayloadDocumentGateway, Applicati
     @Override
     public Mono<Map<String, Object>> buildPayload(String template, Map<String, Object> data) {
         return templateOperations.process(template, data, Map.class)
-                .doOnNext(e -> System.out.println("construyo el payload"))
                 .map(map -> (Map<String, Object>) map)
                 .doOnNext(payload -> logger.info("Built payload.", payload));
     }
