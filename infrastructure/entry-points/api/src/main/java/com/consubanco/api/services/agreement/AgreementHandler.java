@@ -32,7 +32,6 @@ public class AgreementHandler {
         return Mono.just(AgreementPathParams.PROCESS_ID)
                 .map(serverRequest::pathVariable)
                 .flatMapMany(getAttachmentsByAgreementUseCase::execute)
-                .doOnNext(e -> System.out.println(e.toString()))
                 .map(attachment -> mapper.map(attachment, AttachmentResDTO.class))
                 .collectList()
                 .flatMap(HttpResponseUtil::Ok);

@@ -55,12 +55,10 @@ public class UploadAgreementFilesUseCase {
     private Mono<Map<String, String>> uploadAllDocuments(Process process, List<FileUploadVO> attachments, Agreement agreement) {
         Flux<File> uploadAttachments = uploadAttachments(attachments, process.getOffer().getId());
         Flux<File> uploadGeneratedDocuments = buildAgreementDocumentsUseCase.execute(process, agreement.getDocuments());
-        Flux.merge(uploadAttachments, uploadGeneratedDocuments)
+        return Flux.merge(uploadAttachments, uploadGeneratedDocuments)
                 .collectList()
                 .flatMap(files -> buildCompoundDocumentsUseCase.execute(process, files))
-                .subscribeOn(Schedulers.boundedElastic())
-                .subscribe();
-        return Mono.just(Map.of("message", "The validations were successful, the file uploading process starts..."));
+                .thenReturn(Map.of("message", "The validations were successful, the file uploading process starts..."));
     }
 
     private Flux<File> uploadAttachments(List<FileUploadVO> attachments, String offerId) {
@@ -85,8 +83,9 @@ public class UploadAgreementFilesUseCase {
     }
 
     private Mono<String> convertAttachmentToPDF(FileUploadVO fileUploadVO) {
-        return Mono.just(fileUploadVO.getExtension())
-                .filter(extension -> !FileExtensions.PDF.equalsIgnoreCase(extension))
+        return Mono.just(fileUploadVO)
+                .filter(FileUploadVO::isNotPDF)
+                .map(FileUploadVO::getContent)
                 .map(List::of)
                 .flatMap(pdfDocumentGateway::generatePdfWithImages)
                 .defaultIfEmpty(fileUploadVO.getContent());

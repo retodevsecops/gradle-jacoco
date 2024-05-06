@@ -23,6 +23,7 @@ public class DocumentApisProperties {
         private String applicationId;
         private String apiGetCnca;
         private String searchInterlocutor;
+        private String apiDocsPrevious;
     }
 
     public String getApplicationId() {

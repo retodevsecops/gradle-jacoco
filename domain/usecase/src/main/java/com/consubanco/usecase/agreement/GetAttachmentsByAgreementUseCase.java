@@ -1,35 +1,80 @@
 package com.consubanco.usecase.agreement;
 
 import com.consubanco.model.entities.agreement.gateway.AgreementConfigRepository;
-import com.consubanco.model.entities.agreement.vo.AgreementConfigVO;
 import com.consubanco.model.entities.agreement.vo.AttachmentConfigVO;
+import com.consubanco.model.entities.document.gateway.DocumentGateway;
+import com.consubanco.model.entities.document.vo.PreviousDocumentVO;
+import com.consubanco.model.entities.file.File;
+import com.consubanco.model.entities.file.gateway.FileRepository;
 import com.consubanco.model.entities.process.Process;
 import com.consubanco.usecase.process.GetProcessByIdUseCase;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
+import java.util.Optional;
+
+import static com.consubanco.model.entities.file.constant.FileConstants.attachmentsDirectory;
 
 @RequiredArgsConstructor
 public class GetAttachmentsByAgreementUseCase {
 
     private final GetProcessByIdUseCase getProcessByIdUseCase;
     private final AgreementConfigRepository agreementConfigRepository;
+    private final DocumentGateway documentGateway;
+    private final FileRepository fileRepository;
 
     public Flux<AttachmentConfigVO> execute(String processId) {
-        // TODO: se debe trabajar en el llamado al api para saber que documentos se pueden obtener
-        //  de la solicitud anterior y luego obtener cada documento
         return getProcessByIdUseCase.execute(processId)
-                .doOnNext(e -> System.out.println(e.toString()))
-                .map(Process::getAgreementNumber)
-                .flatMap(agreementConfigRepository::getConfigByAgreement)
-                .map(AgreementConfigVO::getAttachmentsDocuments)
-                .flatMapMany(Flux::fromIterable);
+                .flatMapMany(process -> agreementConfigRepository.getConfigByAgreement(process.getAgreementNumber())
+                        .flatMapMany(agreementConfigVO -> filterAttachments(process, agreementConfigVO.getAttachmentsDocuments())));
     }
 
-    private Flux<AttachmentConfigVO> prev(List<AttachmentConfigVO> attachments){
-        return Flux.fromIterable(attachments)
-                .filter(AttachmentConfigVO::getIsRecoverable);
+    private Flux<AttachmentConfigVO> filterAttachments(Process process, List<AttachmentConfigVO> attachments) {
+        List<AttachmentConfigVO> attachmentsToRetrieved = attachmentsToRetrieved(attachments);
+        return retrievePreviousDocuments(process, attachmentsToRetrieved)
+                .collectList()
+                .flatMapMany(list -> Flux.fromIterable(attachments)
+                        .filter(attachConfig -> isNotRecoveredFile(list, attachConfig.getTechnicalName())));
+    }
+
+    private List<AttachmentConfigVO> attachmentsToRetrieved(List<AttachmentConfigVO> attachments) {
+        return attachments.stream()
+                .filter(AttachmentConfigVO::getIsRecoverable)
+                .toList();
+    }
+
+    private Flux<File> retrievePreviousDocuments(Process process, List<AttachmentConfigVO> attachmentsToRetrieved) {
+        return documentGateway.getDocsFromPreviousApplication(process.getOffer().getPreviousApplicationId(), attachmentsToRetrieved)
+                .parallel()
+                .runOn(Schedulers.parallel())
+                .map(prevDocument -> {
+                    Optional<AttachmentConfigVO> attachConfig = getAttachment(attachmentsToRetrieved, prevDocument.getName());
+                    return buildFile(process, prevDocument, attachConfig.get());
+                })
+                .flatMap(fileRepository::save)
+                .sequential();
+    }
+
+    private boolean isNotRecoveredFile(List<File> recoveredFiles, String nameFile) {
+        return recoveredFiles.stream()
+                .noneMatch(file -> file.getName().equalsIgnoreCase(nameFile));
+    }
+
+    private Optional<AttachmentConfigVO> getAttachment(List<AttachmentConfigVO> attachments, String previousDocument) {
+        return attachments.stream()
+                .filter(attachment -> attachment.getNamePreviousDocument().equalsIgnoreCase(previousDocument))
+                .findFirst();
+    }
+
+    private static File buildFile(Process process, PreviousDocumentVO prevDocument, AttachmentConfigVO attachConfig) {
+        return File.builder()
+                .name(attachConfig.getTechnicalName())
+                .content(prevDocument.getContent())
+                .extension(prevDocument.getExtension())
+                .directoryPath(attachmentsDirectory(process.getOffer().getId()))
+                .build();
     }
 
 }

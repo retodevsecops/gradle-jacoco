@@ -1,17 +1,16 @@
 package com.consubanco.consumer.adapters.document;
 
-import com.consubanco.consumer.adapters.document.dto.GenerateDocumentRequestDTO;
-import com.consubanco.consumer.adapters.document.dto.GenerateDocumentResponseDTO;
-import com.consubanco.consumer.adapters.document.dto.GetCNCALetterRequestDTO;
-import com.consubanco.consumer.adapters.document.dto.GetCNCALetterResponseDTO;
+import com.consubanco.consumer.adapters.document.dto.*;
 import com.consubanco.consumer.adapters.document.properties.DocumentApisProperties;
 import com.consubanco.model.commons.exception.TechnicalException;
 import com.consubanco.model.entities.agreement.vo.AttachmentConfigVO;
 import com.consubanco.model.entities.document.gateway.DocumentGateway;
 import com.consubanco.model.entities.document.vo.PreviousDocumentVO;
 import com.consubanco.model.entities.file.vo.AttachmentVO;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
@@ -20,9 +19,13 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.Map;
 
+import static com.consubanco.consumer.adapters.document.dto.GetDocsPreviousApplicationResDTO.getResponseCode;
+import static com.consubanco.consumer.adapters.document.dto.GetDocsPreviousApplicationResDTO.getResponseMessage;
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.monoTechnicalError;
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
-import static com.consubanco.model.entities.file.message.FileTechnicalMessage.*;
+import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.API_DOCS_PREVIOUS_ERROR;
+import static com.consubanco.model.entities.file.message.FileTechnicalMessage.API_ERROR;
+import static com.consubanco.model.entities.file.message.FileTechnicalMessage.API_PROMOTER_ERROR;
 
 @Service
 public class DocumentAdapter implements DocumentGateway {
@@ -30,13 +33,16 @@ public class DocumentAdapter implements DocumentGateway {
     private final WebClient apiConnectClient;
     private final WebClient apiPromoterClient;
     private final DocumentApisProperties apis;
+    private final ObjectMapper objectMapper;
 
     public DocumentAdapter(final @Qualifier("ApiConnectClient") WebClient apiConnectClient,
                            final @Qualifier("ApiPromoterClient") WebClient apiPromoterClient,
-                           final DocumentApisProperties apisProperties) {
+                           final DocumentApisProperties apisProperties,
+                           final ObjectMapper objectMapper) {
         this.apiConnectClient = apiConnectClient;
         this.apiPromoterClient = apiPromoterClient;
         this.apis = apisProperties;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -47,8 +53,7 @@ public class DocumentAdapter implements DocumentGateway {
                 .bodyValue(requestDTO)
                 .retrieve()
                 .bodyToMono(GetCNCALetterResponseDTO.class)
-                .map(GetCNCALetterResponseDTO::getData)
-                .flatMap(this::getFileAsBase64)
+                .flatMap(GetCNCALetterResponseDTO::getFileAsBase64)
                 .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(API_ERROR));
     }
 
@@ -68,8 +73,23 @@ public class DocumentAdapter implements DocumentGateway {
     }
 
     @Override
-    public Flux<PreviousDocumentVO> getDocsFromPreviousApplication(String previousApplicationId, List<AttachmentConfigVO> ra) {
-        return Flux.empty();
+    public Flux<PreviousDocumentVO> getDocsFromPreviousApplication(String previousApplicationId, List<AttachmentConfigVO> docs) {
+        return this.apiConnectClient.post()
+                .uri(apis.getApiConnect().getApiDocsPrevious())
+                .bodyValue(new GetDocsPreviousApplicationReqDTO(apis.getApplicationId(), previousApplicationId, docs))
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                .flatMapMany(response -> {
+                    Integer responseCode = getResponseCode(response);
+                    if (responseCode.equals(HttpStatus.OK.value())) {
+                        return objectMapper.convertValue(response, GetDocsPreviousApplicationResDTO.class).toDomainEntity();
+                    }
+                    String responseMessage = getResponseMessage(response);
+                    String detail = "Api response with code %s: %s";
+                    String cause = String.format(detail, responseCode, responseMessage);
+                    return monoTechnicalError(cause, API_DOCS_PREVIOUS_ERROR);
+                })
+                .onErrorMap(throwTechnicalError(API_DOCS_PREVIOUS_ERROR));
     }
 
     @Override
@@ -81,13 +101,6 @@ public class DocumentAdapter implements DocumentGateway {
                 .bodyToMono(GenerateDocumentResponseDTO.class)
                 .map(GenerateDocumentResponseDTO::getPublicUrl)
                 .onErrorMap(throwTechnicalError(API_PROMOTER_ERROR));
-    }
-
-    private Mono<String> getFileAsBase64(GetCNCALetterResponseDTO.Data data) {
-        return Mono.justOrEmpty(data.getFiles())
-                .filter(files -> !files.isEmpty())
-                .map(files -> files.get(0).getBase64())
-                .switchIfEmpty(monoTechnicalError(data.getResponse(), CNCA_LETTER_ERROR));
     }
 
 }

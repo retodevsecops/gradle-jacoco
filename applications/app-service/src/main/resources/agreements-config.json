@@ -9,7 +9,7 @@
         "maxFiles": 1,
         "isOcr": true,
         "isRecoverable": true,
-        "name-previous-document": "IDENTIFICACIONOFICIAL",
+        "namePreviousDocument": "IDENTIFICACIONOFICIAL",
         "isRequired": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF"]
       },
@@ -19,7 +19,7 @@
         "maxFiles": 2,
         "isOcr": true,
         "isRecoverable": true,
-        "name-previous-document": "RECIBO-NOMINA",
+        "namePreviousDocument": "RECIBO-NOMINA",
         "isRequired": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF"]
       },
@@ -29,7 +29,7 @@
         "maxFiles": 1,
         "isOcr": true,
         "isRecoverable": true,
-        "name-previous-document": "IDENTIFICACIONOFICIAL",
+        "namePreviousDocument": "COMPROBANTE-DOMICILIO",
         "isRequired": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF"]
       }
