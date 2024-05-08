@@ -1,4 +1,4 @@
-package com.consubanco.api.services.loans;
+package com.consubanco.api.services.loan;
 
 import com.consubanco.api.commons.util.HttpResponseUtil;
 import lombok.RequiredArgsConstructor;

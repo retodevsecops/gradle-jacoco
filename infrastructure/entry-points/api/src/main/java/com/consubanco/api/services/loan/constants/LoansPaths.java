@@ -1,4 +1,4 @@
-package com.consubanco.api.services.loans.constants;
+package com.consubanco.api.services.loan.constants;
 
 import lombok.experimental.UtilityClass;
 

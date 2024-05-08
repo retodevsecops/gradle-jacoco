@@ -5,7 +5,7 @@ import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.constant.FileConstants;
 import com.consubanco.model.entities.file.constant.FileExtensions;
 import com.consubanco.model.entities.file.gateway.FileRepository;
-import com.consubanco.model.entities.file.message.FileMessage;
+import com.consubanco.model.entities.file.util.AttachmentValidatorUtil;
 import com.consubanco.model.entities.file.vo.FileUploadVO;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
@@ -48,14 +48,7 @@ public class FileUseCase {
     }
 
     private Mono<FileUploadVO> checkFileSize(FileUploadVO fileUploadVO) {
-        Double maxSize = fileRepository.getMaxSizeOfFileInMBAllowed();
-        return Mono.just(fileUploadVO.getSizeInMB())
-                .filter(sizeInMB -> sizeInMB > maxSize)
-                .map(list -> {
-                    String detail = FileMessage.maxSize(maxSize);
-                    throw ExceptionFactory.buildBusiness(detail, ATTACHMENT_INVALID_SIZE);
-                })
-                .thenReturn(fileUploadVO);
+        return AttachmentValidatorUtil.checkFileSize(fileUploadVO, fileRepository.getMaxSizeOfFileInMBAllowed());
     }
 
 

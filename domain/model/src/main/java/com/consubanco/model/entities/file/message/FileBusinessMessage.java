@@ -16,7 +16,9 @@ public enum FileBusinessMessage implements IExceptionMessage {
     FILE_NOT_JSON("BE_FILE_0006", "The file must be a valid json file."),
     FILE_NOT_FTL("BE_FILE_0007", "The file must be a valid ftl file."),
     ATTACHMENT_INVALID_SIZE("BE_FILE_0008", "Files exceed the maximum allowed size."),
-    ATTACHMENT_INVALID_TYPE("BE_FILE_0009", "Attachments come with not allowed file types.");
+    ATTACHMENT_INVALID_TYPE("BE_FILE_0009", "Attachments come with not allowed file types."),
+    DATA_MISSING_TO_UPLOAD("BE_FILE_0010", "Missing data to upload the file."),
+    MIN_INVALID_SIZE("BE_FILE_0011", "Minimum file size is invalid.");
 
     private final String code;
     private final String message;

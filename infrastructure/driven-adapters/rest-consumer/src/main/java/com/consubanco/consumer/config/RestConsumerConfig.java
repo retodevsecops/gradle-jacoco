@@ -21,6 +21,8 @@ import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
+import java.time.Duration;
+
 import static com.consubanco.consumer.commons.Constants.AUTH_BEARER_VALUE;
 import static com.consubanco.consumer.commons.Constants.CLIENT_ID_HEADER;
 import static io.netty.channel.ChannelOption.CONNECT_TIMEOUT_MILLIS;
@@ -92,6 +94,7 @@ public class RestConsumerConfig {
                 .compress(true)
                 .keepAlive(true)
                 .option(CONNECT_TIMEOUT_MILLIS, timeout)
+                .responseTimeout(Duration.ofMillis(timeout))
                 .secure(sslContextSpec -> sslContextSpec.sslContext(getBuildSslContext()))
                 .doOnConnected(connection -> {
                     connection.addHandlerLast(new ReadTimeoutHandler(timeout, MILLISECONDS));

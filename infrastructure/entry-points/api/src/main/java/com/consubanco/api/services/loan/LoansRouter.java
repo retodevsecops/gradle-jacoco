@@ -1,4 +1,4 @@
-package com.consubanco.api.services.loans;
+package com.consubanco.api.services.loan;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -7,8 +7,8 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
-import static com.consubanco.api.services.loans.LoansOpenAPI.createApplication;
-import static com.consubanco.api.services.loans.constants.LoansPaths.CREATE_APPLICATION_PATH;
+import static com.consubanco.api.services.loan.LoansOpenAPI.createApplication;
+import static com.consubanco.api.services.loan.constants.LoansPaths.CREATE_APPLICATION_PATH;
 import static org.springdoc.webflux.core.fn.SpringdocRouteBuilder.route;
 import static org.springframework.web.reactive.function.server.RequestPredicates.path;
 

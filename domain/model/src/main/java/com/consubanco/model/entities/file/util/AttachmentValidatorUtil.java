@@ -10,7 +10,10 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.consubanco.model.commons.exception.factory.ExceptionFactory.buildBusiness;
+import static com.consubanco.model.commons.exception.factory.ExceptionFactory.monoBusiness;
 import static com.consubanco.model.entities.file.message.FileBusinessMessage.*;
+import static com.consubanco.model.entities.file.message.FileMessage.maxSize;
 
 @UtilityClass
 public class AttachmentValidatorUtil {
@@ -34,6 +37,12 @@ public class AttachmentValidatorUtil {
         return checkRequiredAttachments(attachmentsByAgreement, providedAttachmentNames)
                 .then(checkValidTypes(filteredAttachments, attachmentsByAgreement))
                 .thenReturn(filteredAttachments);
+    }
+
+    public Mono<FileUploadVO> checkFileSize(FileUploadVO vo, Double  maxSizeAllowed) {
+        if (vo.getSizeInMB() <= 0) return buildBusiness(MIN_INVALID_SIZE);
+        if (vo.getSizeInMB() > maxSizeAllowed ) return monoBusiness(ATTACHMENT_INVALID_SIZE, maxSize(maxSizeAllowed));
+        return Mono.just(vo);
     }
 
     private List<String> attachmentNames(List<AttachmentConfigVO> attachmentsByAgreement) {

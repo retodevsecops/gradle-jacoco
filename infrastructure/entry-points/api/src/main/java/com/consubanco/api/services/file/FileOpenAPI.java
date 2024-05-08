@@ -3,10 +3,7 @@ package com.consubanco.api.services.file;
 import com.consubanco.api.commons.swagger.ParamsOpenAPI;
 import com.consubanco.api.commons.swagger.RequestsOpenAPI;
 import com.consubanco.api.services.file.constants.FilePathParams;
-import com.consubanco.api.services.file.dto.FileResDTO;
-import com.consubanco.api.services.file.dto.GenerateDocumentReqDTO;
-import com.consubanco.api.services.file.dto.GenerateDocumentResDTO;
-import com.consubanco.api.services.file.dto.GetAndUploadDocumentReqDTO;
+import com.consubanco.api.services.file.dto.*;
 import org.springdoc.core.fn.builders.operation.Builder;
 
 import java.util.Map;
@@ -135,6 +132,18 @@ public class FileOpenAPI {
                 .summary("Get payload data.")
                 .parameter(ParamsOpenAPI.path(FilePathParams.PROCESS_ID, "Process identifier"))
                 .response(responseOkWithList(Map.class))
+                .response(responseBusinessException())
+                .response(responseInternalError());
+    }
+
+    public static Consumer<Builder> uploadOfficialID() {
+        return ops -> ops.tag(TAG_OFFER)
+                .operationId("uploadOfficialID")
+                .description("This operation is responsible for uploading an official identification file to storage..")
+                .summary("Upload official identification.")
+                .parameter(ParamsOpenAPI.path(FilePathParams.PROCESS_ID, "Process identifier"))
+                .requestBody(RequestsOpenAPI.body(UploadOfficialIdReqDTO.class))
+                .response(responseOk(FileResDTO.class))
                 .response(responseBusinessException())
                 .response(responseInternalError());
     }

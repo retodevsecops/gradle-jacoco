@@ -3,11 +3,13 @@ package com.consubanco.api.services.file.handlers;
 import com.consubanco.api.commons.util.FilePartUtil;
 import com.consubanco.api.commons.util.HttpResponseUtil;
 import com.consubanco.api.services.file.dto.FileResDTO;
+import com.consubanco.api.services.file.dto.UploadOfficialIdReqDTO;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.usecase.document.GetPayloadDataUseCase;
 import com.consubanco.usecase.file.GetCustomerVisibleFilesUseCase;
 import com.consubanco.usecase.file.GetFilesByOfferUseCase;
 import com.consubanco.usecase.file.UploadAgreementFilesUseCase;
+import com.consubanco.usecase.file.UploadOfficialIDUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Component;
@@ -30,6 +32,7 @@ public class OfferFileHandler {
     private final GetCustomerVisibleFilesUseCase getCustomerVisibleFilesUseCase;
     private final UploadAgreementFilesUseCase uploadFilesAgreementUseCase;
     private final GetPayloadDataUseCase getPayloadDataUseCase;
+    private final UploadOfficialIDUseCase uploadOfficialIDUseCase;
 
     public Mono<ServerResponse> getFilesByOffer(ServerRequest request) {
         return executeUseCase(request.pathVariable(OFFER_ID), getFilesByOfferUseCase::execute);
@@ -52,6 +55,14 @@ public class OfferFileHandler {
     public Mono<ServerResponse> getPayloadData(ServerRequest request) {
         String processId = request.pathVariable(PROCESS_ID);
         return getPayloadDataUseCase.execute(processId)
+                .flatMap(HttpResponseUtil::Ok);
+    }
+
+    public Mono<ServerResponse> uploadOfficialID(ServerRequest request) {
+        String processId = request.pathVariable(PROCESS_ID);
+        return request.bodyToMono(UploadOfficialIdReqDTO.class)
+                .map(UploadOfficialIdReqDTO::toEntity)
+                .flatMap(entity -> uploadOfficialIDUseCase.execute(processId, entity))
                 .flatMap(HttpResponseUtil::Ok);
     }
 
