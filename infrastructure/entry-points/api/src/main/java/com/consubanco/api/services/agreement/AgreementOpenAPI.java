@@ -28,9 +28,9 @@ public class AgreementOpenAPI {
     public static Consumer<Builder> getAttachments() {
         return ops -> ops.tag(TAG)
                 .operationId("getAttachments")
-                .description("List all attachments required by agreement.")
+                .description("List attachments required by an agreement associated with a process.")
                 .summary("List attachments by agreement.")
-                .parameter(ParamsOpenAPI.path(AgreementPathParams.AGREEMENT_NUMBER, "Agreement number"))
+                .parameter(ParamsOpenAPI.path(AgreementPathParams.PROCESS_ID, "Process identifier"))
                 .response(responseOkWithList(AttachmentResDTO.class))
                 .response(responseBusinessException())
                 .response(responseInternalError());
