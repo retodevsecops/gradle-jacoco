@@ -4,7 +4,7 @@ buildscript {
 		springBootVersion = '3.2.2'
 		sonarVersion = '4.4.1.3373'
 		jacocoVersion = '0.8.11'
-        lombokVersion = '1.18.30'
+        lombokVersion = '1.18.32'
 	mapstructVersion = "1.5.5.Final"
         jKubeVersion = '1.13.0'
 	}
