@@ -16,4 +16,11 @@ public class ParamsOpenAPI {
                 .description(description);
     }
 
+    public static Builder query(String name, String description) {
+        return parameterBuilder()
+                .in(ParameterIn.QUERY)
+                .name(name)
+                .description(description);
+    }
+
 }

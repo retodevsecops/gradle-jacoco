@@ -44,9 +44,8 @@ public class ErrorFactory {
     }
 
     private static Mono<String> getReason(ResponseStatusException responseException) {
-        return just(responseException.getStatusCode().value())
-                .map(String::valueOf)
-                .map(status -> String.join(" ", status, responseException.getMessage()));
+        return Mono.justOrEmpty(responseException.getReason())
+                .defaultIfEmpty(responseException.getMessage());
     }
 
     public static ErrorDTO buildError(IExceptionMessage exceptionMessage, String reason, String domain) {

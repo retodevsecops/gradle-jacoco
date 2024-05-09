@@ -21,7 +21,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.function.Function;
 
-import static com.consubanco.api.services.file.constants.FilePathParams.PROCESS_ID;
+import static com.consubanco.api.services.file.constants.FileParams.PROCESS_ID;
 
 @Component
 @RequiredArgsConstructor

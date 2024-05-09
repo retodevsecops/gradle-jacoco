@@ -2,8 +2,8 @@ package com.consubanco.api.services.file.handlers;
 
 import com.consubanco.api.commons.util.FilePartUtil;
 import com.consubanco.api.commons.util.HttpResponseUtil;
+import com.consubanco.api.commons.util.ParamsValidator;
 import com.consubanco.api.services.file.dto.FileResDTO;
-import com.consubanco.api.services.file.dto.UploadOfficialIdReqDTO;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.usecase.document.GetPayloadDataUseCase;
 import com.consubanco.usecase.file.GetCustomerVisibleFilesUseCase;
@@ -21,8 +21,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.function.Function;
 
-import static com.consubanco.api.services.file.constants.FilePathParams.OFFER_ID;
-import static com.consubanco.api.services.file.constants.FilePathParams.PROCESS_ID;
+import static com.consubanco.api.services.file.constants.FileParams.*;
 
 @Component
 @RequiredArgsConstructor
@@ -60,9 +59,9 @@ public class OfferFileHandler {
 
     public Mono<ServerResponse> uploadOfficialID(ServerRequest request) {
         String processId = request.pathVariable(PROCESS_ID);
-        return request.bodyToMono(UploadOfficialIdReqDTO.class)
-                .map(UploadOfficialIdReqDTO::toEntity)
-                .flatMap(entity -> uploadOfficialIDUseCase.execute(processId, entity))
+        return ParamsValidator.queryParam(request, OFFICIAL_ID)
+                .flatMap(ParamsValidator::paramIsUrl)
+                .flatMap(url -> uploadOfficialIDUseCase.execute(processId, url))
                 .flatMap(HttpResponseUtil::Ok);
     }
 

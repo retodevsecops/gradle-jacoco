@@ -2,8 +2,11 @@ package com.consubanco.api.services.file;
 
 import com.consubanco.api.commons.swagger.ParamsOpenAPI;
 import com.consubanco.api.commons.swagger.RequestsOpenAPI;
-import com.consubanco.api.services.file.constants.FilePathParams;
-import com.consubanco.api.services.file.dto.*;
+import com.consubanco.api.services.file.constants.FileParams;
+import com.consubanco.api.services.file.dto.FileResDTO;
+import com.consubanco.api.services.file.dto.GenerateDocumentReqDTO;
+import com.consubanco.api.services.file.dto.GenerateDocumentResDTO;
+import com.consubanco.api.services.file.dto.GetAndUploadDocumentReqDTO;
 import org.springdoc.core.fn.builders.operation.Builder;
 
 import java.util.Map;
@@ -23,7 +26,7 @@ public class FileOpenAPI {
                 .operationId("buildCNCALetters")
                 .description("Get CNCA letter by account number.")
                 .summary("Get CNCA letter.")
-                .parameter(ParamsOpenAPI.path(FilePathParams.PROCESS_ID, "Process identifier"))
+                .parameter(ParamsOpenAPI.path(FileParams.PROCESS_ID, "Process identifier"))
                 .response(responseOkWithList(FileResDTO.class))
                 .response(responseBusinessException())
                 .response(responseInternalError());
@@ -34,7 +37,7 @@ public class FileOpenAPI {
                 .operationId("generateDocument")
                 .description("Generate a single PDF document as url from a list documents.")
                 .summary("Generate pdf document as url.")
-                .parameter(ParamsOpenAPI.path(FilePathParams.PROCESS_ID, "Process identifier"))
+                .parameter(ParamsOpenAPI.path(FileParams.PROCESS_ID, "Process identifier"))
                 .requestBody(RequestsOpenAPI.body(GenerateDocumentReqDTO.class))
                 .response(responseOk(GenerateDocumentResDTO.class))
                 .response(responseBusinessException())
@@ -46,7 +49,7 @@ public class FileOpenAPI {
                 .operationId("generateFileEncoded")
                 .description("Generate a single PDF document as file base64 encoded from a list documents.")
                 .summary("Generate pdf document as base64 encoded.")
-                .parameter(ParamsOpenAPI.path(FilePathParams.PROCESS_ID, "Process identifier"))
+                .parameter(ParamsOpenAPI.path(FileParams.PROCESS_ID, "Process identifier"))
                 .requestBody(RequestsOpenAPI.body(GenerateDocumentReqDTO.class))
                 .response(responseOk(GenerateDocumentResDTO.class))
                 .response(responseBusinessException())
@@ -58,7 +61,7 @@ public class FileOpenAPI {
                 .operationId("getAndUpload")
                 .description("Generate and save in google storage a single PDF document from a list documents.")
                 .summary("Generate and save in storage pdf document.")
-                .parameter(ParamsOpenAPI.path(FilePathParams.PROCESS_ID, "Process identifier"))
+                .parameter(ParamsOpenAPI.path(FileParams.PROCESS_ID, "Process identifier"))
                 .requestBody(RequestsOpenAPI.body(GetAndUploadDocumentReqDTO.class))
                 .response(responseOk(FileResDTO.class))
                 .response(responseBusinessException())
@@ -69,7 +72,7 @@ public class FileOpenAPI {
                 .operationId("uploadAgreementFiles")
                 .description("Upload all files of an agreement, including attachments and auto-generated documents.")
                 .summary("Upload all files of an agreement.")
-                .parameter(ParamsOpenAPI.path(FilePathParams.PROCESS_ID, "Process identifier"))
+                .parameter(ParamsOpenAPI.path(FileParams.PROCESS_ID, "Process identifier"))
                 .response(responseAccepted(Void.class))
                 .response(responseBusinessException())
                 .response(responseInternalError());
@@ -79,7 +82,7 @@ public class FileOpenAPI {
                 .operationId("getFilesByOffer")
                 .description("Get all offer documents including generated documents and attachments.")
                 .summary("Get all files by offer.")
-                .parameter(ParamsOpenAPI.path(FilePathParams.OFFER_ID, "Offer identifier"))
+                .parameter(ParamsOpenAPI.path(FileParams.OFFER_ID, "Offer identifier"))
                 .response(responseOkWithList(FileResDTO.class))
                 .response(responseBusinessException())
                 .response(responseInternalError());
@@ -89,7 +92,7 @@ public class FileOpenAPI {
                 .operationId("getCustomerVisibleFiles")
                 .description("Get all files that the customer can view.")
                 .summary("Get customer visible files.")
-                .parameter(ParamsOpenAPI.path(FilePathParams.PROCESS_ID, "Process identifier"))
+                .parameter(ParamsOpenAPI.path(FileParams.PROCESS_ID, "Process identifier"))
                 .response(responseOkWithList(FileResDTO.class))
                 .response(responseBusinessException())
                 .response(responseInternalError());
@@ -130,7 +133,7 @@ public class FileOpenAPI {
                 .operationId("getPayloadData")
                 .description("Get all the payload data with which the documents are constructed.")
                 .summary("Get payload data.")
-                .parameter(ParamsOpenAPI.path(FilePathParams.PROCESS_ID, "Process identifier"))
+                .parameter(ParamsOpenAPI.path(FileParams.PROCESS_ID, "Process identifier"))
                 .response(responseOkWithList(Map.class))
                 .response(responseBusinessException())
                 .response(responseInternalError());
@@ -141,8 +144,8 @@ public class FileOpenAPI {
                 .operationId("uploadOfficialID")
                 .description("This operation is responsible for uploading an official identification file to storage..")
                 .summary("Upload official identification.")
-                .parameter(ParamsOpenAPI.path(FilePathParams.PROCESS_ID, "Process identifier"))
-                .requestBody(RequestsOpenAPI.body(UploadOfficialIdReqDTO.class))
+                .parameter(ParamsOpenAPI.path(FileParams.PROCESS_ID, "Process identifier"))
+                .parameter(ParamsOpenAPI.query(FileParams.OFFICIAL_ID, "Url image official identification").required(true))
                 .response(responseOk(FileResDTO.class))
                 .response(responseBusinessException())
                 .response(responseInternalError());
