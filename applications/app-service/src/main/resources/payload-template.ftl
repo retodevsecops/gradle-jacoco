@@ -23,15 +23,15 @@
         "rfc": "${promoter_data.rfc}"
     },
     "employmentData": {
-        "numeroEmpleado": "${offer_data.offer.employeeNumber}"
+        "numeroEmpleado": "${offer_data.offer.employeeNumber?string}"
     },
     "idDocumentData": {
-        "ocr": "${customer_data.customer.preApplicationData.applicant.identificationNumber}",
-        "type": "${customer_data.customer.preApplicationData.applicant.identificationType}"
+        "ocr": "${customer_data.preApplicationData.applicant.identificationNumber}",
+        "type": "${customer_data.preApplicationData.applicant.identificationType}"
     },
     "offer": {
         "quoter": {
-            "CAT": ${offer_data.offer.cat},
+            "CAT": "${offer_data.offer.cat?string}",
             "agreemen": {
                 "branch": {
                     "empresa": {
@@ -44,15 +44,15 @@
                 "convenioId": "${offer_data.offer.agreement.key}"
             },
             "amount": "${offer_data.offer.amount?string}",
-            "annualTI": ${offer_data.offer.annualTI},
-            "currentDiscount": ${offer_data.offer.discount},
-            "discountAmount": ${offer_data.offer.discount},
+            "annualTI": "${offer_data.offer.annualTI?string}",
+            "currentDiscount": "${offer_data.offer.discount?string}",
+            "discountAmount": "${offer_data.offer.discount?string}",
             "frequencyDescription": "${offer_data.offer.frequency}",
-            "monthlyTI": ${offer_data.offer.monthlyTI},
+            "monthlyTI": "${offer_data.offer.monthlyTI?string}",
             "openingCommissionPercentage": "${offer_data.offer.commissions}",
-            "plazo": ${offer_data.offer.term},
-            "requestedAmount": ${offer_data.offer.amount?string},
-            "totalAmount": ${offer_data.offer.amount?string}
+            "plazo": "${offer_data.offer.term?string}",
+            "requestedAmount": "${offer_data.offer.amount?string}",
+            "totalAmount": "${offer_data.offer.amount?string}"
         }
     },
     "person": {

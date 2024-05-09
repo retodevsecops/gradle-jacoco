@@ -42,16 +42,13 @@ public class AuthTokenRenexFilter implements ExchangeFilterFunction {
     @Override
     public Mono<ClientResponse> filter(ClientRequest request, ExchangeFunction next) {
         return getAuthToken()
-                .doOnNext(e -> logger.info("se obtuvo el token de autenticacion."))
                 .map(token -> injectTokenToRequest(request, token))
                 .flatMap(next::exchange)
                 .doOnError(error -> logger.error("Error generating the renex authentication token.", error));
     }
 
     private Mono<String> getAuthToken() {
-        return Mono.just(Constants.TOKEN_RENEX_CACHE_KEY)
-                .map(cache::getIfPresent)
-                .doOnNext(e -> logger.info("El token se obtuvo de la cache"))
+        return Mono.justOrEmpty(cache.getIfPresent(Constants.TOKEN_RENEX_CACHE_KEY))
                 .switchIfEmpty(generateToken());
     }
 
@@ -75,11 +72,9 @@ public class AuthTokenRenexFilter implements ExchangeFilterFunction {
                 IdTokenProvider tokenProvider = getTokenProvider();
                 IdTokenCredentials idTokenCredentials = buildTokenCredentials(tokenProvider);
                 AccessToken accessToken = idTokenCredentials.refreshAccessToken();
-                if(Objects.isNull(accessToken)){
-                    logger.info("ojo! el token que se intento generar es null");
+                if (Objects.isNull(accessToken)) {
                     sink.error(new RuntimeException("No se pudo obtener un nuevo token de acceso"));
-                }else {
-                    logger.info("el token que se genero es valido y no es null");
+                } else {
                     sink.success(accessToken);
                 }
             } catch (Exception e) {
