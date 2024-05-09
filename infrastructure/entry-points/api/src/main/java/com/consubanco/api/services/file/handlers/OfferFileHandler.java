@@ -62,6 +62,7 @@ public class OfferFileHandler {
         return ParamsValidator.queryParam(request, OFFICIAL_ID)
                 .flatMap(ParamsValidator::paramIsUrl)
                 .flatMap(url -> uploadOfficialIDUseCase.execute(processId, url))
+                .map(FileResDTO::new)
                 .flatMap(HttpResponseUtil::Ok);
     }
 
