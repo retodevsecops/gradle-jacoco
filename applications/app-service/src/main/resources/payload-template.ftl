@@ -6,11 +6,11 @@
     current_date_timestamp = .now?long
 >
 {
-    "id": "100800009705",
+    "id": "${offer_data.offer.id}",
     "created_at": "${current_date_timestamp?c}",
     "contactInformation": {
-        "email": "carlosmartinez@gmail.com",
-        "phone": "2284767230",
+        "email": "${customer_data.customer.email!''}",
+        "phone": "${customer_data.customer.phone!''}",
         "phoneAddress": "2222222222",
         "phoneWork": "3333333333"
     },
@@ -23,15 +23,15 @@
         "rfc": "${promoter_data.rfc}"
     },
     "employmentData": {
-        "numeroEmpleado": "111111"
+        "numeroEmpleado": "${offer_data.offer.employeeNumber}"
     },
     "idDocumentData": {
-        "ocr": "1900091754271",
-        "type": "INE O IFE"
+        "ocr": "${customer_data.customer.preApplicationData.applicant.identificationNumber}",
+        "type": "${customer_data.customer.preApplicationData.applicant.identificationType}"
     },
     "offer": {
         "quoter": {
-            "CAT": 67.9,
+            "CAT": ${offer_data.offer.cat},
             "agreemen": {
                 "branch": {
                     "empresa": {
@@ -44,15 +44,15 @@
                 "convenioId": "${offer_data.offer.agreement.key}"
             },
             "amount": "${offer_data.offer.amount?string}",
-            "annualTI": 51.74999999999999,
-            "currentDiscount": 1186.78,
-            "discountAmount": 1186.78,
+            "annualTI": ${offer_data.offer.annualTI},
+            "currentDiscount": ${offer_data.offer.discount},
+            "discountAmount": ${offer_data.offer.discount},
             "frequencyDescription": "${offer_data.offer.frequency}",
-            "monthlyTI": 4.312499999999999,
-            "openingCommissionPercentage": "1.000",
+            "monthlyTI": ${offer_data.offer.monthlyTI},
+            "openingCommissionPercentage": "${offer_data.offer.commissions}",
             "plazo": ${offer_data.offer.term},
-            "requestedAmount": 45000,
-            "totalAmount": 142413.6
+            "requestedAmount": ${offer_data.offer.amount?string},
+            "totalAmount": ${offer_data.offer.amount?string}
         }
     },
     "person": {
@@ -95,47 +95,47 @@
                 "zipCode": "91130"
             }
         ],
+        "residenceCountry": "MX",
         "countryBirth": {
             "description": "México",
             "key": "MX"
         },
-        "dateBirth": "1993-11-19",
-        "email": "cinosoni@gmail.com",
-        "gender": "M",
-        "lastname1": "SAN CRISTOBAL",
-        "lastname2": "RAMIREZ",
+        "dateBirth": "${customer_data.customer.dateBirth}",
+        "email": "${customer_data.customer.email}",
+        "gender": "${customer_data.customer.gender}",
+        "name1": "${customer_data.customer.firstName}",
+        "name2": "${customer_data.customer.secondName}",
+        "lastname1": "${customer_data.customer.lastName}",
+        "lastname2": "${customer_data.customer.secondLastName}",
         "levelStudies": {
-            "description": "",
-            "key": "NOT_FOUND"
+            "description": "${customer_data.customer.levelStudies.description}",
+            "key": "${customer_data.customer.levelStudies.key}"
         },
         "maritalStatus": {
-            "description": "Soltero/a",
-            "key": "1"
+            "description": "${customer_data.customer.maritalStatus.description}",
+            "key": "${customer_data.customer.maritalStatus.key}"
         },
-        "name1": "EMILIO",
-        "name2": "",
         "nationality": {
-            "description": "MEXICANA",
-            "key": "MX"
+            "description": "${customer_data.customer.nationality.description}",
+            "key": "${customer_data.customer.nationality.key}"
         },
         "occupation": {
-            "description": "Empleado",
-            "key": "1008"
+            "description": "${customer_data.preApplicationData.applicant.occupation.description}",
+            "key": "${customer_data.preApplicationData.applicant.occupation.key}"
         },
-        "placeBirth": "VERACRUZ",
-        "residenceCountry": "MX",
-        "rfc": "SARE931119T80",
-        "spouseLastName1": "",
-        "spouseLastName2": "",
-        "spouseName1": "",
-        "spouseName2": ""
+        "placeBirth": "${customer_data.customer.placeBirth}",
+        "rfc": "${customer_data.customer.rfc}",
+        "spouseLastName1": "${customer_data.preApplicationData.applicant.spouseLastName1}",
+        "spouseLastName2": "${customer_data.preApplicationData.applicant.spouseLastName2}",
+        "spouseName1": "${customer_data.preApplicationData.applicant.spouseName1}",
+        "spouseName2": "${customer_data.preApplicationData.applicant.spouseName2}"
     },
     "privateDeposit": {
-        "banco": "640",
-        "bancoText": "GEM-CONSUBANCO",
-        "cbanc": "640180000000454635",
-        "descriptionPaymentMethod": "Depósito a Cuenta",
-        "metodoPago": "6"
+        "banco": "${customer_data.preApplicationData.paymentData.bankId}",
+        "bancoText": "${customer_data.preApplicationData.paymentData.bankDesc}",
+        "cbanc": "${customer_data.preApplicationData.paymentData.clabe}",
+        "descriptionPaymentMethod": "${customer_data.preApplicationData.paymentData.paymentMethodDesc}",
+        "metodoPago": "${customer_data.preApplicationData.paymentData.paymentMethodId}"
     },
     "references": [
         {
@@ -154,5 +154,5 @@
         }
     ],
     "signatureColor": "#000000",
-    "origin": "ECSB"
+    "origin": "RENEX"
 }

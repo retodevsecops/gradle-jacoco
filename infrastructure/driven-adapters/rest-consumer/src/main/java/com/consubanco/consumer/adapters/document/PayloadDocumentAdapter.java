@@ -16,6 +16,9 @@ import reactor.util.function.Tuple3;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
+import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.PAYLOAD_ERROR;
+
 @Service
 public class PayloadDocumentAdapter implements PayloadDocumentGateway, ApplicationListener<ApplicationReadyEvent> {
 
@@ -63,7 +66,8 @@ public class PayloadDocumentAdapter implements PayloadDocumentGateway, Applicati
     public Mono<Map<String, Object>> buildPayload(String template, Map<String, Object> data) {
         return templateOperations.process(template, data, Map.class)
                 .map(map -> (Map<String, Object>) map)
-                .doOnNext(payload -> logger.info("Built payload.", payload));
+                .doOnNext(payload -> logger.info("Built payload.", payload))
+                .onErrorMap(throwTechnicalError(PAYLOAD_ERROR));
     }
 
     @Override
