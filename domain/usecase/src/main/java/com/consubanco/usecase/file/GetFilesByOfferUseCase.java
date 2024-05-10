@@ -19,7 +19,7 @@ public class GetFilesByOfferUseCase {
     public Flux<File> execute(String offerId) {
         return checkOfferId(offerId)
                 .map(FileConstants::offerDirectory)
-                .flatMapMany(fileRepository::listByFolder)
+                .flatMapMany(fileRepository::listByFolderWithUrls)
                 .switchIfEmpty(ExceptionFactory.buildBusiness(FILES_NOT_FOUND));
     }
 

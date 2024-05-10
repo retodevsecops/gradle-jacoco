@@ -7,7 +7,8 @@ import reactor.core.publisher.Mono;
 
 public interface FileRepository {
     Mono<File> save(File file);
-    Flux<File> listByFolder(String path);
+    Flux<File> listByFolderWithUrls(String folderPath);
+    Flux<File> listByFolderWithoutUrls(String folderPath);
     Mono<File> getByName(String name);
     Mono<File> getPayloadTemplate();
     Mono<FileUploadVO> getLocalPayloadTemplate();

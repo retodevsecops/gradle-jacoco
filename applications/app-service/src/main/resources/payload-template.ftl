@@ -11,7 +11,7 @@
     "id": "${offer_data.offer.id}",
     "created_at": "${current_date_timestamp?c}",
     "contactInformation": {
-        "email": "${customer_data.customer.email!''}",
+        "email": "${customer_data.customer.email?lower_case!''}",
         "phone": "${customer_data.customer.phone!''}",
         "phoneAddress": "2222222222",
         "phoneWork": "3333333333"
@@ -33,7 +33,7 @@
     },
     "offer": {
         "quoter": {
-            "CAT": ${offer_data.offer.cat},
+            "CAT": ${offer_data.offer.cat?replace(",", ".")},
             "agreemen": {
                 "branch": {
                     "empresa": {
@@ -43,12 +43,12 @@
                 "convenioId": "${offer_data.offer.agreement.key}"
             },
             "amount": ${amount},
-            "annualTI": ${offer_data.offer.annualTI},
+            "annualTI": ${offer_data.offer.annualTI?replace(",", ".")},
             "currentDiscount": ${discount},
             "discountAmount": ${discount},
             "frequencyDescription": "${offer_data.offer.frequency}",
-            "monthlyTI": ${offer_data.offer.monthlyTI},
-            "openingCommissionPercentage": ${offer_data.offer.commissions},
+            "monthlyTI": ${offer_data.offer.monthlyTI?replace(",", ".")},
+            "openingCommissionPercentage": ${offer_data.offer.commissions?replace(",", ".")},
             "plazo": ${offer_data.offer.term},
             "requestedAmount": ${amount},
             "totalAmount": ${amount}

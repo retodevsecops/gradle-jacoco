@@ -44,7 +44,7 @@ public class FileUseCase {
     }
 
     public Flux<File> getManagementFiles() {
-        return fileRepository.listByFolder(FileConstants.MANAGEMENT_DIRECTORY_PATH);
+        return fileRepository.listByFolderWithUrls(FileConstants.MANAGEMENT_DIRECTORY_PATH);
     }
 
     private Mono<FileUploadVO> checkFileSize(FileUploadVO fileUploadVO) {

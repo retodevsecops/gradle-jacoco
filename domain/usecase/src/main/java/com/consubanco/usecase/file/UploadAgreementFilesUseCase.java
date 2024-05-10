@@ -21,8 +21,6 @@ import reactor.core.scheduler.Schedulers;
 import java.util.List;
 import java.util.Map;
 
-import static com.consubanco.model.entities.document.constant.DocumentNames.OFFICIAL_ID;
-import static com.consubanco.model.entities.document.constant.DocumentNames.PARTS_OFFICIAL_ID;
 import static com.consubanco.model.entities.file.constant.FileConstants.attachmentsDirectory;
 import static com.consubanco.model.entities.file.util.AttachmentValidatorUtil.checkAttachments;
 import static com.consubanco.model.entities.file.util.AttachmentValidatorUtil.checkAttachmentsSize;
@@ -55,15 +53,14 @@ public class UploadAgreementFilesUseCase {
     private Mono<Map<String, String>> uploadAllDocuments(Process process, List<FileUploadVO> attachments, Agreement agreement) {
         Flux<File> uploadAttachments = uploadAttachments(attachments, process.getOffer().getId());
         Flux<File> uploadGeneratedDocuments = buildAgreementDocumentsUseCase.execute(process, agreement.getDocuments());
-        return Flux.merge(uploadAttachments, uploadGeneratedDocuments)
+        return Flux.merge(uploadGeneratedDocuments, uploadAttachments)
                 .collectList()
                 .flatMap(files -> buildCompoundDocumentsUseCase.execute(process, files))
-                .thenReturn(Map.of("message", "The validations were successful, the file uploading process starts..."));
+                .thenReturn(Map.of("message", "Files uploaded and generated successfully."));
     }
 
     private Flux<File> uploadAttachments(List<FileUploadVO> attachments, String offerId) {
         return buildAttachmentList(attachments, offerId)
-                .concatWith(generateOfficialIdPdf(attachments, offerId))
                 .parallel()
                 .runOn(Schedulers.parallel())
                 .concatMap(fileRepository::save)
@@ -72,7 +69,6 @@ public class UploadAgreementFilesUseCase {
 
     private Flux<File> buildAttachmentList(List<FileUploadVO> attachments, String offerId) {
         return Flux.fromIterable(attachments)
-                .filter(attachment -> !PARTS_OFFICIAL_ID.contains(attachment.getName()))
                 .flatMap(fileUploadVO -> convertAttachmentToPDF(fileUploadVO)
                         .map(pdf -> File.builder()
                                 .name(fileUploadVO.getName())
@@ -89,21 +85,6 @@ public class UploadAgreementFilesUseCase {
                 .map(List::of)
                 .flatMap(pdfDocumentGateway::generatePdfWithImages)
                 .defaultIfEmpty(fileUploadVO.getContent());
-    }
-
-    private Mono<File> generateOfficialIdPdf(List<FileUploadVO> attachments, String offerId) {
-        return Flux.fromIterable(attachments)
-                .filter(attachment -> PARTS_OFFICIAL_ID.contains(attachment.getName()))
-                .map(FileUploadVO::getContent)
-                .collectList()
-                .filter(list -> !list.isEmpty())
-                .flatMap(pdfDocumentGateway::generatePdfWithImages)
-                .map(officialID -> File.builder()
-                        .name(OFFICIAL_ID)
-                        .content(officialID)
-                        .directoryPath(attachmentsDirectory(offerId))
-                        .extension(FileExtensions.PDF)
-                        .build());
     }
 
 }

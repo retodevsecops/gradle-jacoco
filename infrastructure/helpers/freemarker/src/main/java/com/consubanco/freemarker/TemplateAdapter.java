@@ -10,6 +10,7 @@ import reactor.core.publisher.Mono;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.Base64;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -28,10 +29,11 @@ public class TemplateAdapter implements ITemplateOperations {
     public <T> Mono<T> process(String templateAsString, Object data, Class<T> cls) {
         return Mono.fromCallable(() -> {
             try (StringWriter writer = new StringWriter()) {
-                Template template = buildTemplate(templateAsString);
+                Template template = buildTemplate(new String(Base64.getDecoder().decode(templateAsString)));
                 Map<String, Object> dataMap = buildDataMap(data);
                 template.process(dataMap, writer);
                 String rendered = writer.toString();
+                logger.info("This is the result of the freemarker template after processing", rendered);
                 return FunctionsUtil.readLValue(rendered, cls);
             } catch (IOException | TemplateException exception) {
                 logger.error(MESSAGE_ERROR, mapLogError(data, templateAsString, cls, exception));

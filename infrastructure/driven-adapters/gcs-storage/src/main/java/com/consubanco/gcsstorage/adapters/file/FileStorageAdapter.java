@@ -55,15 +55,19 @@ public class FileStorageAdapter implements FileRepository {
     }
 
     @Override
-    public Flux<File> listByFolder(String path) {
-        return Mono.just(Storage.BlobListOption.prefix(path))
-                .map(option -> storage.list(properties.getBucketName(), option))
-                .flatMapIterable(Page::iterateAll)
+    public Flux<File> listByFolderWithUrls(String folderPath) {
+        return listByPrefix(folderPath)
                 .parallel()
                 .runOn(Schedulers.parallel())
                 .flatMap(this::buildFileEntityFromBlob)
                 .sequential()
                 .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(GET_FILE_ERROR));
+    }
+
+    @Override
+    public Flux<File> listByFolderWithoutUrls(String folderPath) {
+        return listByPrefix(folderPath)
+                .map(FileFactoryUtil::buildFromBlob);
     }
 
     @Override
@@ -122,9 +126,18 @@ public class FileStorageAdapter implements FileRepository {
         return properties.getMaxFileSizeMB();
     }
 
+
     private Mono<File> buildFileEntityFromBlob(Blob blob) {
         return signUrl(blob)
                 .map(signUrl -> FileFactoryUtil.buildFromBlobWithUrl(blob, signUrl));
+    }
+
+    private Flux<Blob> listByPrefix(String folderPath) {
+        return Mono.just(folderPath)
+                .map(Storage.BlobListOption::prefix)
+                .map(option -> storage.list(properties.getBucketName(), option))
+                .flatMapIterable(Page::iterateAll)
+                .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(GET_FILE_ERROR));
     }
 
     private Mono<String> signUrl(Blob blob) {

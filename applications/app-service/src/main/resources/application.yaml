@@ -104,3 +104,7 @@ springdoc:
   swagger-ui:
     disable-swagger-default-url: true
     path: /swagger.html
+
+logging:
+  level:
+    org.springframework: OFF

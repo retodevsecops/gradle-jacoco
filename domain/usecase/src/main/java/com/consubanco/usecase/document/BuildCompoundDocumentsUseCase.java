@@ -30,8 +30,10 @@ public class BuildCompoundDocumentsUseCase {
     public Mono<Void> execute(Process process, List<File> files) {
         String directory = FileConstants.documentsDirectory(process.getOffer().getId());
         String agreementNumber = process.getAgreementNumber();
-        return Mono.zip(createApplicantRecord(files, directory),
-                        createConfiguredCompoundDocuments(agreementNumber, files, directory).collectList())
+        return mergeFiles(process.getOffer().getId(), files)
+                .collectList()
+                .flatMap(allFiles -> Mono.zip(createApplicantRecord(allFiles, directory),
+                        createConfiguredCompoundDocuments(agreementNumber, allFiles, directory).collectList()))
                 .then();
     }
 
@@ -94,6 +96,22 @@ public class BuildCompoundDocumentsUseCase {
                 .directoryPath(directory)
                 .extension(FileExtensions.PDF)
                 .build();
+    }
+
+    private Flux<File> mergeFiles(String offerId, List<File> files) {
+        return Flux.fromIterable(files)
+                .concatWith(getAttachmentsUploaded(offerId)
+                        .filter(file -> !checkIfExists(files, file.getName())));
+    }
+
+    private Flux<File> getAttachmentsUploaded(String offerId) {
+        return Mono.just(offerId)
+                .map(FileConstants::attachmentsDirectory)
+                .flatMapMany(fileRepository::listByFolderWithoutUrls);
+    }
+
+    private Boolean checkIfExists(List<File> files, String nameAttachment) {
+        return files.stream().anyMatch(file -> file.getName().equalsIgnoreCase(nameAttachment));
     }
 
 }
