@@ -4,6 +4,8 @@
 -->
 <#assign
     current_date_timestamp = .now?long
+    amount = offer_data.offer.amount?replace(",", "")?number?c
+    discount = offer_data.offer.discount?replace(",", "")?number?c
 >
 {
     "id": "${offer_data.offer.id}",
@@ -31,28 +33,25 @@
     },
     "offer": {
         "quoter": {
-            "CAT": "${offer_data.offer.cat?string}",
+            "CAT": ${offer_data.offer.cat},
             "agreemen": {
                 "branch": {
                     "empresa": {
                         "businessName": "La Tenda Mexico S.A. de C.V."
-                    },
-                    "distribuidor": {
-                        "distributorName": "SOLO LO AGREGUE PARA PRUEBAS"
                     }
                 },
                 "convenioId": "${offer_data.offer.agreement.key}"
             },
-            "amount": "${offer_data.offer.amount?string}",
-            "annualTI": "${offer_data.offer.annualTI?string}",
-            "currentDiscount": "${offer_data.offer.discount?string}",
-            "discountAmount": "${offer_data.offer.discount?string}",
+            "amount": ${amount},
+            "annualTI": ${offer_data.offer.annualTI},
+            "currentDiscount": ${discount},
+            "discountAmount": ${discount},
             "frequencyDescription": "${offer_data.offer.frequency}",
-            "monthlyTI": "${offer_data.offer.monthlyTI?string}",
-            "openingCommissionPercentage": "${offer_data.offer.commissions}",
-            "plazo": "${offer_data.offer.term?string}",
-            "requestedAmount": "${offer_data.offer.amount?string}",
-            "totalAmount": "${offer_data.offer.amount?string}"
+            "monthlyTI": ${offer_data.offer.monthlyTI},
+            "openingCommissionPercentage": ${offer_data.offer.commissions},
+            "plazo": ${offer_data.offer.term},
+            "requestedAmount": ${amount},
+            "totalAmount": ${amount}
         }
     },
     "person": {

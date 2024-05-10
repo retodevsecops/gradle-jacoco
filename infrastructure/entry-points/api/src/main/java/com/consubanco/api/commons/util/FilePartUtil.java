@@ -48,7 +48,7 @@ public class FilePartUtil {
 
     public double bytesToMB(long bytes) {
         double megabytes = bytes / 1048576.0;
-        return Math.round(megabytes * 100.0) / 100.0;
+        return Math.round(megabytes * 1000.0) / 1000.0;
     }
 
     public double getSizeFileInMBFromBase64(String base64EncodedString) {

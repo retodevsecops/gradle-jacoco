@@ -31,8 +31,8 @@ public class AttachmentValidatorUtil {
     }
 
     public Mono<List<FileUploadVO>> checkAttachments(List<AttachmentConfigVO> attachmentsByAgreement, List<FileUploadVO> attachmentsProvided) {
-        List<String> attachmentNames = attachmentNames(attachmentsByAgreement);
-        List<FileUploadVO> filteredAttachments = filteredAttachments(attachmentNames, attachmentsProvided);
+        List<String> attachmentNamesByAgreement = attachmentNames(attachmentsByAgreement);
+        List<FileUploadVO> filteredAttachments = filteredAttachments(attachmentNamesByAgreement, attachmentsProvided);
         List<String> providedAttachmentNames = providedAttachmentNames(filteredAttachments);
         return checkRequiredAttachments(attachmentsByAgreement, providedAttachmentNames)
                 .then(checkValidTypes(filteredAttachments, attachmentsByAgreement))
