@@ -31,4 +31,7 @@ public class Process {
         return this.getOffer().getAgreementNumber();
     }
 
+    public String getPreviousApplicationId() {
+        return this.getOffer().getPreviousApplicationId();
+    }
 }

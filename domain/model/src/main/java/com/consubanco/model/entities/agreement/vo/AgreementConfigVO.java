@@ -44,4 +44,8 @@ public class AgreementConfigVO {
         return this;
     }
 
+    public List<AttachmentConfigVO> attachments(){
+        return attachmentsDocuments;
+    }
+
 }

@@ -10,6 +10,7 @@ import com.consubanco.model.entities.process.Process;
 import com.consubanco.usecase.process.GetProcessByIdUseCase;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
@@ -28,15 +29,18 @@ public class GetAttachmentsByAgreementUseCase {
     public Flux<AttachmentConfigVO> execute(String processId) {
         return getProcessByIdUseCase.execute(processId)
                 .flatMapMany(process -> agreementConfigRepository.getConfigByAgreement(process.getAgreementNumber())
-                        .flatMapMany(agreementConfigVO -> filterAttachments(process, agreementConfigVO.getAttachmentsDocuments())));
+                        .flatMapMany(agreementConfigVO -> filterAttachments(process, agreementConfigVO.attachments())));
     }
 
     private Flux<AttachmentConfigVO> filterAttachments(Process process, List<AttachmentConfigVO> attachments) {
         List<AttachmentConfigVO> attachmentsToRetrieved = attachmentsToRetrieved(attachments);
-        return retrievePreviousDocuments(process, attachmentsToRetrieved)
+        return Mono.just(attachmentsToRetrieved)
+                .filter(list -> !list.isEmpty())
+                .flatMapMany(list -> retrievePreviousDocuments(process, list))
                 .collectList()
                 .flatMapMany(list -> Flux.fromIterable(attachments)
-                        .filter(attachConfig -> isNotRecoveredFile(list, attachConfig.getTechnicalName())));
+                        .filter(attachConfig -> isNotRecoveredFile(list, attachConfig.getTechnicalName())))
+                .switchIfEmpty(Flux.fromIterable(attachments));
     }
 
     private List<AttachmentConfigVO> attachmentsToRetrieved(List<AttachmentConfigVO> attachments) {
@@ -46,7 +50,7 @@ public class GetAttachmentsByAgreementUseCase {
     }
 
     private Flux<File> retrievePreviousDocuments(Process process, List<AttachmentConfigVO> attachmentsToRetrieved) {
-        return documentGateway.getDocsFromPreviousApplication(process.getOffer().getPreviousApplicationId(), attachmentsToRetrieved)
+        return documentGateway.getDocsFromPreviousApplication(process.getPreviousApplicationId(), attachmentsToRetrieved)
                 .parallel()
                 .runOn(Schedulers.parallel())
                 .map(prevDocument -> {
