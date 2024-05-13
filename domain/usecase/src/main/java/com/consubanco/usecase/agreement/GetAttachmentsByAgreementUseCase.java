@@ -1,6 +1,7 @@
 package com.consubanco.usecase.agreement;
 
 import com.consubanco.model.entities.agreement.gateway.AgreementConfigRepository;
+import com.consubanco.model.entities.agreement.vo.AgreementConfigVO;
 import com.consubanco.model.entities.agreement.vo.AttachmentConfigVO;
 import com.consubanco.model.entities.document.gateway.DocumentGateway;
 import com.consubanco.model.entities.document.vo.PreviousDocumentVO;
@@ -10,7 +11,6 @@ import com.consubanco.model.entities.process.Process;
 import com.consubanco.usecase.process.GetProcessByIdUseCase;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
@@ -29,18 +29,19 @@ public class GetAttachmentsByAgreementUseCase {
     public Flux<AttachmentConfigVO> execute(String processId) {
         return getProcessByIdUseCase.execute(processId)
                 .flatMapMany(process -> agreementConfigRepository.getConfigByAgreement(process.getAgreementNumber())
-                        .flatMapMany(agreementConfigVO -> filterAttachments(process, agreementConfigVO.attachments())));
+                        .map(AgreementConfigVO::attachments)
+                        .flatMapMany(attachments -> filterAttachments(process, attachments)));
     }
 
     private Flux<AttachmentConfigVO> filterAttachments(Process process, List<AttachmentConfigVO> attachments) {
         List<AttachmentConfigVO> attachmentsToRetrieved = attachmentsToRetrieved(attachments);
-        return Mono.just(attachmentsToRetrieved)
-                .filter(list -> !list.isEmpty())
-                .flatMapMany(list -> retrievePreviousDocuments(process, list))
+        if (attachmentsToRetrieved.isEmpty()) {
+            return Flux.fromIterable(attachments);
+        }
+        return retrievePreviousDocuments(process, attachmentsToRetrieved)
                 .collectList()
                 .flatMapMany(list -> Flux.fromIterable(attachments)
-                        .filter(attachConfig -> isNotRecoveredFile(list, attachConfig.getTechnicalName())))
-                .switchIfEmpty(Flux.fromIterable(attachments));
+                        .filter(attachConfig -> isNotRecoveredFile(list, attachConfig.getTechnicalName())));
     }
 
     private List<AttachmentConfigVO> attachmentsToRetrieved(List<AttachmentConfigVO> attachments) {
