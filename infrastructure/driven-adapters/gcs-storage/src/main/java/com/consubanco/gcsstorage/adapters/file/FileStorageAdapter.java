@@ -74,8 +74,8 @@ public class FileStorageAdapter implements FileRepository {
     public Mono<File> getByName(String name) {
         BlobId blobId = BlobId.of(properties.getBucketName(), name);
         return Mono.justOrEmpty(storage.get(blobId))
-                .map(FileFactoryUtil::buildFromBlob)
-                .onErrorMap(throwTechnicalError(FIND_FILE_ERROR));
+                .onErrorMap(throwTechnicalError(FIND_FILE_ERROR))
+                .flatMap(this::buildFileEntityFromBlob);
     }
 
     @Override
@@ -98,16 +98,7 @@ public class FileStorageAdapter implements FileRepository {
     @Override
     @CacheEvict(cacheNames = "payloadTemplate", allEntries = true)
     public Mono<File> uploadPayloadTemplate(FileUploadVO fileUploadVO) {
-        return Mono.just(fileUploadVO.getContent())
-                .map(FileUtil::decodeBase64)
-                .filter(templateOperations::validate)
-                .map(isValid -> File.builder()
-                        .name(FileUtil.getFileName(properties.payloadTemplatePath()))
-                        .directoryPath(FileUtil.getDirectory(properties.payloadTemplatePath()))
-                        .content(fileUploadVO.getContent())
-                        .extension(fileUploadVO.getExtension())
-                        .build())
-                .flatMap(this::save);
+        return uploadTemplate(fileUploadVO, properties.payloadTemplatePath());
     }
 
     @Override
@@ -126,6 +117,32 @@ public class FileStorageAdapter implements FileRepository {
         return properties.getMaxFileSizeMB();
     }
 
+
+    @Override
+    @Cacheable("createApplicationTemplate")
+    public Mono<File> getCreateApplicationTemplate() {
+        return getByName(properties.getFilesPath().getCreateApplicationTemplate())
+                .doOnNext(file -> logger.info("Create application template was consulted.", file));
+    }
+
+    @Override
+    @CacheEvict(cacheNames = "createApplicationTemplate", allEntries = true)
+    public Mono<File> uploadCreateApplicationTemplate(FileUploadVO fileUploadVO) {
+        return uploadTemplate(fileUploadVO, properties.getFilesPath().getCreateApplicationTemplate());
+    }
+
+    private Mono<File> uploadTemplate(FileUploadVO fileUploadVO, String path) {
+        return Mono.just(fileUploadVO.getContent())
+                .map(FileUtil::decodeBase64)
+                .filter(templateOperations::validate)
+                .map(isValid -> File.builder()
+                        .name(FileUtil.getFileName(path))
+                        .directoryPath(FileUtil.getDirectory(path))
+                        .content(fileUploadVO.getContent())
+                        .extension(fileUploadVO.getExtension())
+                        .build())
+                .flatMap(this::save);
+    }
 
     private Mono<File> buildFileEntityFromBlob(Blob blob) {
         return signUrl(blob)

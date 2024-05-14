@@ -23,6 +23,8 @@ public class GoogleStorageProperties {
     public static class FilesPath {
         private String payloadTemplate;
         private String agreementsConfig;
+        private String createApplicationTemplate;
+
     }
 
     public String agreementsConfigPath(){

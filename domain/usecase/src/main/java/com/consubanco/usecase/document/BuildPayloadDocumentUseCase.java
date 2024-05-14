@@ -10,7 +10,7 @@ import reactor.function.TupleUtils;
 import java.util.Map;
 
 @RequiredArgsConstructor
-public class BuildPayloadUseCase {
+public class BuildPayloadDocumentUseCase {
 
     private final FileRepository fileRepository;
     private final PayloadDocumentGateway payloadGateway;

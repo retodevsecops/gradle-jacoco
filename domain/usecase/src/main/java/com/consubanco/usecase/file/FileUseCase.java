@@ -30,7 +30,7 @@ public class FileUseCase {
                 .filter(vo -> vo.getExtension().equalsIgnoreCase(FileExtensions.FTL))
                 .switchIfEmpty(ExceptionFactory.buildBusiness(FILE_NOT_FTL))
                 .flatMap(fileRepository::uploadPayloadTemplate)
-                .switchIfEmpty(ExceptionFactory.buildBusiness(PAYLOAD_TEMPLATE_INCORRECT))
+                .switchIfEmpty(ExceptionFactory.buildBusiness(TEMPLATE_INCORRECT))
                 .flatMap(file -> fileRepository.getPayloadTemplate());
     }
 
@@ -41,6 +41,15 @@ public class FileUseCase {
                 .switchIfEmpty(ExceptionFactory.buildBusiness(FILE_NOT_JSON))
                 .map(extension -> new File(fileUploadVO.getContent(), extension))
                 .flatMap(fileRepository::uploadAgreementsConfigFile);
+    }
+
+    public Mono<File> uploadCreateApplicationTemplate(FileUploadVO fileUploadVO) {
+        return checkFileSize(fileUploadVO)
+                .filter(vo -> vo.getExtension().equalsIgnoreCase(FileExtensions.FTL))
+                .switchIfEmpty(ExceptionFactory.buildBusiness(FILE_NOT_FTL))
+                .flatMap(fileRepository::uploadCreateApplicationTemplate)
+                .switchIfEmpty(ExceptionFactory.buildBusiness(TEMPLATE_INCORRECT))
+                .flatMap(file -> fileRepository.getCreateApplicationTemplate());
     }
 
     public Flux<File> getManagementFiles() {

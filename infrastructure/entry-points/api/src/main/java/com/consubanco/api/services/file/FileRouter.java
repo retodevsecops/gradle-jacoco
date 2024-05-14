@@ -35,6 +35,7 @@ public class FileRouter {
                     .GET(FILES_CUSTOMER_VIEW_PATH, offerFileHandler::getCustomerVisibleFiles, getCustomerVisibleFiles())
                     .POST(PAYLOAD_TEMPLATE_PATH, contentType(MULTIPART_FORM_DATA), handler::uploadPayloadTemplate, uploadPayloadTemplate())
                     .POST(AGREEMENTS_CONFIG_PATH, contentType(MULTIPART_FORM_DATA), handler::uploadAgreementsConfig, uploadAgreementsConfig())
+                    .POST(CREATE_APPLICATION_TEMPLATE_PATH, contentType(MULTIPART_FORM_DATA), handler::uploadCreateApplicationTemplate, uploadCreateApplicationTemplate())
                     .GET(MANAGEMENT_PATH, handler::getManagementFiles, getManagementFiles())
                     .GET(PAYLOAD_DATA_PATH, offerFileHandler::getPayloadData, getPayloadData())
                     .GET(UPLOAD_OFFICIAL_ID, offerFileHandler::uploadOfficialID, uploadOfficialID())

@@ -13,16 +13,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AgreementStorageAdapter implements AgreementConfigRepository {
 
-    private final AgreementConfStorageService agreementConfStorageService;
+    private final AgreementConfigStorageService agreementConfigStorageService;
 
     @Override
     public Mono<List<AgreementConfigVO>> getAgreementsConfig() {
-        return agreementConfStorageService.getAgreementsConfig();
+        return agreementConfigStorageService.getAgreementsConfig();
     }
 
     @Override
     public Mono<AgreementConfigVO> getConfigByAgreement(String agreementNumber) {
-        return agreementConfStorageService.getAgreementsConfig()
+        return agreementConfigStorageService.getAgreementsConfig()
                 .flatMapMany(Flux::fromIterable)
                 .filter(agreementConfigVO -> agreementConfigVO.getAgreementNumber().equalsIgnoreCase(agreementNumber))
                 .next();

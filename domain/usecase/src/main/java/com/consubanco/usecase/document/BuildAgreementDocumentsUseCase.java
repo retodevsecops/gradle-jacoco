@@ -23,7 +23,7 @@ import static com.consubanco.model.entities.document.message.DocumentBusinessMes
 @RequiredArgsConstructor
 public class BuildAgreementDocumentsUseCase {
 
-    private final BuildPayloadUseCase buildPayloadUseCase;
+    private final BuildPayloadDocumentUseCase buildPayloadUseCase;
     private final FileRepository fileRepository;
     private final DocumentGateway documentGateway;
     private final FileConvertGateway fileConvertGateway;

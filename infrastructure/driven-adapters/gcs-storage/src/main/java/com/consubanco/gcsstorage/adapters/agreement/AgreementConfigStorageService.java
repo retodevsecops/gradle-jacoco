@@ -26,7 +26,7 @@ import static com.consubanco.model.entities.agreement.message.AgreementTechnical
 
 @Service
 @RequiredArgsConstructor
-public class AgreementConfStorageService {
+public class AgreementConfigStorageService {
 
     private final CustomLogger logger;
     private final Storage storage;

@@ -108,6 +108,16 @@ public class FileOpenAPI {
                 .response(responseInternalError());
     }
 
+    public static Consumer<Builder> uploadCreateApplicationTemplate() {
+        return ops -> ops.tag(TAG_MANAGEMENT)
+                .operationId("uploadCreateApplicationTemplate")
+                .description("Upload template file with which the request to create application is built to consume the api.")
+                .summary("Upload create application template file.")
+                .response(responseOk(FileResDTO.class))
+                .response(responseBusinessException())
+                .response(responseInternalError());
+    }
+
     public static Consumer<Builder> uploadAgreementsConfig() {
         return ops -> ops.tag(TAG_MANAGEMENT)
                 .operationId("uploadAgreementsConfig")

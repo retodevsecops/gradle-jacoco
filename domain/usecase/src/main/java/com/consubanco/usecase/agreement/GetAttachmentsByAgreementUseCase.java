@@ -35,9 +35,7 @@ public class GetAttachmentsByAgreementUseCase {
 
     private Flux<AttachmentConfigVO> filterAttachments(Process process, List<AttachmentConfigVO> attachments) {
         List<AttachmentConfigVO> attachmentsToRetrieved = attachmentsToRetrieved(attachments);
-        if (attachmentsToRetrieved.isEmpty()) {
-            return Flux.fromIterable(attachments);
-        }
+        if (attachmentsToRetrieved.isEmpty()) return Flux.fromIterable(attachments);
         return retrievePreviousDocuments(process, attachmentsToRetrieved)
                 .collectList()
                 .flatMapMany(list -> Flux.fromIterable(attachments)

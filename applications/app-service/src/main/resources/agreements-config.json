@@ -18,7 +18,7 @@
         "technicalName": "recibo-nomina",
         "maxFiles": 2,
         "isOcr": true,
-        "isRecoverable": true,
+        "isRecoverable": false,
         "namePreviousDocument": "RECIBO-NOMINA",
         "isRequired": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF"]

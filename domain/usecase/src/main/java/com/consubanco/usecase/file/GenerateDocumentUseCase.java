@@ -7,7 +7,7 @@ import com.consubanco.model.entities.file.gateway.FileConvertGateway;
 import com.consubanco.model.entities.file.gateway.FileRepository;
 import com.consubanco.model.entities.file.vo.FileDataVO;
 import com.consubanco.model.entities.process.Process;
-import com.consubanco.usecase.document.BuildPayloadUseCase;
+import com.consubanco.usecase.document.BuildPayloadDocumentUseCase;
 import com.consubanco.usecase.process.GetProcessByIdUseCase;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -18,7 +18,7 @@ import static com.consubanco.model.entities.file.constant.FileConstants.pdfForma
 @RequiredArgsConstructor
 public class GenerateDocumentUseCase {
 
-    private final BuildPayloadUseCase buildPayloadUseCase;
+    private final BuildPayloadDocumentUseCase buildPayloadUseCase;
     private final DocumentGateway documentGateway;
     private final FileConvertGateway fileConvertGateway;
     private final FileRepository fileRepository;
