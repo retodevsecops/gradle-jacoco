@@ -42,15 +42,25 @@ public class FileStorageAdapter implements FileRepository {
 
     @Override
     public Mono<File> save(File file) {
+        return saveInStorage(file)
+                .map(blobInfo -> file.toBuilder()
+                        .url(blobInfo.getSelfLink())
+                        .size(FileUtil.getSize(blobInfo))
+                        .build());
+    }
+
+    @Override
+    public Mono<File> saveWithSignedUrl(File file) {
+        return saveInStorage(file)
+                .flatMap(this::buildFileEntityFromBlob);
+    }
+
+    private Mono<Blob> saveInStorage(File file) {
         String contentType = ContentTypeResolver.getFromFileExtension(file.getExtension());
         Mono<BlobInfo> blob = FileUtil.buildBlob(properties.getBucketName(), file.fullPath(), contentType);
         Mono<byte[]> contentFile = FileUtil.base64ToBytes(file.getContent());
         return Mono.zip(blob, contentFile)
                 .map(tuple -> storage.create(tuple.getT1(), tuple.getT2()))
-                .map(blobInfo -> file.toBuilder()
-                        .url(blobInfo.getSelfLink())
-                        .size(FileUtil.getSize(blobInfo))
-                        .build())
                 .onErrorMap(throwTechnicalError(STORAGE_ERROR));
     }
 

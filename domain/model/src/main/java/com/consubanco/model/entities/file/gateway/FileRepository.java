@@ -7,6 +7,7 @@ import reactor.core.publisher.Mono;
 
 public interface FileRepository {
     Mono<File> save(File file);
+    Mono<File> saveWithSignedUrl(File file);
     Flux<File> listByFolderWithUrls(String folderPath);
     Flux<File> listByFolderWithoutUrls(String folderPath);
     Mono<File> getByNameWithSignedUrl(String name);

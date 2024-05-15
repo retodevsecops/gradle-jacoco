@@ -24,15 +24,17 @@ public class UploadOfficialIDUseCase {
     private final PDFDocumentGateway pdfDocumentGateway;
     private final FileConvertGateway fileConvert;
 
-    public Mono<File> execute(String processId, String urlOfficialID) {
-        return Mono.zip(getProcessById.execute(processId), fileConvert.getFileContentAsBase64(urlOfficialID))
+    public Mono<File> execute(String processId, String urlFrontOfficialID, String urlBackOfficialID) {
+        Mono<String> frontOfficialID = fileConvert.getFileContentAsBase64(urlFrontOfficialID);
+        Mono<String> backOfficialID = fileConvert.getFileContentAsBase64(urlBackOfficialID);
+        return Mono.zip(getProcessById.execute(processId), frontOfficialID, backOfficialID)
                 .flatMap(TupleUtils.function(this::buildFile))
-                .flatMap(fileRepository::save);
+                .flatMap(fileRepository::saveWithSignedUrl);
 
     }
 
-    private Mono<File> buildFile(Process process, String officialIdAsBase64) {
-        return pdfDocumentGateway.generatePdfWithImages(List.of(officialIdAsBase64))
+    private Mono<File> buildFile(Process process, String frontOfficialID, String backOfficialID) {
+        return pdfDocumentGateway.generatePdfWithImages(List.of(frontOfficialID, backOfficialID))
                 .map(fileContent -> File.builder()
                         .name(DocumentNames.OFFICIAL_ID)
                         .content(fileContent)

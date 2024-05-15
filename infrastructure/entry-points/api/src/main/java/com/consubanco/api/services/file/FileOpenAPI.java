@@ -155,7 +155,8 @@ public class FileOpenAPI {
                 .description("This operation is responsible for uploading an official identification file to storage..")
                 .summary("Upload official identification.")
                 .parameter(ParamsOpenAPI.path(FileParams.PROCESS_ID, "Process identifier"))
-                .parameter(ParamsOpenAPI.query(FileParams.OFFICIAL_ID, "Url image official identification").required(true))
+                .parameter(ParamsOpenAPI.query(FileParams.FRONT_OFFICIAL_ID, "Url front image official identification").required(true))
+                .parameter(ParamsOpenAPI.query(FileParams.BACK_OFFICIAL_ID, "Url back image official identification").required(true))
                 .response(responseOk(FileResDTO.class))
                 .response(responseBusinessException())
                 .response(responseInternalError());

@@ -2,7 +2,6 @@ package com.consubanco.api.services.file.handlers;
 
 import com.consubanco.api.commons.util.FilePartUtil;
 import com.consubanco.api.commons.util.HttpResponseUtil;
-import com.consubanco.api.commons.util.ParamsValidator;
 import com.consubanco.api.services.file.dto.FileResDTO;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.usecase.document.GetPayloadDataUseCase;
@@ -21,6 +20,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.function.Function;
 
+import static com.consubanco.api.commons.util.ParamsValidator.checkQueryParamIsUrl;
 import static com.consubanco.api.services.file.constants.FileParams.*;
 
 @Component
@@ -59,9 +59,8 @@ public class OfferFileHandler {
 
     public Mono<ServerResponse> uploadOfficialID(ServerRequest request) {
         String processId = request.pathVariable(PROCESS_ID);
-        return ParamsValidator.queryParam(request, OFFICIAL_ID)
-                .flatMap(ParamsValidator::paramIsUrl)
-                .flatMap(url -> uploadOfficialIDUseCase.execute(processId, url))
+        return Mono.zip(checkQueryParamIsUrl(request, FRONT_OFFICIAL_ID), checkQueryParamIsUrl(request, BACK_OFFICIAL_ID))
+                .flatMap(tuple -> uploadOfficialIDUseCase.execute(processId, tuple.getT1(), tuple.getT2()))
                 .map(FileResDTO::new)
                 .flatMap(HttpResponseUtil::Ok);
     }
