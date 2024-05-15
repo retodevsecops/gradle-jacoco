@@ -1,6 +1,6 @@
 <#--
-    This is a freemarker template that is used to dynamically build the payload object
-    to consume the developer api for document generation.
+    This is a freemarker template that is used to dynamically build the request object
+    to consume the api for create application.
 -->
 <#assign
     current_date_timestamp = .now?long

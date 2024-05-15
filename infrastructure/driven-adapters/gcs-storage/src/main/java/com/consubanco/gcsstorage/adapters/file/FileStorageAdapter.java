@@ -71,7 +71,7 @@ public class FileStorageAdapter implements FileRepository {
     }
 
     @Override
-    public Mono<File> getByName(String name) {
+    public Mono<File> getByNameWithSignedUrl(String name) {
         BlobId blobId = BlobId.of(properties.getBucketName(), name);
         return Mono.justOrEmpty(storage.get(blobId))
                 .onErrorMap(throwTechnicalError(FIND_FILE_ERROR))
@@ -79,20 +79,34 @@ public class FileStorageAdapter implements FileRepository {
     }
 
     @Override
-    @Cacheable("payloadTemplate")
-    public Mono<File> getPayloadTemplate() {
-        return getByName(properties.getFilesPath().getPayloadTemplate())
-                .doOnNext(file -> logger.info("Payload template was consulted.", file));
+    public Mono<File> getByNameWithoutSignedUrl(String name) {
+        BlobId blobId = BlobId.of(properties.getBucketName(), name);
+        return Mono.justOrEmpty(storage.get(blobId))
+                .onErrorMap(throwTechnicalError(FIND_FILE_ERROR))
+                .map(FileFactoryUtil::buildFromBlob);
     }
 
     @Override
-    public Mono<FileUploadVO> getLocalPayloadTemplate() {
+    @Cacheable("payloadTemplate")
+    public Mono<File> getPayloadTemplate() {
+        return getByNameWithSignedUrl(properties.getFilesPath().getPayloadTemplate())
+                .doOnNext(file -> logger.info("Payload template was consulted.", file));
+    }
+
+    @Cacheable("payloadTemplate")
+    public Mono<File> loadPayloadTemplate() {
+        return getByNameWithoutSignedUrl(properties.getFilesPath().getPayloadTemplate())
+                .switchIfEmpty(uploadLocalPayloadTemplate());
+    }
+
+    public Mono<File> uploadLocalPayloadTemplate() {
         return Mono.just(properties.payloadTemplatePath())
                 .map(FileUtil::getFileName)
                 .map(ClassPathResource::new)
                 .flatMap(FileUtil::buildFileUploadVOFromResource)
                 .onErrorMap(throwTechnicalError(LOCAL_TEMPLATE_ERROR))
-                .doOnTerminate(() -> logger.info("Payload template was get from local source."));
+                .doOnNext(e -> logger.info("Payload template was get from local source."))
+                .flatMap(this::uploadPayloadTemplate);
     }
 
     @Override
@@ -121,14 +135,31 @@ public class FileStorageAdapter implements FileRepository {
     @Override
     @Cacheable("createApplicationTemplate")
     public Mono<File> getCreateApplicationTemplate() {
-        return getByName(properties.getFilesPath().getCreateApplicationTemplate())
-                .doOnNext(file -> logger.info("Create application template was consulted.", file));
+        return getByNameWithSignedUrl(properties.getFilesPath().getCreateApplicationTemplate())
+                .doOnNext(file -> logger.info("Create application template was consulted in to storage.", file));
     }
 
     @Override
     @CacheEvict(cacheNames = "createApplicationTemplate", allEntries = true)
     public Mono<File> uploadCreateApplicationTemplate(FileUploadVO fileUploadVO) {
         return uploadTemplate(fileUploadVO, properties.getFilesPath().getCreateApplicationTemplate());
+    }
+
+    @Override
+    @Cacheable("createApplicationTemplate")
+    public Mono<File> loadCreateApplicationTemplate() {
+        return getByNameWithoutSignedUrl(properties.getFilesPath().getCreateApplicationTemplate())
+                .switchIfEmpty(uploadLocalCreateApplicationTemplate());
+    }
+
+    private Mono<File> uploadLocalCreateApplicationTemplate() {
+        return Mono.just(properties.getFilesPath().getCreateApplicationTemplate())
+                .map(FileUtil::getFileName)
+                .map(ClassPathResource::new)
+                .flatMap(FileUtil::buildFileUploadVOFromResource)
+                .flatMap(this::uploadCreateApplicationTemplate)
+                .doOnNext(e -> logger.info("The create application template was get from local source."))
+                .onErrorMap(throwTechnicalError(LOCAL_TEMPLATE_ERROR));
     }
 
     private Mono<File> uploadTemplate(FileUploadVO fileUploadVO, String path) {

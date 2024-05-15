@@ -19,8 +19,9 @@ public class FileFactoryUtil {
 
     public static File buildFromBlobWithUrl(Blob blob, String url) {
         return File.builder()
-                .name(FileUtil.getFileName(blob.getName()))
                 .url(url)
+                .name(FileUtil.getFileName(blob.getName()))
+                .content(Base64.encodeBase64String(blob.getContent()))
                 .directoryPath(FileUtil.getDirectory(blob.getName()))
                 .size(FileUtil.getSize(blob))
                 .build();

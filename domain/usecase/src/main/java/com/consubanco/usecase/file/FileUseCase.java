@@ -19,10 +19,7 @@ public class FileUseCase {
     private final FileRepository fileRepository;
 
     public Mono<File> loadPayloadTemplate() {
-        return fileRepository.getPayloadTemplate()
-                .switchIfEmpty(fileRepository.getLocalPayloadTemplate()
-                        .switchIfEmpty(ExceptionFactory.buildBusiness(PAYLOAD_TEMPLATE_NOT_FOUND))
-                        .flatMap(this::uploadPayloadTemplate));
+        return fileRepository.loadPayloadTemplate();
     }
 
     public Mono<File> uploadPayloadTemplate(FileUploadVO fileUploadVO) {
@@ -54,6 +51,10 @@ public class FileUseCase {
 
     public Flux<File> getManagementFiles() {
         return fileRepository.listByFolderWithUrls(FileConstants.MANAGEMENT_DIRECTORY_PATH);
+    }
+
+    public Mono<File> loadCreateApplicationTemplate() {
+        return fileRepository.loadCreateApplicationTemplate();
     }
 
     private Mono<FileUploadVO> checkFileSize(FileUploadVO fileUploadVO) {
