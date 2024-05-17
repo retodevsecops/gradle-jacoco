@@ -8,7 +8,13 @@ import java.util.List;
 @Data
 public class ActiveOfferingResDTO {
 
+    private CustomerData customer;
     private OfferData offer;
+
+    @Data
+    public static class CustomerData {
+        private String bpId;
+    }
 
     @Data
     public static class OfferData {
@@ -31,6 +37,9 @@ public class ActiveOfferingResDTO {
     public Process toDomainEntity(String processId) {
         return Process.builder()
                 .id(processId)
+                .customer(Process.Customer.builder()
+                        .bpId(this.customer.bpId)
+                        .build())
                 .offer(Process.Offer.builder()
                         .id(this.getOffer().getId())
                         .agreementNumber(this.getOffer().getAgreement().getKey())

@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono;
 import java.util.Map;
 
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
-import static com.consubanco.model.entities.file.message.FileTechnicalMessage.API_PROMOTER_ERROR;
+import static com.consubanco.model.entities.loan.message.LoanTechnicalMessage.API_CREATE_APPLICATION_ERROR;
 
 @Service
 public class LoanAdapter implements LoanGateway {
@@ -34,20 +34,22 @@ public class LoanAdapter implements LoanGateway {
     }
 
     @Override
-    public Mono<Map<String, Object>> createApplication(String createApplicationTemplate, Map<String, Object> data) {
+    @SuppressWarnings("unchecked")
+    public Mono<Map<String, Object>> buildApplicationData(String createApplicationTemplate, Map<String, Object> data) {
         return templateOperations.process(createApplicationTemplate, data, Map.class)
-                .flatMap(this::sendRequestToApi)
-                .doOnNext(response -> logger.info("The create application api was successful.", response));
-
+                .map(map -> (Map<String, Object>) map);
     }
 
-    public Mono<Map<String, Object>> sendRequestToApi(Map<String, Object> request) {
+    @Override
+    public Mono<Map<String, Object>> createApplication(Map<String, Object> applicationData) {
+        logger.info("This is request body of create application", applicationData);
         return this.apiConnectClient.post()
                 .uri(apisProperties.getCreateApplication())
-                .bodyValue(request)
+                .bodyValue(applicationData)
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
-                .onErrorMap(throwTechnicalError(API_PROMOTER_ERROR));
+                .onErrorMap(throwTechnicalError(API_CREATE_APPLICATION_ERROR));
     }
+
 
 }

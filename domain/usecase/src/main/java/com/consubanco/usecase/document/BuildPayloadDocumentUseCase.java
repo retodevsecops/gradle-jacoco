@@ -21,7 +21,7 @@ public class BuildPayloadDocumentUseCase {
     }
 
     private Mono<String> getPayloadTemplate() {
-        return fileRepository.getPayloadTemplate()
+        return fileRepository.getPayloadTemplateWithoutSignedUrl()
                 .map(File::getContent);
     }
 

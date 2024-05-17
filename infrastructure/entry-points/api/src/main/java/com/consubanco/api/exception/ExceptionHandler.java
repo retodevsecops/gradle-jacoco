@@ -55,7 +55,8 @@ public class ExceptionHandler extends AbstractErrorWebExceptionHandler {
 
     private Mono<Throwable> accessError(ServerRequest request) {
         return just(request)
-                .map(this::getError);
+                .map(this::getError)
+                .doOnNext(logger::error);
     }
 
     private Function<TechnicalException, Mono<ServerResponse>> responseTechnicalError(ServerRequest request) {

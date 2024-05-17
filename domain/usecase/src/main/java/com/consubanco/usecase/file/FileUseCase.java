@@ -19,7 +19,8 @@ public class FileUseCase {
     private final FileRepository fileRepository;
 
     public Mono<File> loadPayloadTemplate() {
-        return fileRepository.loadPayloadTemplate();
+        return fileRepository.loadPayloadTemplate()
+                .flatMap(file -> fileRepository.getPayloadTemplateWithoutSignedUrl());
     }
 
     public Mono<File> uploadPayloadTemplate(FileUploadVO fileUploadVO) {
@@ -54,7 +55,8 @@ public class FileUseCase {
     }
 
     public Mono<File> loadCreateApplicationTemplate() {
-        return fileRepository.loadCreateApplicationTemplate();
+        return fileRepository.loadCreateApplicationTemplate()
+                .flatMap(file -> fileRepository.getCreateApplicationTemplateWithoutSignedUrl());
     }
 
     private Mono<FileUploadVO> checkFileSize(FileUploadVO fileUploadVO) {

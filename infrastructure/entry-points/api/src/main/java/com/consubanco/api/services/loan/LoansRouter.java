@@ -8,7 +8,8 @@ import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
 import static com.consubanco.api.services.loan.LoansOpenAPI.createApplication;
-import static com.consubanco.api.services.loan.constants.LoansPaths.CREATE_APPLICATION_PATH;
+import static com.consubanco.api.services.loan.LoansOpenAPI.listByProcess;
+import static com.consubanco.api.services.loan.constants.LoansPaths.PROCESS_PATH;
 import static org.springdoc.webflux.core.fn.SpringdocRouteBuilder.route;
 import static org.springframework.web.reactive.function.server.RequestPredicates.path;
 
@@ -23,7 +24,8 @@ public class LoansRouter {
         return RouterFunctions.nest(
                 path(loansServicePath),
                 route()
-                    .POST(CREATE_APPLICATION_PATH, handler::createApplication, createApplication())
+                    .POST(PROCESS_PATH, handler::createApplication, createApplication())
+                    .GET(PROCESS_PATH, handler::listByProcess, listByProcess())
                     .build()
         );
     }

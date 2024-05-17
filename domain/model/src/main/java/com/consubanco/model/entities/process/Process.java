@@ -13,7 +13,17 @@ import java.util.List;
 public class Process {
 
     private String id;
+    private Customer customer;
     private Offer offer;
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder(toBuilder = true)
+    public static class Customer {
+        private String bpId;
+    }
 
     @Getter
     @Setter

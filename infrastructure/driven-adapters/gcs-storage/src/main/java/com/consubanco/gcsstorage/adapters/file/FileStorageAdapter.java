@@ -103,7 +103,14 @@ public class FileStorageAdapter implements FileRepository {
                 .doOnNext(file -> logger.info("Payload template was consulted.", file));
     }
 
+    @Override
     @Cacheable("payloadTemplate")
+    public Mono<File> getPayloadTemplateWithoutSignedUrl() {
+        return getByNameWithoutSignedUrl(properties.getFilesPath().getPayloadTemplate())
+                .doOnNext(file -> logger.info("Payload template was consulted.", file));
+    }
+
+    @Override
     public Mono<File> loadPayloadTemplate() {
         return getByNameWithoutSignedUrl(properties.getFilesPath().getPayloadTemplate())
                 .switchIfEmpty(uploadLocalPayloadTemplate());
@@ -150,13 +157,19 @@ public class FileStorageAdapter implements FileRepository {
     }
 
     @Override
+    @Cacheable("createApplicationTemplate")
+    public Mono<File> getCreateApplicationTemplateWithoutSignedUrl() {
+        return getByNameWithoutSignedUrl(properties.getFilesPath().getCreateApplicationTemplate())
+                .doOnNext(file -> logger.info("Create application template was consulted in to storage.", file));
+    }
+
+    @Override
     @CacheEvict(cacheNames = "createApplicationTemplate", allEntries = true)
     public Mono<File> uploadCreateApplicationTemplate(FileUploadVO fileUploadVO) {
         return uploadTemplate(fileUploadVO, properties.getFilesPath().getCreateApplicationTemplate());
     }
 
     @Override
-    @Cacheable("createApplicationTemplate")
     public Mono<File> loadCreateApplicationTemplate() {
         return getByNameWithoutSignedUrl(properties.getFilesPath().getCreateApplicationTemplate())
                 .switchIfEmpty(uploadLocalCreateApplicationTemplate());

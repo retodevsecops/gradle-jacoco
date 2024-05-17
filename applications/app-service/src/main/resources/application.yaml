@@ -15,6 +15,13 @@ spring:
       path: "/h2"
   profiles:
     include: null
+  flyway:
+    enabled: true
+    baseline-version: 1
+    locations: "classpath:db/migration"
+    sql-migration-prefix: "V"
+    sql-migration-suffixes: ".sql"
+    baseline-on-migrate: true
 app:
   init:
     promoter-id: ${INIT_PROMOTER_ID:0010007540}
@@ -29,6 +36,7 @@ adapter:
         api-customer-process: ${API_CUSTOMER_PROCESS:http://localhost:3001/customers-api/customer/all-info/{processId}}
         api-health-offer: ${API_HEALTH_OFFER:http://localhost:3001/offers-api/offers/actuator/health}
         api-active-offer: ${API_ACTIVE_OFFER:http://localhost:3001/offers-api/offers/active-offering?processId={processId}}
+        api-validate-otp: ${API_VALIDATE_OTP:https://vd-dev.csbservicios.com/authorization-api/otp/validate}
       promoter:
         auth-token: ${API_PROMOTER_AUTH_TOKEN}
         channel: ${API_GET_AGREEMENT_CHANNEL:RENEX}
@@ -49,6 +57,14 @@ adapter:
       payload-template: ${GCS_PAYLOAD_TEMPLATE_PATH:management/puc-loans-documents-msa/payload-template.ftl}
       agreements-config: ${GCS_AGREEMENT_CONFIG:management/puc-loans-documents-msa/agreements-config.json}
       create-application-template: ${GCS_CREATE_APPLICATION_TEMPLATE_PATH:management/puc-loans-documents-msa/create-application-template.ftl}
+  postgresql-repository:
+    connection:
+      host: ${DB_HOST}
+      port: ${DB_PORT}
+      database: ${DB_DATABASE}
+      schema: ${DB_SCHEMA}
+      username: ${DB_USERNAME}
+      password: ${DB_PASSWORD}
 entry:
   api:
     open-api:
@@ -109,4 +125,4 @@ springdoc:
 
 logging:
   level:
-    org.springframework: OFF
+    org.springframework: ${ENABLE_SPRING_LOGS:OFF}

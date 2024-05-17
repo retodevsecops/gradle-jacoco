@@ -44,13 +44,13 @@ public class PayloadDocumentAdapter implements PayloadDocumentGateway, Applicati
     }
 
     @Override
-    @Cacheable("payload-data")
+    @Cacheable("all-data")
     public Mono<Map<String, Object>> getAllData(String processId) {
         return Mono.zip(promoterApiConsumer.getPromoterById(promoterId),
                         customerApiConsumer.customerDataByProcess(processId),
                         offerApiService.activeOfferByProcess(processId))
                 .map(this::buildDataMap)
-                .doOnNext(data -> logger.info("Data used to build payload was consulted.", data));
+                .doOnNext(data -> logger.info("Data used to process template was consulted.", data));
     }
 
     private Map<String, Object> buildDataMap(Tuple3<Map<String, Object>, Map<String, Object>, Map<String, Object>> tuple) {

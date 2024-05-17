@@ -13,11 +13,13 @@ public interface FileRepository {
     Mono<File> getByNameWithSignedUrl(String name);
     Mono<File> getByNameWithoutSignedUrl(String name);
     Mono<File> getPayloadTemplate();
+    Mono<File> getPayloadTemplateWithoutSignedUrl();
     Mono<File> loadPayloadTemplate();
     Mono<File> uploadPayloadTemplate(FileUploadVO fileUploadVO);
     Mono<File> uploadAgreementsConfigFile(File file);
     Double getMaxSizeOfFileInMBAllowed();
     Mono<File> getCreateApplicationTemplate();
+    Mono<File> getCreateApplicationTemplateWithoutSignedUrl();
     Mono<File> uploadCreateApplicationTemplate(FileUploadVO fileUploadVO);
     Mono<File> loadCreateApplicationTemplate();
 }
