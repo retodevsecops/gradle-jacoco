@@ -2,6 +2,7 @@ package com.consubanco.api.services.loan;
 
 import com.consubanco.api.commons.util.HttpResponseUtil;
 import com.consubanco.api.services.loan.constants.LoanHeaderParams;
+import com.consubanco.api.services.loan.dto.LoanApplicationResDTO;
 import com.consubanco.usecase.loan.CreateApplicationLoanUseCase;
 import com.consubanco.usecase.loan.LoanUseCase;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class LoansHandler {
     public Mono<ServerResponse> listByProcess(ServerRequest serverRequest) {
         String processId = serverRequest.pathVariable(PROCESS_ID);
         return loanUseCase.listByProcess(processId)
+                .map(LoanApplicationResDTO::new)
                 .collectList()
                 .flatMap(HttpResponseUtil::Ok);
     }
