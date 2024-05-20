@@ -7,7 +7,7 @@ current_date_timestamp = .now?long
 >
 {
   "createApplicationRequestBO": {
-    "applicationId": "string",
+    "applicationId": "${offer_data.offer.id}",
     "aplicationInfo": {
       "probankNumber": "string",
       "folioApplication": "string",
@@ -17,11 +17,11 @@ current_date_timestamp = .now?long
         "bp": "string",
         "clientId": "string",
         "curp": "string",
-        "rfc": "string",
-        "name1": "string",
-        "name2": "string",
-        "lastName1": "string",
-        "lastName2": "string",
+        "rfc": "${customer_data.customer.rfc}",
+        "name1": "${customer_data.customer.firstName}",
+        "name2": "${customer_data.customer.secondName}",
+        "lastName1": "${customer_data.customer.lastName}",
+        "lastName2": "${customer_data.customer.secondLastName}",
         "regimenFiscal": {
           "key": "string",
           "description": "string"
