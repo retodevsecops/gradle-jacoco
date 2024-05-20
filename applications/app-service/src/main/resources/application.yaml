@@ -62,7 +62,6 @@ adapter:
       host: ${DB_HOST}
       port: ${DB_PORT}
       database: ${DB_DATABASE}
-      schema: ${DB_SCHEMA}
       username: ${DB_USERNAME}
       password: ${DB_PASSWORD}
 entry:

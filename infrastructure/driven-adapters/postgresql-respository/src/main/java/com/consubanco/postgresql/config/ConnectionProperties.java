@@ -11,7 +11,6 @@ public class ConnectionProperties {
     private String host;
     private Integer port;
     private String database;
-    private String schema;
     private String username;
     private String password;
 
