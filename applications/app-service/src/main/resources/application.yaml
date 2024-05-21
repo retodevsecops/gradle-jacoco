@@ -44,8 +44,8 @@ adapter:
         api-get-agreement: ${API_GET_AGREEMENT_ENDPOINT:https://it-api-gateway.qa.masnominadigital.com/convenios/getDetail}
       api-connect:
         client-id: ${API_CONNECT_CLIENT_ID}
-        application-id: ${API_CONNECT_APPLICATION_ID:CSB-CTE-APP}
-        api-get-cnca: ${API_GET_CNCA:https://apic.consubanco.com/csb/qa/opc-service/getCNCALetter}
+        application-id: ${API_CONNECT_APPLICATION_ID:CSB-RENEX}
+        api-get-cnca: ${API_GET_CNCA:https://apic.consubanco.com/csb/qa/puc-letter-generate-api/getLetterCNCA}
         api-search-interlocutor: ${API_SEARCH_INTERLOCUTOR:http://localhost:3001/csb/qa/common-crm-service/searchInterlocutor}
         api-docs-previous: ${API_DOCS_PREVIOUS:https://apic.consubanco.com/csb/qa/opp-service/findDocsPreviusApplication}
         create-application: ${API_CREATE_APPLICATION:https://apic.consubanco.com/csb/qa/opp-service/createApplication}

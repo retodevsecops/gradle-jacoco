@@ -27,7 +27,7 @@ public class FileOpenAPI {
                 .description("Get CNCA letter by account number.")
                 .summary("Get CNCA letter.")
                 .parameter(ParamsOpenAPI.path(FileParams.PROCESS_ID, "Process identifier"))
-                .response(responseOkWithList(FileResDTO.class))
+                .response(responseOk(FileResDTO.class))
                 .response(responseBusinessException())
                 .response(responseInternalError());
     }

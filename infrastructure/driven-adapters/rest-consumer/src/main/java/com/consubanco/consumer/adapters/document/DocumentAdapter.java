@@ -46,14 +46,16 @@ public class DocumentAdapter implements DocumentGateway {
     }
 
     @Override
-    public Mono<String> getContentCNCALetter(String loanId) {
-        GetCNCALetterRequestDTO requestDTO = new GetCNCALetterRequestDTO(apis.getApplicationId(), loanId);
+    public Mono<String> generateContentCNCALetter(String loanId) {
+        GenerateCNCALetterReqDTO requestDTO = new GenerateCNCALetterReqDTO(apis.getApplicationId(), loanId);
         return this.apiConnectClient.post()
                 .uri(apis.getCNCAApiEndpoint())
                 .bodyValue(requestDTO)
                 .retrieve()
-                .bodyToMono(GetCNCALetterResponseDTO.class)
-                .flatMap(GetCNCALetterResponseDTO::getFileAsBase64)
+                .bodyToMono(GenerateCNCALetterResDTO.class)
+                .filter(GenerateCNCALetterResDTO::checkCNCAIfExists)
+                .map(GenerateCNCALetterResDTO::getData)
+                .map(GenerateCNCALetterResDTO.Data::getBase64)
                 .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(API_ERROR));
     }
 

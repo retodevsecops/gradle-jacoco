@@ -5,7 +5,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class FileConstants {
     private final static String OFFER_DIRECTORY_PATH = "renewal/offer/%s/";
-    private final static String FILE_NAME_CNCA_LETTER = "carta-de-liquidacion_%s";
+    public final static String FILE_NAME_CNCA_LETTER = "carta-de-liquidacion";
     private final static String PDF_FORMAT = "%s.pdf";
     private final static String ATTACHMENTS_DIRECTORY_PATH = OFFER_DIRECTORY_PATH.concat("attachments/");
     private final static String DOCUMENTS_DIRECTORY_PATH = OFFER_DIRECTORY_PATH.concat("documents/");
@@ -15,11 +15,6 @@ public class FileConstants {
 
     public static String pdfFormat(String fileName) {
         return String.format(PDF_FORMAT, fileName);
-    }
-
-    public static String cncaFormatName(String loanId) {
-        String fileName = String.format(FILE_NAME_CNCA_LETTER, loanId);
-        return pdfFormat(fileName);
     }
 
     public static String cncaDirectory(String offerId) {

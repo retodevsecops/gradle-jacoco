@@ -35,7 +35,6 @@ public class FileHandler {
         String processId = request.pathVariable(PROCESS_ID);
         return buildCNCALettersUseCase.execute(processId)
                 .map(FileResDTO::new)
-                .collectList()
                 .flatMap(HttpResponseUtil::Ok);
     }
 
