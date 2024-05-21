@@ -31,7 +31,7 @@ public class BuildCNCALettersUseCase {
         return getProcessByIdUseCase.execute(processId)
                 .map(Process::getOffer)
                 .flatMap(this::generateUnifiedCNCALetter)
-                .flatMap(fileRepository::save);
+                .flatMap(fileRepository::saveWithSignedUrl);
 
     }
 
