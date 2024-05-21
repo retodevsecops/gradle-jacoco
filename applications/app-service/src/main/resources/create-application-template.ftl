@@ -4,19 +4,20 @@ to consume the api for create application. ${}
 -->
 <#assign
 current_date_timestamp = .now?long
+promotorCompleteName = promoter_data.name1 + "" + promoter_data.lastname1
 >
 {
   "createApplicationRequestBO": {
-    "applicationId": "${offer_data.offer.id}",
+    "applicationId": "RENEX",
     "aplicationInfo": {
-      "probankNumber": "string",
-      "folioApplication": "string",
-      "promotorBp": "string",
-      "promotorCompleteName": "string",
+      "probankNumber": "${offer_data.offer.id}",
+      "folioApplication": "${offer_data.offer.id}",
+      "promotorBp": "${promoter_data.bpId}",
+      "promotorCompleteName": "${promotorCompleteName}",
       "applicant": {
-        "bp": "string",
-        "clientId": "string",
-        "curp": "string",
+        "bp": "${customer_data.customer.bpId}",
+        "clientId": "${customer_data.customer.bpId}",
+        "curp": "${customer_data.customer.curp}",
         "rfc": "${customer_data.customer.rfc}",
         "name1": "${customer_data.customer.firstName}",
         "name2": "${customer_data.customer.secondName}",
