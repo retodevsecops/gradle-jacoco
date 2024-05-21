@@ -3,6 +3,7 @@ package com.consubanco.api.services.file.handlers;
 import com.consubanco.api.commons.util.FilePartUtil;
 import com.consubanco.api.commons.util.HttpResponseUtil;
 import com.consubanco.api.services.file.dto.FileResDTO;
+import com.consubanco.api.services.file.dto.UploadOfficialIdentificationReqDTO;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.usecase.document.GetPayloadDataUseCase;
 import com.consubanco.usecase.file.GetCustomerVisibleFilesUseCase;
@@ -20,8 +21,8 @@ import reactor.core.publisher.Mono;
 
 import java.util.function.Function;
 
-import static com.consubanco.api.commons.util.ParamsValidator.checkQueryParamIsUrl;
-import static com.consubanco.api.services.file.constants.FileParams.*;
+import static com.consubanco.api.services.file.constants.FileParams.OFFER_ID;
+import static com.consubanco.api.services.file.constants.FileParams.PROCESS_ID;
 
 @Component
 @RequiredArgsConstructor
@@ -59,8 +60,9 @@ public class OfferFileHandler {
 
     public Mono<ServerResponse> uploadOfficialID(ServerRequest request) {
         String processId = request.pathVariable(PROCESS_ID);
-        return Mono.zip(checkQueryParamIsUrl(request, FRONT_OFFICIAL_ID), checkQueryParamIsUrl(request, BACK_OFFICIAL_ID))
-                .flatMap(tuple -> uploadOfficialIDUseCase.execute(processId, tuple.getT1(), tuple.getT2()))
+        return request.bodyToMono(UploadOfficialIdentificationReqDTO.class)
+                .flatMap(UploadOfficialIdentificationReqDTO::check)
+                .flatMap(dto -> uploadOfficialIDUseCase.execute(processId, dto.front(), dto.back()))
                 .map(FileResDTO::new)
                 .flatMap(HttpResponseUtil::Ok);
     }

@@ -28,7 +28,8 @@ app:
 
 adapter:
   rest-consumer:
-    timeout: ${REST_TIMEOUT:5000}
+    timeout: ${REST_TIMEOUT:10000}
+    memory: ${REST_MAX_MEMORY_SIZE_MB:10}
     apis:
       renex:
         audience: ${GCP_AUDIENCE:renovacion-dev}

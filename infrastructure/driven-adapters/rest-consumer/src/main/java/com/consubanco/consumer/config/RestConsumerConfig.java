@@ -46,6 +46,7 @@ public class RestConsumerConfig {
         return WebClient.builder()
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .defaultHeader(HttpHeaders.AUTHORIZATION, String.format(AUTH_BEARER_VALUE, token))
+                .exchangeStrategies(defineStrategy())
                 .clientConnector(getClientHttpConnector())
                 .filter(webClientLoggingFilter)
                 .build();
@@ -56,6 +57,7 @@ public class RestConsumerConfig {
         return WebClient.builder()
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .defaultHeader(CLIENT_ID_HEADER, clientId)
+                .exchangeStrategies(defineStrategy())
                 .clientConnector(getClientHttpConnector())
                 .filter(webClientLoggingFilter)
                 .build();
@@ -64,10 +66,15 @@ public class RestConsumerConfig {
     @Bean("clientGetFiles")
     public WebClient buildClientGetFiles(WebClient.Builder builder) {
         return builder
-                .exchangeStrategies(ExchangeStrategies.builder()
-                        .codecs(config -> config.defaultCodecs().maxInMemorySize(1024 * 1024 * 10))
-                        .build())
+                .exchangeStrategies(defineStrategy())
                 .clientConnector(getClientHttpConnector())
+                .build();
+    }
+
+    private ExchangeStrategies defineStrategy() {
+        int maxBytes = clientProperties.getMemory() * 1024 * 1024;
+        return ExchangeStrategies.builder()
+                .codecs(config -> config.defaultCodecs().maxInMemorySize(maxBytes))
                 .build();
     }
 
