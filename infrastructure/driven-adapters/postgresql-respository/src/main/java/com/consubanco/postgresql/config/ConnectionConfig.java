@@ -36,6 +36,7 @@ public class ConnectionConfig extends AbstractR2dbcConfiguration {
         ConnectionFactoryInitializer initializer = new ConnectionFactoryInitializer();
         initializer.setConnectionFactory(connectionFactory);
         initializer.setDatabasePopulator(databasePopulator());
+        System.out.println(connectionProperties.toString());
         return initializer;
     }
 
