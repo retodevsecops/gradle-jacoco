@@ -20,6 +20,7 @@ public class ConnectionConfig extends AbstractR2dbcConfiguration {
     @Bean
     @Override
     public ConnectionFactory connectionFactory() {
+        System.out.println(connectionProperties.getHost());
         return new PostgresqlConnectionFactory(
                 PostgresqlConnectionConfiguration.builder()
                         .host(connectionProperties.getHost())
@@ -27,16 +28,13 @@ public class ConnectionConfig extends AbstractR2dbcConfiguration {
                         .database(connectionProperties.getDatabase())
                         .username(connectionProperties.getUsername())
                         .password(connectionProperties.getPassword())
-                        .build()
-        );
+                        .build());
     }
 
     @Bean
     public ConnectionFactoryInitializer initializer(ConnectionFactory connectionFactory) {
         ConnectionFactoryInitializer initializer = new ConnectionFactoryInitializer();
         initializer.setConnectionFactory(connectionFactory);
-        initializer.setDatabasePopulator(databasePopulator());
-        System.out.println(connectionProperties.toString());
         return initializer;
     }
 
