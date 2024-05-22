@@ -20,7 +20,7 @@ public class ConnectionConfig extends AbstractR2dbcConfiguration {
     @Bean
     @Override
     public ConnectionFactory connectionFactory() {
-        System.out.println(connectionProperties.getHost());
+        System.out.println(connectionProperties.toString());
         return new PostgresqlConnectionFactory(
                 PostgresqlConnectionConfiguration.builder()
                         .host(connectionProperties.getHost())
