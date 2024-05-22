@@ -13,5 +13,6 @@ public class ConnectionProperties {
     private String database;
     private String username;
     private String password;
+    private String script;
 
 }

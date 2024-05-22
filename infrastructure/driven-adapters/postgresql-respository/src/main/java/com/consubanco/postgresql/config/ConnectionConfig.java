@@ -35,12 +35,13 @@ public class ConnectionConfig extends AbstractR2dbcConfiguration {
     public ConnectionFactoryInitializer initializer(ConnectionFactory connectionFactory) {
         ConnectionFactoryInitializer initializer = new ConnectionFactoryInitializer();
         initializer.setConnectionFactory(connectionFactory);
+        initializer.setDatabasePopulator(databasePopulator());
         return initializer;
     }
 
     @Bean
     public ResourceDatabasePopulator databasePopulator() {
-        return new ResourceDatabasePopulator(new ClassPathResource("db/migration"));
+        return new ResourceDatabasePopulator(new ClassPathResource(connectionProperties.getScript()));
     }
 
 }

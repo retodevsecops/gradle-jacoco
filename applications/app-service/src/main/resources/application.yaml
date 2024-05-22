@@ -65,6 +65,7 @@ adapter:
       database: ${DB_DATABASE}
       username: ${DB_USERNAME}
       password: ${DB_PASSWORD}
+      script: db/migration/V1.0__init_schema.sql
 entry:
   api:
     open-api:
