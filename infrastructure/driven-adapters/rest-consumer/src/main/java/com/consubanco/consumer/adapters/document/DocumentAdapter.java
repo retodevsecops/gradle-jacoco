@@ -8,6 +8,7 @@ import com.consubanco.model.entities.document.gateway.DocumentGateway;
 import com.consubanco.model.entities.document.vo.PreviousDocumentVO;
 import com.consubanco.model.entities.file.vo.AttachmentVO;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.netty.handler.timeout.TimeoutException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
@@ -21,9 +22,9 @@ import java.util.Map;
 
 import static com.consubanco.consumer.adapters.document.dto.GetDocsPreviousApplicationResDTO.getResponseCode;
 import static com.consubanco.consumer.adapters.document.dto.GetDocsPreviousApplicationResDTO.getResponseMessage;
-import static com.consubanco.model.commons.exception.factory.ExceptionFactory.monoTechnicalError;
-import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
+import static com.consubanco.model.commons.exception.factory.ExceptionFactory.*;
 import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.API_DOCS_PREVIOUS_ERROR;
+import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.API_DOCS_PREVIOUS_TIMEOUT;
 import static com.consubanco.model.entities.file.message.FileTechnicalMessage.API_ERROR;
 import static com.consubanco.model.entities.file.message.FileTechnicalMessage.API_PROMOTER_ERROR;
 
@@ -70,7 +71,8 @@ public class DocumentAdapter implements DocumentGateway {
                 .uri(apis.generateDocumentApiEndpoint())
                 .bodyValue(new GenerateDocumentRequestDTO(documents, payload))
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {})
+                .bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {
+                })
                 .onErrorMap(throwTechnicalError(API_PROMOTER_ERROR));
     }
 
@@ -80,7 +82,8 @@ public class DocumentAdapter implements DocumentGateway {
                 .uri(apis.getApiConnect().getApiDocsPrevious())
                 .bodyValue(new GetDocsPreviousApplicationReqDTO(apis.getApplicationId(), previousApplicationId, docs))
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
+                })
                 .flatMapMany(response -> {
                     Integer responseCode = getResponseCode(response);
                     if (responseCode.equals(HttpStatus.OK.value())) {
@@ -91,7 +94,10 @@ public class DocumentAdapter implements DocumentGateway {
                     String cause = String.format(detail, responseCode, responseMessage);
                     return monoTechnicalError(cause, API_DOCS_PREVIOUS_ERROR);
                 })
-                .onErrorMap(throwTechnicalError(API_DOCS_PREVIOUS_ERROR));
+                .onErrorMap(error -> {
+                    if (error.getCause() instanceof TimeoutException) return buildTechnical(error.getCause(), API_DOCS_PREVIOUS_TIMEOUT);
+                    return buildTechnical(error.getCause(), API_DOCS_PREVIOUS_ERROR);
+                });
     }
 
     @Override

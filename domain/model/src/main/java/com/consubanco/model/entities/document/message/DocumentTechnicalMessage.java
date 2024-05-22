@@ -14,7 +14,8 @@ public enum DocumentTechnicalMessage implements IExceptionMessage {
     CUSTOMER_HEALTH_ERROR("TE_DOCUMENT_PAYLOAD_0004", "Error when consuming customer health service."),
     OFFER_HEALTH_ERROR("TE_DOCUMENT_PAYLOAD_0005", "Error when consuming offer health service."),
     PAYLOAD_ERROR("TE_DOCUMENT_PAYLOAD_0006", "Error when processing the payload template for request."),
-    API_DOCS_PREVIOUS_ERROR("TE_DOCUMENT_0001", "Error when consuming get docs previous application API.");
+    API_DOCS_PREVIOUS_ERROR("TE_DOCUMENT_0007", "Error when consuming get docs previous application API."),
+    API_DOCS_PREVIOUS_TIMEOUT("TE_DOCUMENT_0008", "The API opp-service/findDocsPreviusApplication did not respond in the expected time.");
 
     private final String code;
     private final String message;
