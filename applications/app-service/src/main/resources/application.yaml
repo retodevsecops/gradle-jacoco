@@ -60,7 +60,7 @@ adapter:
       create-application-template: ${GCS_CREATE_APPLICATION_TEMPLATE_PATH:management/puc-loans-documents-msa/create-application-template.ftl}
   postgresql-repository:
     connection:
-      host: ${DB_HOST}
+      host: ${DB_HOSTNAME}
       port: ${DB_PORT}
       database: ${DB_DATABASE}
       username: ${DB_USERNAME}
