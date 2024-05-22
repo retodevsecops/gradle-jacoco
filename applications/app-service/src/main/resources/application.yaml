@@ -125,4 +125,4 @@ springdoc:
 
 logging:
   level:
-    org.springframework: ${ENABLE_SPRING_LOGS:INFO}
+    org.springframework: ${ENABLE_SPRING_LOGS:OFF}
