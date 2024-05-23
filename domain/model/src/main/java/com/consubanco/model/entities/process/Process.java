@@ -1,8 +1,13 @@
 package com.consubanco.model.entities.process;
 
 import lombok.*;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Objects;
+
+import static com.consubanco.model.commons.exception.factory.ExceptionFactory.buildBusiness;
+import static com.consubanco.model.entities.process.message.ProcessBusinessMessage.INCOMPLETE_DATA;
 
 @Getter
 @Setter
@@ -44,4 +49,10 @@ public class Process {
     public String getPreviousApplicationId() {
         return this.getOffer().getPreviousApplicationId();
     }
+
+    public Mono<Process> checkRequiredData(){
+        if (Objects.isNull(id) || Objects.isNull(customer) || Objects.isNull(offer)) return buildBusiness(INCOMPLETE_DATA);
+        return Mono.just(this);
+    }
+
 }

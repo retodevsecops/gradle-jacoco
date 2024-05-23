@@ -140,7 +140,7 @@ public class FileStorageAdapter implements FileRepository {
                         .name(FileUtil.getFileName(path))
                         .directoryPath(FileUtil.getDirectory(path))
                         .build())
-                .flatMap(this::save);
+                .flatMap(this::saveWithSignedUrl);
     }
 
     @Override

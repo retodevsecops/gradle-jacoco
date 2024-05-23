@@ -14,11 +14,14 @@ public class FileResDTO {
     @Schema(description = "File name as found in the directory.", example = "document-name", requiredMode = REQUIRED)
     private String name;
 
-    @Schema(description = "Public Url to view the file.", example = "https://storage.googleapis.com/csb-venta-digital/renewal/offer/123/document.pdf", requiredMode = REQUIRED)
+    @Schema(description = "Public Url to view the file.", example = "https://storage.googleapis.com/csb-venta-digital/renewal/offer/123/document", requiredMode = REQUIRED)
     private String url;
 
     @Schema(description = "Directory where the file is saved.", example = "renewal/offer/123/", requiredMode = REQUIRED)
     private String directoryPath;
+
+    @Schema(description = "Size of the file.",example = "gs://csb-venta-digital/renewal/offer/123/documents/document",  requiredMode = REQUIRED)
+    private String storageRoute;
 
     @Schema(description = "Size of the file.",example = "63 KB",  requiredMode = REQUIRED)
     private String size;
@@ -28,6 +31,8 @@ public class FileResDTO {
         this.directoryPath = file.getDirectoryPath();
         this.size = file.getSize();
         this.name = file.getName();
+        this.storageRoute = file.getStorageRoute();
+
     }
 
 }

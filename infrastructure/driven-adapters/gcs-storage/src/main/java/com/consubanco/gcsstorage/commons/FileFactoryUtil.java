@@ -8,12 +8,15 @@ import org.apache.commons.codec.binary.Base64;
 @UtilityClass
 public class FileFactoryUtil {
 
+    private static final String URI_GS = "gs://%s/%s";
+
     public static File buildFromBlob(Blob blob) {
         return File.builder()
                 .name(FileUtil.getFileName(blob.getName()))
                 .content(Base64.encodeBase64String(blob.getContent()))
                 .directoryPath(FileUtil.getDirectory(blob.getName()))
                 .size(FileUtil.getSize(blob))
+                .storageRoute(String.format(URI_GS, blob.getBucket(), blob.getName()))
                 .build();
     }
 
@@ -24,6 +27,7 @@ public class FileFactoryUtil {
                 .content(Base64.encodeBase64String(blob.getContent()))
                 .directoryPath(FileUtil.getDirectory(blob.getName()))
                 .size(FileUtil.getSize(blob))
+                .storageRoute(String.format(URI_GS, blob.getBucket(), blob.getName()))
                 .build();
     }
 
