@@ -36,7 +36,7 @@ public class GetAttachmentsByAgreementUseCase {
     private Flux<AttachmentConfigVO> filterAttachments(Process process, List<AttachmentConfigVO> attachments) {
         List<AttachmentConfigVO> attachmentsToRetrieved = attachmentsToRetrieved(attachments);
         if (attachmentsToRetrieved.isEmpty()) return Flux.fromIterable(attachments);
-        return retrievePreviousDocuments(process, attachmentsToRetrieved)
+        return retrieveDocuments(process, attachmentsToRetrieved)
                 .collectList()
                 .flatMapMany(list -> Flux.fromIterable(attachments)
                         .filter(attachConfig -> isNotRecoveredFile(list, attachConfig.getTechnicalName())));
@@ -48,16 +48,52 @@ public class GetAttachmentsByAgreementUseCase {
                 .toList();
     }
 
+    private Flux<File> retrieveDocuments(Process process, List<AttachmentConfigVO> attachmentsToRetrieved) {
+        return getAttachmentsFromStorage(process, attachmentsToRetrieved)
+                .collectList()
+                .flatMapMany(attachmentsInStorage -> merge(process, attachmentsToRetrieved, attachmentsInStorage));
+    }
+
+    private Flux<File> getAttachmentsFromStorage(Process process, List<AttachmentConfigVO> attachmentsToRetrieved) {
+        return fileRepository.listByFolderWithoutUrls(attachmentsDirectory(process.getOffer().getId()))
+                .filter(file -> fileIsRecoverable(file, attachmentsToRetrieved));
+    }
+
+    private boolean fileIsRecoverable(File file, List<AttachmentConfigVO> attachmentsToRetrieved) {
+        return attachmentsToRetrieved.stream()
+                .anyMatch(vo -> vo.getTechnicalName().equalsIgnoreCase(file.getName()));
+    }
+
+    private Flux<File> merge(Process process, List<AttachmentConfigVO> attachmentsToRetrieved, List<File> attachmentsInStorage) {
+        List<AttachmentConfigVO> excludeAttachments = excludeAttachments(attachmentsToRetrieved, attachmentsInStorage);
+        if (excludeAttachments.isEmpty()) return Flux.fromIterable(attachmentsInStorage);
+        Flux<File> previousDocuments = retrievePreviousDocuments(process, excludeAttachments);
+        return Flux.merge(Flux.fromIterable(attachmentsInStorage), previousDocuments);
+    }
+
+    private List<AttachmentConfigVO> excludeAttachments(List<AttachmentConfigVO> attachmentsToRetrieved, List<File> attachmentsInStorage) {
+        return attachmentsToRetrieved.stream()
+                .filter(attachmentConfigVO -> !attachmentToRetrievedIsInStorage(attachmentConfigVO, attachmentsInStorage))
+                .toList();
+    }
+
+    private boolean attachmentToRetrievedIsInStorage(AttachmentConfigVO attachmentToRetrieved, List<File> attachmentsInStorage) {
+        return attachmentsInStorage.stream()
+                .anyMatch(file -> file.getName().equalsIgnoreCase(attachmentToRetrieved.getTechnicalName()));
+    }
+
     private Flux<File> retrievePreviousDocuments(Process process, List<AttachmentConfigVO> attachmentsToRetrieved) {
         return documentGateway.getDocsFromPreviousApplication(process.getPreviousApplicationId(), attachmentsToRetrieved)
                 .parallel()
                 .runOn(Schedulers.parallel())
-                .map(prevDocument -> {
-                    Optional<AttachmentConfigVO> attachConfig = getAttachment(attachmentsToRetrieved, prevDocument.getName());
-                    return buildFile(process, prevDocument, attachConfig.get());
-                })
+                .map(prevDocument -> buildAttachment(process, attachmentsToRetrieved, prevDocument))
                 .flatMap(fileRepository::save)
                 .sequential();
+    }
+
+    private File buildAttachment(Process process, List<AttachmentConfigVO> attachmentsToRetrieved, PreviousDocumentVO prevDocument) {
+        Optional<AttachmentConfigVO> attachConfig = getAttachment(attachmentsToRetrieved, prevDocument.getName());
+        return buildFile(process, prevDocument, attachConfig.get());
     }
 
     private boolean isNotRecoveredFile(List<File> recoveredFiles, String nameFile) {

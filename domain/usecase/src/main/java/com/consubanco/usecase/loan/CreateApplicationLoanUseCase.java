@@ -36,13 +36,20 @@ public class CreateApplicationLoanUseCase {
 
     public Mono<Map<String, String>> execute(String processId, String otp) {
         return getProcessByIdUseCase.execute(processId)
-                .flatMap(process -> checkOtpUseCase.execute(new Otp(otp, process.getCustomer().getBpId())).thenReturn(process))
+                .flatMap(process -> verifyOtp(process, otp))
                 .flatMap(process ->
                         generateNom151(process)
                                 .flatMap(file -> Mono.zip(getCreateApplicationTemplate(), payloadDocGateway.getAllData(processId)))
                                 .flatMap(TupleUtils.function(loanGateway::buildApplicationData))
                                 .flatMap(applicationData -> createApplication(process, otp, applicationData)))
                 .thenReturn(Map.of("message", MESSAGE));
+    }
+
+    private Mono<Process> verifyOtp(Process process, String otp) {
+        return Mono.just(process.getCustomer().getBpId())
+                .map(customerBpId -> new Otp(otp, customerBpId))
+                .flatMap(checkOtpUseCase::execute)
+                .thenReturn(process);
     }
 
     private Mono<File> generateNom151(Process process) {

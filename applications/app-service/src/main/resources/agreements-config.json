@@ -11,7 +11,7 @@
         "isRecoverable": true,
         "namePreviousDocument": "IDENTIFICACIONOFICIAL",
         "isRequired": true,
-        "typeFile": ["JPG", "JPEG", "PNG", "PDF"]
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF"]
       },
       {
         "name": "Recibos de nomina",
@@ -21,7 +21,7 @@
         "isRecoverable": true,
         "namePreviousDocument": "RECIBO-NOMINA",
         "isRequired": true,
-        "typeFile": ["JPG", "JPEG", "PNG", "PDF"]
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF"]
       },
       {
         "name": "Comprobante de domicilio",
@@ -31,7 +31,7 @@
         "isRecoverable": true,
         "namePreviousDocument": "COMPROBANTE-DOMICILIO",
         "isRequired": true,
-        "typeFile": ["JPG", "JPEG", "PNG", "PDF"]
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF"]
       }
     ],
     "compoundDocuments": [
