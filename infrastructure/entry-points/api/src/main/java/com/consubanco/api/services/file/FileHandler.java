@@ -8,6 +8,7 @@ import com.consubanco.api.services.file.dto.GenerateDocumentResDTO;
 import com.consubanco.api.services.file.dto.GetAndUploadDocumentReqDTO;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.vo.FileUploadVO;
+import com.consubanco.usecase.agreement.GetAttachmentsByAgreementUseCase;
 import com.consubanco.usecase.file.BuildCNCALettersUseCase;
 import com.consubanco.usecase.file.FileUseCase;
 import com.consubanco.usecase.file.GenerateDocumentUseCase;
@@ -18,6 +19,7 @@ import org.springframework.web.reactive.function.BodyExtractors;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.function.Function;
 
@@ -30,9 +32,11 @@ public class FileHandler {
     private final FileUseCase fileUseCase;
     private final BuildCNCALettersUseCase buildCNCALettersUseCase;
     private final GenerateDocumentUseCase generateDocUseCase;
+    private final GetAttachmentsByAgreementUseCase getAttachmentsByAgreementUseCase;
 
     public Mono<ServerResponse> buildCNCALetters(ServerRequest request) {
         String processId = request.pathVariable(PROCESS_ID);
+        loadDocumentsFromPreviousApplication(processId);
         return buildCNCALettersUseCase.execute(processId)
                 .map(FileResDTO::new)
                 .flatMap(HttpResponseUtil::Ok);
@@ -91,6 +95,12 @@ public class FileHandler {
                 .flatMap(useCase)
                 .map(FileResDTO::new)
                 .flatMap(HttpResponseUtil::Ok);
+    }
+
+    private void loadDocumentsFromPreviousApplication(String processId) {
+        getAttachmentsByAgreementUseCase.execute(processId)
+                .subscribeOn(Schedulers.boundedElastic())
+                .subscribe();
     }
 
 }
