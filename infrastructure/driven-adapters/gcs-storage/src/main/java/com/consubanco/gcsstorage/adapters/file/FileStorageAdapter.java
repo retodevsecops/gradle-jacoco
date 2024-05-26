@@ -10,6 +10,7 @@ import com.consubanco.model.commons.exception.TechnicalException;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.gateway.FileRepository;
 import com.consubanco.model.entities.file.vo.FileUploadVO;
+import com.consubanco.model.entities.file.vo.FileWithStorageRouteVO;
 import com.google.api.gax.paging.Page;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
@@ -43,10 +44,7 @@ public class FileStorageAdapter implements FileRepository {
     @Override
     public Mono<File> save(File file) {
         return saveInStorage(file)
-                .map(blobInfo -> file.toBuilder()
-                        .url(blobInfo.getSelfLink())
-                        .size(FileUtil.getSize(blobInfo))
-                        .build());
+                .map(blobInfo -> FileFactoryUtil.completeFileFromBlob(file, blobInfo));
     }
 
     @Override
@@ -78,6 +76,12 @@ public class FileStorageAdapter implements FileRepository {
     public Flux<File> listByFolderWithoutUrls(String folderPath) {
         return listByPrefix(folderPath)
                 .map(FileFactoryUtil::buildFromBlob);
+    }
+
+    @Override
+    public Flux<FileWithStorageRouteVO> listByFolder(String folderPath) {
+        return listByPrefix(folderPath)
+                .map(FileFactoryUtil::buildFileWithStorageRouteVO);
     }
 
     @Override

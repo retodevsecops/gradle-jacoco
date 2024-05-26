@@ -55,4 +55,8 @@ public class Process {
         return Mono.just(this);
     }
 
+    public String getOfferId() {
+        return this.offer.id;
+    }
+
 }

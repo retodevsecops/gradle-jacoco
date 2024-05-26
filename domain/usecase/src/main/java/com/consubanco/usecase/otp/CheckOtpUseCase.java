@@ -1,4 +1,4 @@
-package com.consubanco.usecase;
+package com.consubanco.usecase.otp;
 
 import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.consubanco.model.entities.otp.Otp;

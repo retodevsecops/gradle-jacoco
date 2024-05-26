@@ -13,8 +13,8 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.util.function.Tuple3;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
 import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.PAYLOAD_ERROR;
@@ -54,7 +54,7 @@ public class PayloadDocumentAdapter implements PayloadDocumentGateway, Applicati
     }
 
     private Map<String, Object> buildDataMap(Tuple3<Map<String, Object>, Map<String, Object>, Map<String, Object>> tuple) {
-        Map<String, Object> data = new ConcurrentHashMap<>();
+        Map<String, Object> data = new HashMap<>();
         data.put("promoter_data", tuple.getT1());
         data.put("customer_data", tuple.getT2());
         data.put("offer_data", tuple.getT3());

@@ -5,6 +5,7 @@ import com.consubanco.api.services.file.constants.FileParams;
 import com.consubanco.model.entities.loan.LoanApplication;
 import org.springdoc.core.fn.builders.operation.Builder;
 
+import java.util.Map;
 import java.util.function.Consumer;
 
 import static com.consubanco.api.commons.swagger.ResponsesOpenAPI.*;
@@ -31,6 +32,17 @@ public class LoansOpenAPI {
                 .summary("List loan applications by process.")
                 .parameter(ParamsOpenAPI.path(FileParams.PROCESS_ID, "Process identifier"))
                 .response(responseOk(LoanApplication.class))
+                .response(responseBusinessException())
+                .response(responseInternalError());
+    }
+
+    public static Consumer<Builder> applicationData() {
+        return ops -> ops.tag(TAG)
+                .operationId("applicationData")
+                .description("Consult all the available data for the loan application.")
+                .summary("Get all data for the loan application.")
+                .parameter(ParamsOpenAPI.path(FileParams.PROCESS_ID, "Process identifier"))
+                .response(responseOk(Map.class))
                 .response(responseBusinessException())
                 .response(responseInternalError());
     }

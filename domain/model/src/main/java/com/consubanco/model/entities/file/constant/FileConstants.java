@@ -1,5 +1,6 @@
 package com.consubanco.model.entities.file.constant;
 
+import com.consubanco.model.entities.document.constant.DocumentNames;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
@@ -31,6 +32,10 @@ public class FileConstants {
 
     public static String offerDirectory(String offerId) {
         return String.format(OFFER_DIRECTORY_PATH, offerId);
+    }
+
+    public static String applicantRecordDirectory(String offerId) {
+        return documentsDirectory(offerId).concat(DocumentNames.APPLICANT_RECORD);
     }
 
 }

@@ -1,26 +1,20 @@
 package com.consubanco.usecase.loan;
 
-import com.consubanco.model.commons.exception.factory.ExceptionFactory;
-import com.consubanco.model.entities.document.constant.DocumentNames;
 import com.consubanco.model.entities.document.gateway.PayloadDocumentGateway;
 import com.consubanco.model.entities.file.File;
-import com.consubanco.model.entities.file.constant.FileConstants;
 import com.consubanco.model.entities.file.gateway.FileRepository;
 import com.consubanco.model.entities.loan.LoanApplication;
 import com.consubanco.model.entities.loan.gateway.LoanApplicationRepository;
 import com.consubanco.model.entities.loan.gateway.LoanGateway;
 import com.consubanco.model.entities.otp.Otp;
 import com.consubanco.model.entities.process.Process;
-import com.consubanco.usecase.CheckOtpUseCase;
-import com.consubanco.usecase.document.GenerateNom151UseCase;
+import com.consubanco.usecase.otp.CheckOtpUseCase;
 import com.consubanco.usecase.process.GetProcessByIdUseCase;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 import reactor.function.TupleUtils;
 
 import java.util.Map;
-
-import static com.consubanco.model.entities.loan.message.LoanBusinessMessage.APPLICANT_RECORD_NOT_FOUND;
 
 @RequiredArgsConstructor
 public class CreateApplicationLoanUseCase {
@@ -32,14 +26,13 @@ public class CreateApplicationLoanUseCase {
     private final LoanGateway loanGateway;
     private final LoanApplicationRepository loanApplicationRepository;
     private final CheckOtpUseCase checkOtpUseCase;
-    private final GenerateNom151UseCase generateNom151UseCase;
+    private final BuildDataForApplicationUseCase buildDataForApplicationUseCase;
 
     public Mono<Map<String, String>> execute(String processId, String otp) {
         return getProcessByIdUseCase.execute(processId)
                 .flatMap(process -> verifyOtp(process, otp))
                 .flatMap(process ->
-                        generateNom151(process)
-                                .flatMap(file -> Mono.zip(getCreateApplicationTemplate(), payloadDocGateway.getAllData(processId)))
+                        Mono.zip(getCreateApplicationTemplate(), buildDataForApplicationUseCase.execute(process))
                                 .flatMap(TupleUtils.function(loanGateway::buildApplicationData))
                                 .flatMap(applicationData -> createApplication(process, otp, applicationData)))
                 .thenReturn(Map.of("message", MESSAGE));
@@ -52,13 +45,6 @@ public class CreateApplicationLoanUseCase {
                 .thenReturn(process);
     }
 
-    private Mono<File> generateNom151(Process process) {
-        return fileRepository.listByFolderWithoutUrls(FileConstants.offerDirectory(process.getOffer().getId()))
-                .filter(file -> file.getName().equalsIgnoreCase(DocumentNames.APPLICANT_RECORD))
-                .next()
-                .flatMap(file -> generateNom151UseCase.execute(file, process))
-                .switchIfEmpty(ExceptionFactory.buildBusiness(APPLICANT_RECORD_NOT_FOUND));
-    }
 
     private Mono<Void> createApplication(Process process, String otp, Map<String, Object> applicationData) {
         return loanGateway.createApplication(applicationData)
