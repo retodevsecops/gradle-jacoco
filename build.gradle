@@ -6,7 +6,7 @@ buildscript {
 		jacocoVersion = '0.8.11'
         lombokVersion = '1.18.32'
 	mapstructVersion = "1.5.5.Final"
-        jKubeVersion = '1.13.0'
+        jKubeVersion = '1.16.1'
 	}
 }
 
@@ -24,7 +24,7 @@ sonar {
         property "sonar.sourceEncoding", "UTF-8"
         property "sonar.modules", "${modules.join(',')}"
         property "sonar.sources", "src,deployment,settings.gradle,main.gradle,build.gradle,${modules.collect { "${it}/build.gradle" }.join(',')}"
-        property "sonar.exclusions","**/MainApplication.java"
+        property "sonar.exclusions","**/MainApplication.java, **/freemarker/**"
         property "sonar.test", "src/test"
         property "sonar.java.binaries", ""
         property "sonar.junit.reportsPath", ""
