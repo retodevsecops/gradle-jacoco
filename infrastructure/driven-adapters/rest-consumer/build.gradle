@@ -1,6 +1,8 @@
 dependencies {
     implementation project(':model')
     implementation project(":custom-logger")
+    implementation project(":caffeine-cache")
+    implementation project(":freemarker")
     implementation 'org.springframework:spring-context'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
@@ -12,5 +14,9 @@ dependencies {
     implementation ('org.modelmapper:modelmapper:3.2.0') {
         exclude group: 'com.h2database', module: 'h2'
     }
+    implementation 'commons-codec:commons-codec:1.16.1'
+    implementation 'com.google.auth:google-auth-library-oauth2-http:1.23.0'
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
+    implementation 'org.apache.commons:commons-lang3:3.14.0'
 
 }

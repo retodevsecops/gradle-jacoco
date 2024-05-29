@@ -1,12 +1,12 @@
-<server:
-  port: 8080
+server:
+  port: ${SERVICE_PORT:8080}
 spring:
   main:
     banner-mode: off
   webflux:
     base-path: /api/v1/loans-documents
   application:
-    name: "puc-loans-documents-msa"
+    name: "vd-loans-documents-msa"
   devtools:
     add-properties: false
   h2:
@@ -15,29 +15,96 @@ spring:
       path: "/h2"
   profiles:
     include: null
+  flyway:
+    enabled: true
+    baseline-version: 1
+    locations: "classpath:db/migration"
+    sql-migration-prefix: "V"
+    sql-migration-suffixes: ".sql"
+    baseline-on-migrate: true
+app:
+  init:
+    promoter-id: ${INIT_PROMOTER_ID:0010007540}
+
 adapter:
   rest-consumer:
-    timeout: 5000
+    timeout: ${REST_TIMEOUT:30000}
+    memory: ${REST_MAX_MEMORY_SIZE_MB:20}
     apis:
+      renex:
+        audience: ${GCP_AUDIENCE:renovacion-dev}
+        api-health-customer: ${API_HEALTH_CUSTOMER:http://localhost:3001/customers-api/actuator/health}
+        api-customer-process: ${API_CUSTOMER_PROCESS:http://localhost:3001/customers-api/customer/all-info/{processId}}
+        api-health-offer: ${API_HEALTH_OFFER:http://localhost:3001/offers-api/offers/actuator/health}
+        api-active-offer: ${API_ACTIVE_OFFER:http://localhost:3001/offers-api/offers/active-offering?processId={processId}}
+        api-validate-otp: ${API_VALIDATE_OTP:http://localhost:3001/authorization-api/otp/validate}
+        api-accept-offer: ${API_ACCEPT_OFFER:https://vd-dev.csbservicios.com/offers-api/offers/accept/{processId}}
       promoter:
-        auth-token: ${API_AGREEMENT_AUTH_TOKEN}
-        agreement-get-detail:
-          endpoint: https://it-api-gateway.qa.masnominadigital.com/convenios/getDetail
-          channel: ${API_AGREEMENT_CHANNEL:ECSB}
+        auth-token: ${API_PROMOTER_AUTH_TOKEN}
+        channel: ${API_GET_AGREEMENT_CHANNEL:RENEX}
+        api-generate-document: ${API_GENERATE_DOCUMENT_ENDPOINT:https://documents.qa.masnominadigital.com/api/generate/csb}
+        api-get-agreement: ${API_GET_AGREEMENT_ENDPOINT:https://it-api-gateway.qa.masnominadigital.com/convenios/getDetail}
       api-connect:
         client-id: ${API_CONNECT_CLIENT_ID}
-        get-cnca-letter:
-          endpoint: http://localhost:3001/
+        application-id: ${API_CONNECT_APPLICATION_ID:CSB-RENEX}
+        api-get-cnca: ${API_GET_CNCA:https://apic.consubanco.com/csb/qa/puc-letter-generate-api/getLetterCNCA}
+        api-search-interlocutor: ${API_SEARCH_INTERLOCUTOR:http://localhost:3001/csb/qa/common-crm-service/searchInterlocutor}
+        api-docs-previous: ${API_DOCS_PREVIOUS:https://apic.consubanco.com/csb/qa/opp-service/findDocsPreviusApplication}
+        create-application: ${API_CREATE_APPLICATION:http://localhost:3001//csb/qa/opp-service/createApplication}
+      nom151:
+        endpoint: ${API_ENDPOINT_NOM151:https://wstestautosign.doc2sign.com/Doc2SignLite.svc}
+        credentials:
+          csb:
+            user: ${API_USER_NOM151_CSB:d3aae0ff-d45d-455a-9929-014b5dd8b665}
+            password: ${API_PASSWORD_NOM151_CSB:92850e29-6f0a-4b58-b3d5-54a82717e581}
+          mas-nomina:
+            user: ${API_USER_NOM151_MN:9fee015d-782c-40cf-81a8-49468f591d89}
+            password: ${API_PASSWORD_NOM151_MN:0ecedfa4-0200-4601-9fc8-b10fbe6859f6}
+        actions:
+          load-document: ${ACTION_LOAD_DOCUMENT_NOM151:http://tempuri.org/IDoc2SignLite/Load}
+          get-document-signed: ${ACTION_GET_DOCUMENT_SIGNED_NOM151:http://tempuri.org/IDoc2SignLite/GETDocFirmado}
+          get-nom151: ${ACTION_GET_NOM151:http://tempuri.org/IDoc2SignLite/GETNOM}
 
+  gcs-storage:
+    max-file-size-mb: ${GCS_MAX_FILE_SIZE_IN_MB:0.5}
+    bucket-name: ${GCS_BUCKET_NAME:csb-venta-digital}
+    sign-url-days: ${GCS_SIGN_URL_DAYS:1}
+    files-path:
+      payload-template: ${GCS_PAYLOAD_TEMPLATE_PATH:management/puc-loans-documents-msa/payload-template.ftl}
+      agreements-config: ${GCS_AGREEMENT_CONFIG:management/puc-loans-documents-msa/agreements-config.json}
+      create-application-template: ${GCS_CREATE_APPLICATION_TEMPLATE_PATH:management/puc-loans-documents-msa/create-application-template.ftl}
+  postgresql-repository:
+    connection:
+      host: ${DB_HOST}
+      port: ${DB_PORT}
+      database: ${DB_DATABASE}
+      username: ${DB_USERNAME}
+      password: ${DB_PASSWORD}
+      script: db/migration/V1.0__init_schema.sql
+      connection-timeout: ${DB_CONNECTION_TIMEOUT_IN_SECONDS:10}
+      statement-timeout: ${DB_STATEMENT_TIMEOUT_IN_SECONDS:10}
+      pool:
+        initial-size: ${DB_MIN_CONNECTIONS:2}
+        max-size: ${DB_MAX_CONNECTIONS:20}
+        max-idle-time: ${DB_MAX_IDLE_TIME_IN_MINUTES:30}
+        max-create-connection-time: ${DB_MAX_CREATE_CONNECTION_TIME_IN_SECONDS:30}
+        max-acquire-time: ${DB_MAX_ACQUIRE_TIME_IN_SECONDS:30}
+        max-life-time: ${DB_MAX_LIFE_TIME_IN_HOURS:2}
 entry:
   api:
     open-api:
       title: ${spring.application.name}
       version: 1.0.0
-      description: resolves loan document capabilities.
+      description: Resolves loan document capabilities.
     path-services:
+      health: /healthz
       agreement: /agreement
       file: /file
+      loans: /loans
+helpers:
+  caffeine:
+    expire-after-write: ${CACHE_EXPIRE_TIME_MINUTES:60}
+    max-size-elements: ${CACHE_MAX_SIZE_ELEMENTS:100}
 
 management:
   health:
@@ -46,11 +113,12 @@ management:
   endpoints:
     web:
       exposure:
-        include: "health,prometheus"
+        include: health,prometheus
   endpoint:
     health:
       probes:
         enabled: true
+        show-details: always
 resilience4j:
   circuitbreaker:
     instances:
@@ -72,8 +140,6 @@ resilience4j:
         slidingWindowSize: 10
         minimumNumberOfCalls: 10
         waitDurationInOpenState: "10s"
-cors:
-  allowed-origins: "http://localhost:4200,http://localhost:8080"
 
 springdoc:
   api-docs:
@@ -81,3 +147,7 @@ springdoc:
   swagger-ui:
     disable-swagger-default-url: true
     path: /swagger.html
+
+logging:
+  level:
+    org.springframework: ${ENABLE_SPRING_LOGS:OFF}
