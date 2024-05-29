@@ -27,11 +27,11 @@ public class GetCustomerVisibleFilesUseCase {
         return agreementConfigRepository.getConfigByAgreement(process.getAgreementNumber())
                 .switchIfEmpty(ExceptionFactory.buildBusiness(AGREEMENT_CONFIG_NOT_FOUND))
                 .map(AgreementConfigVO::checkCustomerVisibleDocuments)
-                .flatMapMany(agreementConfigVO -> getFiles(agreementConfigVO, process.getOffer().getId()));
+                .flatMapMany(agreementConfigVO -> getFiles(agreementConfigVO, process));
     }
 
-    private Flux<File> getFiles(AgreementConfigVO agreementConfigVO, String offerId) {
-        return getFilesByOfferUseCase.execute(offerId)
+    private Flux<File> getFiles(AgreementConfigVO agreementConfigVO, Process process) {
+        return getFilesByOfferUseCase.execute(process.getId())
                 .filter(file -> isFileVisible(agreementConfigVO, file));
     }
 
