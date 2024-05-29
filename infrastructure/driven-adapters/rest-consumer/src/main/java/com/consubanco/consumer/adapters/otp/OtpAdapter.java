@@ -16,6 +16,10 @@ import static com.consubanco.model.entities.otp.message.OtpTechnicalMessage.API_
 @Service
 public class OtpAdapter implements OtpGateway {
 
+    public static final String LATITUDE = "latitude";
+    public static final String LONGITUDE = "longitude";
+    public static final String IP = "ip";
+    public static final String USER_AGENT = "User-Agent";
     private final WebClient renexClient;
     private final OtpApisProperties apisProperties;
 
@@ -30,6 +34,10 @@ public class OtpAdapter implements OtpGateway {
     public Mono<Boolean> checkOtp(Otp otp) {
         return renexClient.post()
                 .uri(apisProperties.getApiValidateOtp())
+                .header(LATITUDE, otp.getLatitude())
+                .header(LONGITUDE, otp.getLongitude())
+                .header(IP, otp.getIp())
+                .header(USER_AGENT, otp.getUserAgent())
                 .bodyValue(new ValidateOTPReqDTO(otp.getCode(), otp.getCustomerBpId()))
                 .retrieve()
                 .bodyToMono(ValidateOTPResDTO.class)

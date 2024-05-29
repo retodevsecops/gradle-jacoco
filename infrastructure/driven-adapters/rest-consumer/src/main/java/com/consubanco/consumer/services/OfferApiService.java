@@ -1,12 +1,16 @@
 package com.consubanco.consumer.services;
 
-import com.consubanco.consumer.adapters.document.properties.PayloadApisProperties;
+import com.consubanco.consumer.adapters.document.properties.ApisProperties;
+import com.consubanco.consumer.config.dto.RestConsumerLogDTO;
+import com.consubanco.logger.CustomLogger;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
@@ -18,13 +22,18 @@ import static com.consubanco.model.entities.document.message.DocumentTechnicalMe
 @Service
 public class OfferApiService {
 
+    private final static String STATUS_FINALIZED = "FINALIZED";
+    private final static String STATUS_ERROR = "ERROR";
     private final WebClient renexClient;
-    private final PayloadApisProperties apis;
+    private final ApisProperties apis;
+    private final CustomLogger logger;
 
     public OfferApiService(final @Qualifier("ApiRenexClient") WebClient renexClient,
-                           final PayloadApisProperties apisProperties) {
+                           final ApisProperties apisProperties,
+                           final CustomLogger logger) {
         this.renexClient = renexClient;
         this.apis = apisProperties;
+        this.logger = logger;
     }
 
     @Cacheable("offers")
@@ -43,6 +52,18 @@ public class OfferApiService {
                 .retrieve()
                 .bodyToMono(String.class)
                 .onErrorMap(throwTechnicalError(OFFER_HEALTH_ERROR));
+    }
+
+    public Mono<String> acceptOffer(String processId) {
+        return this.renexClient.post()
+                .uri(apis.getRenex().getApiAcceptOffer(), processId)
+                .exchangeToMono(response -> Mono.just(response.statusCode()))
+                .filter(HttpStatusCode::is2xxSuccessful)
+                .map(httpStatusCode -> STATUS_FINALIZED)
+                .switchIfEmpty(Mono.just(STATUS_ERROR))
+                .doOnError(WebClientResponseException.class, error -> logger.error(new RestConsumerLogDTO(error)))
+                .doOnError(error -> !(error instanceof WebClientResponseException), logger::error)
+                .onErrorResume(e -> Mono.just(STATUS_ERROR));
     }
 
 }

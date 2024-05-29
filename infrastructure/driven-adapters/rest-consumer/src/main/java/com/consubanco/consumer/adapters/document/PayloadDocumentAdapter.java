@@ -1,5 +1,6 @@
 package com.consubanco.consumer.adapters.document;
 
+import com.consubanco.consumer.services.CustomerApiService;
 import com.consubanco.consumer.services.OfferApiService;
 import com.consubanco.freemarker.ITemplateOperations;
 import com.consubanco.logger.CustomLogger;
@@ -25,20 +26,20 @@ public class PayloadDocumentAdapter implements PayloadDocumentGateway, Applicati
     private final String promoterId;
     private final CustomLogger logger;
     private final PromoterApiConsumer promoterApiConsumer;
-    private final CustomerApiConsumer customerApiConsumer;
+    private final CustomerApiService customerApiService;
     private final OfferApiService offerApiService;
     private final ITemplateOperations templateOperations;
 
     public PayloadDocumentAdapter(final @Value("${app.init.promoter-id}") String promoterId,
                                   final CustomLogger logger,
                                   final PromoterApiConsumer promoterApiConsumer,
-                                  final CustomerApiConsumer customerApiConsumer,
+                                  final CustomerApiService customerApiService,
                                   final OfferApiService offerApiService,
                                   final ITemplateOperations templateOperations) {
         this.promoterId = promoterId;
         this.logger = logger;
         this.promoterApiConsumer = promoterApiConsumer;
-        this.customerApiConsumer = customerApiConsumer;
+        this.customerApiService = customerApiService;
         this.offerApiService = offerApiService;
         this.templateOperations = templateOperations;
     }
@@ -47,7 +48,7 @@ public class PayloadDocumentAdapter implements PayloadDocumentGateway, Applicati
     @Cacheable("all-data")
     public Mono<Map<String, Object>> getAllData(String processId) {
         return Mono.zip(promoterApiConsumer.getPromoterById(promoterId),
-                        customerApiConsumer.customerDataByProcess(processId),
+                        customerApiService.customerDataByProcess(processId),
                         offerApiService.activeOfferByProcess(processId))
                 .map(this::buildDataMap)
                 .doOnNext(data -> logger.info("Data used to process template was consulted.", data));

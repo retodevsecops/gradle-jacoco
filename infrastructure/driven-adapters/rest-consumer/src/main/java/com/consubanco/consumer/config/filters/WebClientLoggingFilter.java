@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
@@ -32,10 +33,26 @@ public class WebClientLoggingFilter implements ExchangeFilterFunction {
     }
 
     private Mono<ClientResponse> printLog(ClientRequest request, ClientResponse response) {
-        return response.bodyToMono(Object.class)
+        if (contentLengthIsEmpty(response)) {
+            orchestrateLog(request, response, null);
+            return Mono.just(response);
+        }
+        return getBody(response)
                 .doOnNext(responseBody -> orchestrateLog(request, response, responseBody))
                 .map(this::convertObjectToString)
                 .map(body -> response.mutate().body(body).build());
+    }
+
+    private boolean contentLengthIsEmpty(ClientResponse clientResponse) {
+        return clientResponse.headers().contentLength().orElse(0L) == 0;
+    }
+
+    private Mono<?> getBody(ClientResponse response) {
+        MediaType mediaType = response.headers().contentType().orElse(MediaType.APPLICATION_OCTET_STREAM);
+        if (mediaType.isCompatibleWith(MediaType.APPLICATION_JSON)) {
+            return response.bodyToMono(Object.class);
+        }
+        return response.bodyToMono(String.class);
     }
 
     private <T> void orchestrateLog(ClientRequest request, ClientResponse response, T body) {

@@ -21,7 +21,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.function.Function;
 
-import static com.consubanco.api.services.file.constants.FileParams.OFFER_ID;
 import static com.consubanco.api.services.file.constants.FileParams.PROCESS_ID;
 
 @Component
@@ -34,8 +33,9 @@ public class OfferFileHandler {
     private final GetPayloadDataUseCase getPayloadDataUseCase;
     private final UploadOfficialIDUseCase uploadOfficialIDUseCase;
 
-    public Mono<ServerResponse> getFilesByOffer(ServerRequest request) {
-        return executeUseCase(request.pathVariable(OFFER_ID), getFilesByOfferUseCase::execute);
+    public Mono<ServerResponse> getFilesOfferByProcess(ServerRequest request) {
+        String processId = request.pathVariable(PROCESS_ID);
+        return executeUseCase(processId, getFilesByOfferUseCase::execute);
     }
 
     public Mono<ServerResponse> getCustomerVisibleFiles(ServerRequest request) {

@@ -1,7 +1,7 @@
 package com.consubanco.consumer.adapters.document;
 
 import com.consubanco.consumer.adapters.document.dto.SearchInterlocutorReqDTO;
-import com.consubanco.consumer.adapters.document.properties.PayloadApisProperties;
+import com.consubanco.consumer.adapters.document.properties.ApisProperties;
 import com.consubanco.logger.CustomLogger;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
@@ -22,10 +22,10 @@ public class PromoterApiConsumer {
 
     private final CustomLogger logger;
     private final WebClient apiConnectClient;
-    private final PayloadApisProperties apis;
+    private final ApisProperties apis;
 
     public PromoterApiConsumer(final @Qualifier("ApiConnectClient") WebClient apiConnectClient,
-                               final PayloadApisProperties apisProperties,
+                               final ApisProperties apisProperties,
                                final CustomLogger logger) {
         this.apiConnectClient = apiConnectClient;
         this.apis = apisProperties;

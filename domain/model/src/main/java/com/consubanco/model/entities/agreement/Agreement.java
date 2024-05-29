@@ -1,5 +1,6 @@
 package com.consubanco.model.entities.agreement;
 
+import com.consubanco.model.entities.agreement.constant.CompanyNames;
 import lombok.*;
 
 import java.util.List;
@@ -83,6 +84,10 @@ public class Agreement {
             private String value;
         }
 
+    }
+
+    public Boolean isMN() {
+        return CompanyNames.MN.equalsIgnoreCase(this.company);
     }
 
 }

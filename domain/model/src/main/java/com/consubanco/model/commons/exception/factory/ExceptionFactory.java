@@ -30,6 +30,11 @@ public class ExceptionFactory {
     public static TechnicalException buildTechnical(Throwable cause, IExceptionMessage exceptionMessage) {
         return new TechnicalException(cause, exceptionMessage);
     }
+
+    public static TechnicalException buildTechnical(String cause, IExceptionMessage exceptionMessage) {
+        return new TechnicalException(cause, exceptionMessage);
+    }
+
     public static Function<Throwable, TechnicalException> throwTechnicalError(IExceptionMessage message) {
         return error -> buildTechnical(error, message);
     }

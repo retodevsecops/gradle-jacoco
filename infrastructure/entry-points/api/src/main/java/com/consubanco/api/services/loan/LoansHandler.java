@@ -3,6 +3,7 @@ package com.consubanco.api.services.loan;
 import com.consubanco.api.commons.util.HttpResponseUtil;
 import com.consubanco.api.services.loan.constants.LoanHeaderParams;
 import com.consubanco.api.services.loan.dto.LoanApplicationResDTO;
+import com.consubanco.model.entities.otp.Otp;
 import com.consubanco.usecase.loan.BuildDataForApplicationUseCase;
 import com.consubanco.usecase.loan.CreateApplicationLoanUseCase;
 import com.consubanco.usecase.loan.LoanUseCase;
@@ -26,8 +27,8 @@ public class LoansHandler {
 
     public Mono<ServerResponse> createApplication(ServerRequest serverRequest) {
         String processId = serverRequest.pathVariable(PROCESS_ID);
-        String otpCode = serverRequest.headers().firstHeader(LoanHeaderParams.OTP);
-        return createApplicationLoanUseCase.execute(processId, otpCode)
+        Otp otp = buildOtp(serverRequest);
+        return createApplicationLoanUseCase.execute(processId, otp)
                 .flatMap(HttpResponseUtil::Ok);
     }
 
@@ -44,6 +45,16 @@ public class LoansHandler {
         return getProcessByIdUseCase.execute(processId)
                 .flatMap(buildDataForApplicationUseCase::execute)
                 .flatMap(HttpResponseUtil::Ok);
+    }
+
+    private Otp buildOtp(ServerRequest request) {
+        return Otp.builder()
+                .code(request.headers().firstHeader(LoanHeaderParams.OTP))
+                .latitude(request.headers().firstHeader(LoanHeaderParams.LATITUDE))
+                .longitude(request.headers().firstHeader(LoanHeaderParams.LONGITUDE))
+                .ip(request.headers().firstHeader(LoanHeaderParams.IP))
+                .userAgent(request.headers().firstHeader(LoanHeaderParams.USER_AGENT))
+                .build();
     }
 
 }

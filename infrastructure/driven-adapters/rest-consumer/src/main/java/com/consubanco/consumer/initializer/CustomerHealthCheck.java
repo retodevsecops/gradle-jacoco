@@ -1,6 +1,6 @@
 package com.consubanco.consumer.initializer;
 
-import com.consubanco.consumer.adapters.document.CustomerApiConsumer;
+import com.consubanco.consumer.services.CustomerApiService;
 import com.consubanco.logger.CustomLogger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -13,7 +13,7 @@ import reactor.core.scheduler.Schedulers;
 public class CustomerHealthCheck implements ApplicationListener<ApplicationReadyEvent> {
 
     private final CustomLogger logger;
-    private final CustomerApiConsumer customerApiConsumer;
+    private final CustomerApiService customerApiService;
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
@@ -21,7 +21,7 @@ public class CustomerHealthCheck implements ApplicationListener<ApplicationReady
     }
 
     private void healthTest() {
-        this.customerApiConsumer.getCustomerHealth()
+        this.customerApiService.getCustomerHealth()
                 .doOnNext(rta -> logger.info("Connection with renex customer service was verified."))
                 .doOnError(error -> logger.error("Failed to verify the connection to renex customer.", error.getCause()))
                 .subscribeOn(Schedulers.single())

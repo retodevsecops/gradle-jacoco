@@ -15,5 +15,4 @@ public interface DocumentGateway {
     Mono<String> generate(String document, Map<String, Object> payload);
     Mono<Map<String, String>> generateMultiple(List<String> documents, Map<String, Object> payload);
     Flux<PreviousDocumentVO>  getDocsFromPreviousApplication(String previousApplicationId, List<AttachmentConfigVO> docs);
-    Mono<String> generateNom151(final byte[] documentContent, String documentName);
 }

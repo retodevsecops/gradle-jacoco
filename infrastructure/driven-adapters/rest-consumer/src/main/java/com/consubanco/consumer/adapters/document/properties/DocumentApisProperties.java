@@ -24,7 +24,6 @@ public class DocumentApisProperties {
         private String apiGetCnca;
         private String searchInterlocutor;
         private String apiDocsPrevious;
-        private String generateNom151;
     }
 
     public String getApplicationId() {
@@ -37,10 +36,6 @@ public class DocumentApisProperties {
 
     public String generateDocumentApiEndpoint() {
         return this.getPromoter().getApiGenerateDocument();
-    }
-
-    public String generateNom151ApiEndpoint() {
-        return this.apiConnect.generateNom151;
     }
 
 }

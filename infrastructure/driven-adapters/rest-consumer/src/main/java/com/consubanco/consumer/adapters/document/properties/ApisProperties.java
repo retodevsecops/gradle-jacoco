@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 @Data
 @Configuration
 @ConfigurationProperties(prefix = "adapter.rest-consumer.apis")
-public class PayloadApisProperties {
+public class ApisProperties {
 
     private Renex renex;
     private ApiConnect apiConnect;
@@ -24,6 +24,7 @@ public class PayloadApisProperties {
         private String apiCustomerProcess;
         private String apiActiveOffer;
         private String apiHealthOffer;
+        private String apiAcceptOffer;
     }
 
 }

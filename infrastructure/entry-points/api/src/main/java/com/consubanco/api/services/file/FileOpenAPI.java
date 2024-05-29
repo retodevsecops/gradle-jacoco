@@ -74,12 +74,12 @@ public class FileOpenAPI {
                 .response(responseBusinessException())
                 .response(responseInternalError());
     }
-    public static Consumer<Builder> getFilesByOffer() {
+    public static Consumer<Builder> getFilesOfferByProcess() {
         return ops -> ops.tag(TAG_OFFER)
-                .operationId("getFilesByOffer")
+                .operationId("getFilesOfferByProcess")
                 .description("Get all offer documents including generated documents and attachments.")
-                .summary("Get all files by offer.")
-                .parameter(ParamsOpenAPI.path(FileParams.OFFER_ID, "Offer identifier"))
+                .summary("Get all files offer by process id.")
+                .parameter(ParamsOpenAPI.path(FileParams.PROCESS_ID, "Process identifier"))
                 .response(responseOkWithList(FileResDTO.class))
                 .response(responseBusinessException())
                 .response(responseInternalError());

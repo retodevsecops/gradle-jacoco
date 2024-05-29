@@ -63,6 +63,16 @@ public class RestConsumerConfig {
                 .build();
     }
 
+    @Bean("nom151Client")
+    public WebClient buildNom151Client() {
+        return WebClient.builder()
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_XML_VALUE + ";charset=utf-8")
+                .exchangeStrategies(defineStrategy())
+                .clientConnector(getClientHttpConnector())
+                .filter(webClientLoggingFilter)
+                .build();
+    }
+
     @Bean("clientGetFiles")
     public WebClient buildClientGetFiles(WebClient.Builder builder) {
         return builder

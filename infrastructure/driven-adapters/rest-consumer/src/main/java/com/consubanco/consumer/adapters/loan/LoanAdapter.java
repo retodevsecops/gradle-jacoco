@@ -3,7 +3,10 @@ package com.consubanco.consumer.adapters.loan;
 import com.consubanco.consumer.adapters.loan.properties.LoanApisProperties;
 import com.consubanco.freemarker.ITemplateOperations;
 import com.consubanco.logger.CustomLogger;
+import com.consubanco.model.entities.loan.constant.ApplicationStatus;
 import com.consubanco.model.entities.loan.gateway.LoanGateway;
+import com.consubanco.model.entities.loan.vo.ApplicationResponseVO;
+import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
@@ -41,14 +44,20 @@ public class LoanAdapter implements LoanGateway {
     }
 
     @Override
-    public Mono<Map<String, Object>> createApplication(Map<String, Object> applicationData) {
+    public Mono<ApplicationResponseVO> createApplication(Map<String, Object> applicationData) {
         logger.info("This is request body of create application", applicationData);
         return this.apiConnectClient.post()
                 .uri(apisProperties.getCreateApplication())
                 .bodyValue(applicationData)
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                .map(map -> new ApplicationResponseVO(getApplicationStatus(map), map))
                 .onErrorMap(throwTechnicalError(API_CREATE_APPLICATION_ERROR));
+    }
+
+    private String getApplicationStatus(Map<String, Object> response) {
+        Integer status = CreateApplicationResponseUtil.getCodeResponse(response);
+        return  (status == HttpStatus.SC_OK) ? ApplicationStatus.SUCCESSFUL.name() : ApplicationStatus.ERROR.name();
     }
 
 

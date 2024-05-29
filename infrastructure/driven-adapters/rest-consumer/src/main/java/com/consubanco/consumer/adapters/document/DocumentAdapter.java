@@ -2,7 +2,6 @@ package com.consubanco.consumer.adapters.document;
 
 import com.consubanco.consumer.adapters.document.dto.*;
 import com.consubanco.consumer.adapters.document.properties.DocumentApisProperties;
-import com.consubanco.consumer.commons.HashGeneratorUtil;
 import com.consubanco.model.commons.exception.TechnicalException;
 import com.consubanco.model.entities.agreement.vo.AttachmentConfigVO;
 import com.consubanco.model.entities.document.gateway.DocumentGateway;
@@ -24,7 +23,8 @@ import java.util.Map;
 import static com.consubanco.consumer.adapters.document.dto.GetDocsPreviousApplicationResDTO.getResponseCode;
 import static com.consubanco.consumer.adapters.document.dto.GetDocsPreviousApplicationResDTO.getResponseMessage;
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.*;
-import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.*;
+import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.API_DOCS_PREVIOUS_ERROR;
+import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.API_DOCS_PREVIOUS_TIMEOUT;
 import static com.consubanco.model.entities.file.message.FileTechnicalMessage.API_ERROR;
 import static com.consubanco.model.entities.file.message.FileTechnicalMessage.API_PROMOTER_ERROR;
 
@@ -109,19 +109,6 @@ public class DocumentAdapter implements DocumentGateway {
                 .bodyToMono(GenerateDocumentResponseDTO.class)
                 .map(GenerateDocumentResponseDTO::getPublicUrl)
                 .onErrorMap(throwTechnicalError(API_PROMOTER_ERROR));
-    }
-
-    @Override
-    public Mono<String> generateNom151(final byte[] documentContent, String documentName) {
-        String documentHash = HashGeneratorUtil.getHashDocument(documentContent);
-        return this.apiConnectClient.post()
-                .uri(apis.generateNom151ApiEndpoint())
-                .bodyValue(new GenerateNom151ReqDTO(apis.getApplicationId(), documentHash, documentName))
-                .retrieve()
-                .bodyToMono(GenerateNom151ResDTO.class)
-                .filter(GenerateNom151ResDTO::checkNom151)
-                .map(GenerateNom151ResDTO::getCertificateInBase64)
-                .onErrorMap(throwTechnicalError(API_NOM151_ERROR));
     }
 
 }

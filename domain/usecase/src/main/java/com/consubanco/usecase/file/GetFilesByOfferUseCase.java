@@ -4,6 +4,8 @@ import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.constant.FileConstants;
 import com.consubanco.model.entities.file.gateway.FileRepository;
+import com.consubanco.model.entities.process.Process;
+import com.consubanco.usecase.process.GetProcessByIdUseCase;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -14,10 +16,13 @@ import static com.consubanco.model.entities.file.message.FileBusinessMessage.OFF
 @RequiredArgsConstructor
 public class GetFilesByOfferUseCase {
 
+    private final GetProcessByIdUseCase getProcessByIdUseCase;
     private final FileRepository fileRepository;
 
-    public Flux<File> execute(String offerId) {
-        return checkOfferId(offerId)
+    public Flux<File> execute(String processId) {
+        return getProcessByIdUseCase.execute(processId)
+                .map(Process::getOfferId)
+                .flatMap(this::checkOfferId)
                 .map(FileConstants::offerDirectory)
                 .flatMapMany(fileRepository::listByFolderWithUrls)
                 .switchIfEmpty(ExceptionFactory.buildBusiness(FILES_NOT_FOUND));

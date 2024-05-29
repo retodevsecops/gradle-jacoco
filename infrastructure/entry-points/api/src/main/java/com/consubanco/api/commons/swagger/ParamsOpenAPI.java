@@ -23,4 +23,11 @@ public class ParamsOpenAPI {
                 .description(description);
     }
 
+    public static Builder header(String name, String description) {
+        return parameterBuilder()
+                .in(ParameterIn.HEADER)
+                .name(name)
+                .description(description);
+    }
+
 }

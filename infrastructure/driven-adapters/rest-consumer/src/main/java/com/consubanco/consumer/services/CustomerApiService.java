@@ -1,6 +1,6 @@
-package com.consubanco.consumer.adapters.document;
+package com.consubanco.consumer.services;
 
-import com.consubanco.consumer.adapters.document.properties.PayloadApisProperties;
+import com.consubanco.consumer.adapters.document.properties.ApisProperties;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
@@ -16,13 +16,13 @@ import static com.consubanco.model.entities.document.message.DocumentTechnicalMe
 import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.CUSTOMER_HEALTH_ERROR;
 
 @Service
-public class CustomerApiConsumer {
+public class CustomerApiService {
 
     private final WebClient renexClient;
-    private final PayloadApisProperties apis;
+    private final ApisProperties apis;
 
-    public CustomerApiConsumer(final @Qualifier("ApiRenexClient") WebClient renexClient,
-                               final PayloadApisProperties apisProperties) {
+    public CustomerApiService(final @Qualifier("ApiRenexClient") WebClient renexClient,
+                              final ApisProperties apisProperties) {
         this.renexClient = renexClient;
         this.apis = apisProperties;
     }

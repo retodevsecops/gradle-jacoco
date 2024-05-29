@@ -19,10 +19,15 @@ public class ProcessAdapter implements ProcessGateway {
 
     @Override
     @Cacheable("process")
-    public Mono<Process> getProcessById(String id) {
-        return offerApiService.activeOfferByProcess(id)
+    public Mono<Process> getProcessById(String processId) {
+        return offerApiService.activeOfferByProcess(processId)
                 .map(offerDataMap -> objectMapper.convertValue(offerDataMap, ActiveOfferingResDTO.class))
-                .map(dto -> dto.toDomainEntity(id));
+                .map(dto -> dto.toDomainEntity(processId));
+    }
+
+    @Override
+    public Mono<String> finish(String processId) {
+        return offerApiService.acceptOffer(processId);
     }
 
 }
