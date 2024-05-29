@@ -44,7 +44,7 @@ public class WebClientLoggingFilter implements ExchangeFilterFunction {
     }
 
     private boolean contentLengthIsEmpty(ClientResponse clientResponse) {
-        return clientResponse.headers().contentLength().orElse(0L) == 0;
+        return clientResponse.headers().contentLength().orElse(1L) == 0;
     }
 
     private Mono<?> getBody(ClientResponse response) {

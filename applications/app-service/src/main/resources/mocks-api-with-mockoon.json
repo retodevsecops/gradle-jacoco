@@ -365,6 +365,35 @@
       ],
       "enabled": true,
       "responseMode": null
+    },
+    {
+      "uuid": "9e753868-0c06-4ed2-8677-e1c3164bafee",
+      "type": "http",
+      "documentation": "",
+      "method": "post",
+      "endpoint": "csb/qa/opp-service/createApplication",
+      "responses": [
+        {
+          "uuid": "4c0568e8-9938-4cff-92c8-c8f7d395151f",
+          "body": "{\n  \"createApplicationResponseBO\": {\n    \"code\": \"200\",\n    \"status\": \"C\",\n    \"response\": \"Exitoso\"\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id"
+        }
+      ],
+      "enabled": true,
+      "responseMode": null
     }
   ],
   "rootChildren": [
@@ -415,6 +444,10 @@
     {
       "type": "route",
       "uuid": "af56b907-75ad-43d3-ab01-d227fee9fbd5"
+    },
+    {
+      "type": "route",
+      "uuid": "9e753868-0c06-4ed2-8677-e1c3164bafee"
     }
   ],
   "proxyMode": false,
