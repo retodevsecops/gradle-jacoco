@@ -34,8 +34,12 @@ public class FileConstants {
         return String.format(OFFER_DIRECTORY_PATH, offerId);
     }
 
-    public static String applicantRecordDirectory(String offerId) {
+    public static String signedApplicantRecordDirectory(String offerId) {
         return documentsDirectory(offerId).concat(DocumentNames.APPLICANT_RECORD);
+    }
+
+    public static String unsignedApplicantRecordDirectory(String offerId) {
+        return documentsDirectory(offerId).concat(DocumentNames.UNSIGNED_APPLICANT_RECORD);
     }
 
 }

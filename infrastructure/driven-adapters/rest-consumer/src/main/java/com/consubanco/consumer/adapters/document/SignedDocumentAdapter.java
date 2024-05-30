@@ -51,6 +51,11 @@ public class SignedDocumentAdapter implements SignedDocumentGateway {
         return nom151ApiService.getNom151ForMN(documentId);
     }
 
+    @Override
+    public Integer getValidDays() {
+        return nom151ApiService.getValidDays();
+    }
+
     private Mono<LoadDocumentReqDTO> buildRequestDTO(DocumentSignatureRequestVO signatureRequest) {
         return customerApiService.customerDataByProcess(signatureRequest.getProcessId())
                 .map(mapCustomerData -> objectMapper.convertValue(mapCustomerData, CustomerAllInfoResDTO.class))

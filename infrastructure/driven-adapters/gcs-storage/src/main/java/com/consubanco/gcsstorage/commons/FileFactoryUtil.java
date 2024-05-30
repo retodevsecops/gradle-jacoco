@@ -18,6 +18,7 @@ public class FileFactoryUtil {
                 .directoryPath(FileUtil.getDirectory(blob.getName()))
                 .size(FileUtil.getSize(blob))
                 .storageRoute(String.format(URI_GS, blob.getBucket(), blob.getName()))
+                .creationDate(blob.getCreateTimeOffsetDateTime().toLocalDateTime())
                 .build();
     }
 
@@ -29,6 +30,7 @@ public class FileFactoryUtil {
                 .directoryPath(FileUtil.getDirectory(blob.getName()))
                 .size(FileUtil.getSize(blob))
                 .storageRoute(String.format(URI_GS, blob.getBucket(), blob.getName()))
+                .creationDate(blob.getCreateTimeOffsetDateTime().toLocalDateTime())
                 .build();
     }
 
@@ -45,6 +47,7 @@ public class FileFactoryUtil {
                 .url(blob.getSelfLink())
                 .size(FileUtil.getSize(blob))
                 .storageRoute(String.format(URI_GS, blob.getBucket(), blob.getName()))
+                .creationDate(blob.getCreateTimeOffsetDateTime().toLocalDateTime())
                 .build();
     }
 
