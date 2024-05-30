@@ -14,6 +14,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -57,6 +58,7 @@ public class DocumentAdapter implements DocumentGateway {
                 .filter(GenerateCNCALetterResDTO::checkCNCAIfExists)
                 .map(GenerateCNCALetterResDTO::getData)
                 .map(GenerateCNCALetterResDTO.Data::getBase64)
+                .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_ERROR))
                 .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(API_ERROR));
     }
 
@@ -76,8 +78,8 @@ public class DocumentAdapter implements DocumentGateway {
                 .uri(apis.generateDocumentApiEndpoint())
                 .bodyValue(new GenerateDocumentRequestDTO(documents, payload))
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {
-                })
+                .bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {})
+                .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_PROMOTER_ERROR))
                 .onErrorMap(throwTechnicalError(API_PROMOTER_ERROR));
     }
 
@@ -99,6 +101,7 @@ public class DocumentAdapter implements DocumentGateway {
                     String cause = String.format(detail, responseCode, responseMessage);
                     return monoTechnicalError(cause, API_DOCS_PREVIOUS_ERROR);
                 })
+                .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_DOCS_PREVIOUS_ERROR))
                 .onErrorMap(error -> {
                     if (error.getCause() instanceof TimeoutException) return buildTechnical(error.getCause(), API_DOCS_PREVIOUS_TIMEOUT);
                     return buildTechnical(error.getCause(), API_DOCS_PREVIOUS_ERROR);
@@ -113,6 +116,7 @@ public class DocumentAdapter implements DocumentGateway {
                 .retrieve()
                 .bodyToMono(GenerateDocumentResponseDTO.class)
                 .map(GenerateDocumentResponseDTO::getPublicUrl)
+                .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_PROMOTER_ERROR))
                 .onErrorMap(throwTechnicalError(API_PROMOTER_ERROR));
     }
 

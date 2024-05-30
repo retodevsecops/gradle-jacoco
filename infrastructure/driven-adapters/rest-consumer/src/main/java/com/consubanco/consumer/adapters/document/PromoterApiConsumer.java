@@ -9,11 +9,13 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Map;
 
+import static com.consubanco.model.commons.exception.factory.ExceptionFactory.buildTechnical;
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
 import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.API_SEARCH_INTERLOCUTOR_ERROR;
 
@@ -48,14 +50,17 @@ public class PromoterApiConsumer {
                 .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
                 .filter(response -> getResponseCode(response).equals(HttpStatus.OK.value()))
                 .flatMap(this::getDataInterlocutor)
+                .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_SEARCH_INTERLOCUTOR_ERROR))
                 .onErrorMap(throwTechnicalError(API_SEARCH_INTERLOCUTOR_ERROR));
     }
 
+    @SuppressWarnings("unchecked")
     private Integer getResponseCode(Map<String, Object> response) {
         Map<String, Object> resBO = (Map<String, Object>) response.get("searchInterlocutorResBO");
         return Integer.parseInt((String) resBO.get("code"));
     }
 
+    @SuppressWarnings("unchecked")
     private Mono<Map<String, Object>> getDataInterlocutor(Map<String, Object> response) {
         return Mono.just(response.get("searchInterlocutorResBO"))
                 .map(resBO -> (Map<String, Object>) resBO)
