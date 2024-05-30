@@ -39,7 +39,8 @@ public class OfferFileHandler {
     }
 
     public Mono<ServerResponse> getCustomerVisibleFiles(ServerRequest request) {
-        return executeUseCase(request.pathVariable(PROCESS_ID), getCustomerVisibleFilesUseCase::execute);
+        String processId = request.pathVariable(PROCESS_ID);
+        return executeUseCase(processId, getCustomerVisibleFilesUseCase::execute);
     }
 
     public Mono<ServerResponse> uploadAgreementFiles(ServerRequest request) {

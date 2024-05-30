@@ -6,7 +6,6 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class FileConstants {
     private final static String OFFER_DIRECTORY_PATH = "renewal/offer/%s/";
-    public final static String FILE_NAME_CNCA_LETTER = "carta-de-liquidacion";
     private final static String PDF_FORMAT = "%s.pdf";
     private final static String ATTACHMENTS_DIRECTORY_PATH = OFFER_DIRECTORY_PATH.concat("attachments/");
     private final static String DOCUMENTS_DIRECTORY_PATH = OFFER_DIRECTORY_PATH.concat("documents/");
@@ -34,8 +33,16 @@ public class FileConstants {
         return String.format(OFFER_DIRECTORY_PATH, offerId);
     }
 
-    public static String applicantRecordDirectory(String offerId) {
+    public static String signedApplicantRecordRoute(String offerId) {
         return documentsDirectory(offerId).concat(DocumentNames.APPLICANT_RECORD);
+    }
+
+    public static String unsignedApplicantRecordRoute(String offerId) {
+        return documentsDirectory(offerId).concat(DocumentNames.UNSIGNED_APPLICANT_RECORD);
+    }
+
+    public static String cncaLetterRoute(String offerId) {
+        return cncaDirectory(offerId).concat(DocumentNames.CNCA_LETTER);
     }
 
 }

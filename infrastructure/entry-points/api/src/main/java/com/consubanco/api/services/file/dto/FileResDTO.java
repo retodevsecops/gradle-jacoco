@@ -1,9 +1,12 @@
 package com.consubanco.api.services.file.dto;
 
 import com.consubanco.model.entities.file.File;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
@@ -26,12 +29,17 @@ public class FileResDTO {
     @Schema(description = "Size of the file.",example = "63 KB",  requiredMode = REQUIRED)
     private String size;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @Schema(description = "Creation date of the file.", example = "yyyy-MM-dd HH:mm:ss",  requiredMode = REQUIRED)
+    private LocalDateTime creationDate;
+
     public FileResDTO(File file) {
         this.url = file.getUrl();
         this.directoryPath = file.getDirectoryPath();
         this.size = file.getSize();
         this.name = file.getName();
         this.storageRoute = file.getStorageRoute();
+        this.creationDate = file.getCreationDate();
 
     }
 

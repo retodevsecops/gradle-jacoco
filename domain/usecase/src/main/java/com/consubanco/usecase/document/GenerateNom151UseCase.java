@@ -3,6 +3,7 @@ package com.consubanco.usecase.document;
 import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.consubanco.model.entities.agreement.Agreement;
 import com.consubanco.model.entities.agreement.gateway.AgreementGateway;
+import com.consubanco.model.entities.document.constant.DocumentNames;
 import com.consubanco.model.entities.document.gateway.SignedDocumentGateway;
 import com.consubanco.model.entities.document.vo.DocumentSignatureRequestVO;
 import com.consubanco.model.entities.file.File;
@@ -30,19 +31,31 @@ public class GenerateNom151UseCase {
 
     public Mono<File> execute(Process process) {
         return process.checkRequiredData()
-                .flatMap(this::getData)
+                .flatMap(this::getSignedApplicationRecord)
+                .filter(file -> file.checkCreationDays(signedDocumentGateway.getValidDays()))
+                .switchIfEmpty(signDocumentWithNom151(process));
+    }
+
+    private Mono<File> getSignedApplicationRecord(Process process) {
+        return Mono.just(process.getOfferId())
+                .map(FileConstants::signedApplicantRecordRoute)
+                .flatMap(fileRepository::getByNameWithoutSignedUrl);
+    }
+    
+    private Mono<File> signDocumentWithNom151(Process process) {
+        return getData(process)
                 .flatMap(TupleUtils.function(this::processNom151));
     }
 
     private Mono<Tuple3<Agreement, File, Process>> getData(Process process) {
         Mono<Agreement> findAgreement = agreementGateway.findByNumber(process.getAgreementNumber());
-        Mono<File> getApplicationRecord = this.getApplicationRecord(process.getOfferId());
+        Mono<File> getApplicationRecord = getUnsignedApplicationRecord(process.getOfferId());
         return Mono.zip(findAgreement, getApplicationRecord, Mono.just(process));
     }
 
-    private Mono<File> getApplicationRecord(String offerId) {
+    private Mono<File> getUnsignedApplicationRecord(String offerId) {
         return Mono.just(offerId)
-                .map(FileConstants::applicantRecordDirectory)
+                .map(FileConstants::unsignedApplicantRecordRoute)
                 .flatMap(fileRepository::getByNameWithoutSignedUrl)
                 .switchIfEmpty(ExceptionFactory.buildBusiness(APPLICANT_RECORD_NOT_FOUND));
     }
@@ -50,13 +63,13 @@ public class GenerateNom151UseCase {
     private Mono<File> processNom151(Agreement agreement, File file, Process process) {
         DocumentSignatureRequestVO signatureRequest = buildSignatureRequest(process, file);
         return generateNom151(agreement, signatureRequest)
-                .map(nom151 -> buildFile(file.getName(), nom151, process.getOfferId()))
+                .map(nom151 -> buildFile(nom151, process.getOfferId()))
                 .flatMap(fileRepository::save);
     }
 
     private DocumentSignatureRequestVO buildSignatureRequest(Process process, File file) {
         return DocumentSignatureRequestVO.builder()
-                .id(process.getOfferId() + LocalDateTime.now().toString())
+                .id(process.getOfferId() + LocalDateTime.now())
                 .documentInBase64(file.getContent())
                 .showSignatures(true)
                 .processId(process.getId())
@@ -82,9 +95,9 @@ public class GenerateNom151UseCase {
                 .switchIfEmpty(ExceptionFactory.buildBusiness(FAILED_LOAD_DOCUMENT));
     }
 
-    private static File buildFile(String name, String contentInBase64, String offerId) {
+    private static File buildFile(String contentInBase64, String offerId) {
         return File.builder()
-                .name(name)
+                .name(DocumentNames.APPLICANT_RECORD)
                 .content(contentInBase64)
                 .directoryPath(documentsDirectory(offerId))
                 .extension(FileExtensions.PDF)

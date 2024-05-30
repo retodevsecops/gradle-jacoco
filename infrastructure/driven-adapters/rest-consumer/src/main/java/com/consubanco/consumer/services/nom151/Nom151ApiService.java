@@ -93,4 +93,8 @@ public class Nom151ApiService {
                 });
     }
 
+    public Integer getValidDays() {
+        return properties.getValidDays();
+    }
+
 }

@@ -61,6 +61,11 @@ public class DocumentAdapter implements DocumentGateway {
     }
 
     @Override
+    public Integer validDaysCNCA() {
+        return apis.getApiConnect().getValidDaysCnca();
+    }
+
+    @Override
     public Mono<String> generate(String document, Map<String, Object> payload) {
         return generate(List.of(document), null, payload);
     }

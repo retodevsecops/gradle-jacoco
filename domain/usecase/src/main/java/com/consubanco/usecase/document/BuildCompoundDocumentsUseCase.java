@@ -13,10 +13,11 @@ import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
+import reactor.util.function.Tuple2;
 
 import java.util.List;
 
-import static com.consubanco.model.entities.document.constant.DocumentNames.APPLICANT_RECORD;
+import static com.consubanco.model.entities.document.constant.DocumentNames.UNSIGNED_APPLICANT_RECORD;
 import static com.consubanco.model.entities.document.message.DocumentBusinessMessage.DOCUMENT_NOT_FOUND;
 import static com.consubanco.model.entities.document.message.DocumentMessage.documentNotFound;
 
@@ -26,15 +27,22 @@ public class BuildCompoundDocumentsUseCase {
     private final AgreementConfigRepository agreementConfigRepository;
     private final PDFDocumentGateway pdfDocumentGateway;
     private final FileRepository fileRepository;
+    private final GenerateNom151UseCase generateNom151UseCase;
 
     public Mono<Void> execute(Process process, List<File> files) {
-        String directory = FileConstants.documentsDirectory(process.getOffer().getId());
-        String agreementNumber = process.getAgreementNumber();
         return mergeFiles(process.getOffer().getId(), files)
                 .collectList()
-                .flatMap(allFiles -> Mono.zip(createApplicantRecord(allFiles, directory),
-                        createConfiguredCompoundDocuments(agreementNumber, allFiles, directory).collectList()))
+                .flatMap(allFiles -> processCompoundDocuments(process, allFiles))
                 .then();
+    }
+
+    private Mono<Tuple2<File, List<File>>> processCompoundDocuments(Process process, List<File> allFiles) {
+        String directory = FileConstants.documentsDirectory(process.getOffer().getId());
+        String agreementNumber = process.getAgreementNumber();
+        Mono<File> unsignedApplicantRecord = createUnsignedApplicantRecord(allFiles, directory);
+        Flux<File> compoundDocuments = createConfiguredCompoundDocuments(agreementNumber, allFiles, directory);
+        return Mono.zip(unsignedApplicantRecord, compoundDocuments.collectList())
+                .doOnSuccess(e -> generateSignedApplicantRecord(process));
     }
 
     private Flux<File> createConfiguredCompoundDocuments(String agreementNumber, List<File> files, String directory) {
@@ -82,11 +90,17 @@ public class BuildCompoundDocumentsUseCase {
                 .defaultIfEmpty(file.getContent());
     }
 
-    private Mono<File> createApplicantRecord(List<File> files, String directory) {
+    private Mono<File> createUnsignedApplicantRecord(List<File> files, String directory) {
         List<String> base64Documents = files.stream().map(File::getContent).toList();
         return pdfDocumentGateway.merge(base64Documents)
-                .map(documentContent -> buildCompundDocumentFile(APPLICANT_RECORD, documentContent, directory))
+                .map(documentContent -> buildCompundDocumentFile(UNSIGNED_APPLICANT_RECORD, documentContent, directory))
                 .flatMap(fileRepository::save);
+    }
+
+    private void generateSignedApplicantRecord(Process process) {
+        generateNom151UseCase.execute(process)
+                .subscribeOn(Schedulers.parallel())
+                .subscribe();
     }
 
     private File buildCompundDocumentFile(String name, String content, String directory) {
