@@ -20,6 +20,7 @@ public class DocumentApisProperties {
 
     @Data
     public static class ApiConnect {
+        private Integer validDaysCnca;
         private String applicationId;
         private String apiGetCnca;
         private String searchInterlocutor;

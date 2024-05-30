@@ -45,6 +45,7 @@ adapter:
         api-generate-document: ${API_GENERATE_DOCUMENT_ENDPOINT:https://documents.qa.masnominadigital.com/api/generate/csb}
         api-get-agreement: ${API_GET_AGREEMENT_ENDPOINT:https://it-api-gateway.qa.masnominadigital.com/convenios/getDetail}
       api-connect:
+        valid-days-cnca: ${VALID_DAYS_CNCA:5}
         client-id: ${API_CONNECT_CLIENT_ID}
         application-id: ${API_CONNECT_APPLICATION_ID:CSB-RENEX}
         api-get-cnca: ${API_GET_CNCA:https://apic.consubanco.com/csb/qa/puc-letter-generate-api/getLetterCNCA}

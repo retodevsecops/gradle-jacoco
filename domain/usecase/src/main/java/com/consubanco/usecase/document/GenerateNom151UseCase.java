@@ -38,7 +38,7 @@ public class GenerateNom151UseCase {
 
     private Mono<File> getSignedApplicationRecord(Process process) {
         return Mono.just(process.getOfferId())
-                .map(FileConstants::signedApplicantRecordDirectory)
+                .map(FileConstants::signedApplicantRecordRoute)
                 .flatMap(fileRepository::getByNameWithoutSignedUrl);
     }
     
@@ -55,7 +55,7 @@ public class GenerateNom151UseCase {
 
     private Mono<File> getUnsignedApplicationRecord(String offerId) {
         return Mono.just(offerId)
-                .map(FileConstants::unsignedApplicantRecordDirectory)
+                .map(FileConstants::unsignedApplicantRecordRoute)
                 .flatMap(fileRepository::getByNameWithoutSignedUrl)
                 .switchIfEmpty(ExceptionFactory.buildBusiness(APPLICANT_RECORD_NOT_FOUND));
     }
