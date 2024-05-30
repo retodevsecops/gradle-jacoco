@@ -1,0 +1,41 @@
+pluginManagement {
+    repositories {
+        mavenLocal()
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = 'vd-loans-documents-msa'
+
+include ':app-service'
+project(':app-service').projectDir = file('./applications/app-service')
+
+include ':model'
+project(':model').projectDir = file('./domain/model')
+
+include ':usecase'
+project(':usecase').projectDir = file('./domain/usecase')
+
+include ':rest-consumer'
+project(':rest-consumer').projectDir = file('./infrastructure/driven-adapters/rest-consumer')
+
+include ':gcs-storage'
+project(':gcs-storage').projectDir = file('./infrastructure/driven-adapters/gcs-storage')
+
+include ':open-pdf'
+project(':open-pdf').projectDir = file('./infrastructure/driven-adapters/open-pdf')
+
+include ':postgresql-respository'
+project(':postgresql-respository').projectDir = file('./infrastructure/driven-adapters/postgresql-respository')
+
+include ':api'
+project(':api').projectDir = file('./infrastructure/entry-points/api')
+
+include ':custom-logger'
+project(':custom-logger').projectDir = file('./infrastructure/helpers/custom-logger')
+
+include ':caffeine-cache'
+project(':caffeine-cache').projectDir = file('./infrastructure/helpers/caffeine-cache')
+
+include ':freemarker'
+project(':freemarker').projectDir = file('./infrastructure/helpers/freemarker')

@@ -1,0 +1,65 @@
+[
+  {
+    "agreement": "cdmx - csb",
+    "agreementNumber": "10000041",
+    "attachmentsDocuments": [
+      {
+        "name": "Identificacion oficial",
+        "technicalName": "identificacion-oficial",
+        "maxFiles": 1,
+        "isOcr": true,
+        "isRecoverable": true,
+        "namePreviousDocument": "IDENTIFICACIONOFICIAL",
+        "isRequired": true,
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF"]
+      },
+      {
+        "name": "Recibos de nomina",
+        "technicalName": "recibo-nomina",
+        "maxFiles": 2,
+        "isOcr": true,
+        "isRecoverable": true,
+        "namePreviousDocument": "RECIBO-NOMINA",
+        "isRequired": true,
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF"]
+      },
+      {
+        "name": "Comprobante de domicilio",
+        "technicalName": "comprobante-domicilio",
+        "maxFiles": 1,
+        "isOcr": true,
+        "isRecoverable": true,
+        "namePreviousDocument": "COMPROBANTE-DOMICILIO",
+        "isRequired": true,
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF"]
+      }
+    ],
+    "compoundDocuments": [
+      {
+        "name": "contrato-cliente",
+        "documents": [
+          {"name": "formato-unico-caratula"},
+          {"name": "formato-unico-contrato-credito"}
+        ]
+      },
+      {
+        "name": "documentos-cobranza",
+        "documents": [
+          {"name": "formato-reserva"},
+          {"name": "identificacion-oficial"},
+          {"name": "carta-consentimiento"},
+          {"name": "recibo-nomina"},
+          {"name": "formato-solicitud-gratuita"},
+          {"name": "formato-unico-caratula"},
+          {"name": "contrato-servicios-digitales", "page": -1},
+          {"name": "pagare"}
+        ]
+      }
+    ],
+    "customerVisibleDocuments": [
+      "formato-solicitud-gratuita",
+      "contrato-cliente",
+      "carta-de-liquidacion"
+    ]
+  }
+]

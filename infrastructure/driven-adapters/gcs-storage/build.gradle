@@ -1,0 +1,9 @@
+dependencies {
+    implementation project(':model')
+    implementation project(":custom-logger")
+    implementation project(":freemarker")
+    implementation 'com.google.cloud:google-cloud-storage:2.35.0'
+    implementation 'org.springframework:spring-context'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation project(":caffeine-cache")
+}
