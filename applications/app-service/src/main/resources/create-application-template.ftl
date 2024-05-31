@@ -4,317 +4,139 @@ to consume the api for create application. ${}
 -->
 <#assign
 current_date_timestamp = .now?long
-promotorCompleteName = promoter_data.name1 + "" + promoter_data.lastname1
+promotorCompleteName = promoter_data.name1 + " " + promoter_data.lastname1
+termDesc = offer_data.offer.term + " " + offer_data.offer.frequency
 >
 {
-  "createApplicationRequestBO": {
-    "applicationId": "RENEX",
-    "aplicationInfo": {
-      "probankNumber": "${offer_data.offer.id}",
-      "folioApplication": "${offer_data.offer.id}",
-      "promotorBp": "${promoter_data.bpId}",
-      "promotorCompleteName": "${promotorCompleteName}",
-      "applicant": {
-        "bp": "${customer_data.customer.bpId}",
-        "clientId": "${customer_data.customer.bpId}",
-        "curp": "${customer_data.customer.curp}",
-        "rfc": "${customer_data.customer.rfc}",
-        "name1": "${customer_data.customer.firstName}",
-        "name2": "${customer_data.customer.secondName}",
-        "lastName1": "${customer_data.customer.lastName}",
-        "lastName2": "${customer_data.customer.secondLastName}",
-        "regimenFiscal": {
-          "key": "string",
-          "description": "string"
-        },
-        "credits": [
-          {
-            "accountId": "string",
-            "formalizationDate": "2024-05-15",
-            "amount": 0,
-            "dueAmount": 0,
-            "paymentNumber": "string",
-            "totalOfPayments": 0,
-            "discountAmount": "string",
-            "paymentFrequency": "string",
-            "paymentBehavior": "string",
-            "paymentHistory": "string",
-            "fraudFlag": 0,
-            "fraudDate": "2024-05-15",
-            "convenioId": "string",
-            "convenioName": "string",
-            "rfc": "string",
-            "name": "string",
-            "montoExigible": "string",
-            "montoAplicado": 0,
-            "fechaPosteo": "2024-05-15",
-            "quebranto": true,
-            "pagoVoluntario": true,
-            "diasRetrazo": 0,
-            "idEstatusCredito": 0,
-            "totalAplicadoNMeses": 0,
-            "ratificado": true,
-            "mesesDesdePrimerPago": 0,
-            "tipoAmortizacion": 0,
-            "letter": {
-              "monto": 0,
-              "interes": 0,
-              "iva": 0,
-              "fechaSolicitudLiq": "2024-05-15",
-              "montoComision": 0,
-              "ivaComision": 0,
-              "totalLiquidacion": 0,
-              "tipoLiquidacion": 0
+    "createApplicationRequestBO": {
+        "applicationId": "CSB-RENEX",  
+        "aplicationInfo": {
+            "branch": {
+                "bp": "0017002824",
+                "id": "51187525",
+                "name": "Equipo 360° - Digital CSB",
+                "company": {
+                    "bp": "0017001478",
+                    "id": "51168057",
+                    "name": "CONSUBANCO",
+                    "acronym": "1300"
+                },
+                "distributor": {
+                    "bp": "0017002823",
+                    "id": "51187524",
+                    "name": "CANAL DIGITAL",
+                    "acronym": "CANDIG"
+                },
+                "branchNFOFlag": true
             },
-            "sistemaOrigen": "string",
-            "descripcionEstatus": "string",
-            "fechaPrimerPago": "2024-05-15",
-            "duenioCartera": "string",
-            "capitalBalance": 0,
-            "outstandingBalance": 0,
-            "operativeBalance": 0,
-            "death": true,
-            "restructure": true,
-            "statusAccount": "string",
-            "annualOrdinaryInterestRatePerc": 0,
-            "annualMoratoriumInterestRatePerc": 0,
-            "amountOfInterestEarned": 0,
-            "percentageOfInterestRateEarned": 0,
-            "cat": 0
-          }
-        ]
-      },
-      "branch": {
-        "id": "string",
-        "name": "string",
-        "bp": "string",
-        "acronym": "string",
-        "company": {
-          "id": "string",
-          "name": "string",
-          "bp": "string",
-          "acronym": "string"
-        },
-        "distributor": {
-          "id": "string",
-          "name": "string",
-          "bp": "string",
-          "acronym": "string"
-        },
-        "branchNFOFlag": true
-      },
-      "agreement": {
-        "id": "string",
-        "name": "string",
-        "shortName": "string",
-        "group": "string",
-        "shortGroup": "string",
-        "brmsCode": "string",
-        "product": {
-          "id": "string",
-          "name": "string",
-          "shortName": "string",
-          "category": "string",
-          "brmsCode": "string",
-          "paymentFrecuencyId": "string",
-          "paymentFrecuencyDesc": "string"
-        },
-        "documents": [
-          {
-            "id": "string",
-            "name": "aviso-de-privacidad",
-            "technicalName": "string",
-            "clasification": "string",
-            "required": true,
-            "visible": true,
-            "fields": [
-              {
-                "id": "string",
-                "name": "string",
-                "technicalName": "string",
-                "clasification": "string",
-                "type": "string",
-                "required": true,
-                "value": "string"
-              }
-            ],
-            "fileName": "string",
-            "url": "string"
-          }
-        ],
-        "convenioNFOFlag": true
-      },
-      "amount": 0,
-      "priceGroupId": "string",
-      "termDesc": "string",
-      "isCNCA": true,
-      "sourceChannelApp": "string",
-      "biometricTask": {
-        "probankNumber": "string",
-        "taskCRMId": "string",
-        "taskStatusCRM": {
-          "key": "string",
-          "description": "string"
-        },
-        "createDate": "2024-05-15"
-      },
-      "recommender": {
-        "bp": "string",
-        "clientId": "string",
-        "curp": "string",
-        "rfc": "string",
-        "name1": "string",
-        "name2": "string",
-        "lastName1": "string",
-        "lastName2": "string",
-        "regimenFiscal": {
-          "key": "string",
-          "description": "string"
-        }
-      },
-      "competitors": [
-        {
-          "serviceOrderId": "string",
-          "bp": "string",
-          "name": "string",
-          "shortName": "string",
-          "amount": 0,
-          "transitPayment": true,
-          "numberTransitPayment": 0,
-          "lastDiscountDate": "2024-05-15",
-          "reference": "string",
-          "concept": "string",
-          "discountAmount": 0,
-          "approvalDate": "2024-05-15",
-          "emmisionDate": "2024-05-15",
-          "expirationDate": "2024-05-15",
-          "cat": 0,
-          "rate": 0,
-          "bankId": "string",
-          "bankDesc": "string",
-          "clabeAggrementAccount": "string",
-          "paymentReference": "string",
-          "paymentMethodId": "string",
-          "paymentMethodDesc": "string"
-        }
-      ],
-      "paymentData": {
-        "bankId": "string",
-        "bankDesc": "string",
-        "clabe": "string",
-        "paymentMethodId": "string",
-        "paymentMethodDesc": "string"
-      },
-      "reprocessNumber": 0,
-      "incidences": [
-        {
-          "type": {
-            "key": "string",
-            "description": "string"
-          },
-          "resolved": true,
-          "cause": {
-            "key": "string",
-            "description": "string"
-          },
-          "motive": {
-            "key": "string",
-            "description": "string"
-          },
-          "reprocessable": true,
-          "externalMessage": "string",
-          "internalMessage": "string"
-        }
-      ],
-      "opcOppnpTask": {
-        "taskId": "string",
-        "sourceChannel": "string"
-      },
-      "specialBranchDocuments": [
-        {
-          "id": "string",
-          "name": "string",
-          "technicalName": "string",
-          "clasification": "string",
-          "required": true,
-          "visible": true,
-          "fields": [
-            {
-              "id": "string",
-              "name": "string",
-              "technicalName": "string",
-              "clasification": "string",
-              "type": "string",
-              "required": true,
-              "value": "string"
-            }
-          ],
-          "fileName": "string",
-          "base64": "string",
-          "url": "string"
-        }
-      ],
-      "references": [
-        {
-          "bp": "string",
-          "clientId": "string",
-          "curp": "string",
-          "rfc": "string",
-          "name1": "string",
-          "name2": "string",
-          "lastName1": "string",
-          "lastName2": "string",
-          "regimenFiscal": {
-            "key": "string",
-            "description": "string"
-          },
-          "relationship": {
-            "key": "string",
-            "description": "string"
-          },
-          "cellPhone": "string"
-        }
-      ],
-      "videoTask": {
-        "id": "string",
-        "idFolio": "string",
-        "documents": [
-          {
-            "id": "string",
-            "name": "string",
-            "technicalName": "string",
-            "clasification": "string",
-            "required": true,
-            "visible": true,
-            "fields": [
-              {
-                "id": "string",
-                "name": "string",
-                "technicalName": "string",
-                "clasification": "string",
-                "type": "string",
-                "required": true,
-                "value": "string"
-              }
-            ],
-            "fileName": "string",
-            "base64": "string",
-            "url": "string"
-          }
-        ]
-      },
-      "cat": 0,
-      "rate": 0,
-      "iva": 0,
-      "discountamount": 0,
-      "amountTotalToPay": 0,
-      "dependence": {
-        "key": "string",
-        "startDate": "2024-05-15",
-        "endDate": "2024-05-15",
-        "name": "string"
-      },
-      "promotorNFOFlag": true
+            "cat": ${offer_data.offer.cat?c},
+            "amount": ${offer_data.offer.amount?c}, 
+            "isCNCA": true,  
+            "termDesc": "${termDesc}", 
+            "agreement": {
+                "id": "${offer_data.offer.agreement.key}",
+                "name": "${offer_data.offer.agreement.description}",
+                "group": "${customer_data.preApplicationData.agreement.group}", 
+                "product": {
+                    "id": "${offer_data.offer.product.key}",
+                    "name": "${offer_data.offer.product.description}",
+                    "category": "${customer_data.preApplicationData.agreement.product.category}",
+                    "shortName": "${customer_data.preApplicationData.agreement.product.shortName}",
+                    "paymentFrecuencyId": "${customer_data.preApplicationData.agreement.product.paymentFrecuencyId}",
+                    "paymentFrecuencyDesc": "${customer_data.preApplicationData.agreement.product.paymentFrecuencyDesc}" 
+                },
+                "brmsCode": "${customer_data.preApplicationData.agreement.brmsCode}",  
+                "documents": [
+                    <#list customer_data.preApplicationData.documents as document>
+                        <#assign file_data_matched_sec = files_data?filter(file_data -> file_data.name == document.technicalName) >
+                        <#assign file_data_matched = file_data_matched_sec?first?if_exists >
+                        <#if file_data_matched.storageRoute??>
+                            {
+                                "id": "${document.id}",
+                                "technicalName": "${document.technicalName}",
+                                "fileName": "${document.technicalName}",
+                                "name": "${document.name}",
+                                "clasification": "${document.clasification}",
+                                "url": <#if file_data_matched.storageRoute??> "${file_data_matched.storageRoute}" <#else> "" </#if>,
+                                <#if document.fields??>
+                                        "fields": [       
+                                            <#list document.fields as field>                
+                                            {
+                                                "id": "${field.id}",
+                                                "name": "${field.name}",
+                                                "technicalName": "${field.technicalName}",
+                                                "clasification": "${field.clasification}",
+                                                "type": "${field.type}",
+                                                "required": ${field.required?c},
+                                                "value": <#if field.value??> "${field.value}" <#else> "" </#if>
+                                            }<#if field?has_next>,</#if>
+                                            </#list>
+                                        ], 
+                                </#if>
+                                "required": ${document.required?c},
+                                "visible": ${document.visible?c}       
+                            }<#if document?has_next>,</#if>
+                        </#if>
+                    </#list>
+                  ],
+                "shortName": "${customer_data.preApplicationData.agreement.shortName}", 
+                "shortGroup": "${customer_data.preApplicationData.agreement.shortGroup}", 
+                "convenioNFOFlag": true 
+            },
+            "applicant": {
+                "bp": "${customer_data.customer.bpId}",
+                "clientId": "${customer_data.customer.bpId}",
+                "curp": "${customer_data.customer.curp}",
+                "rfc": "${customer_data.customer.rfc}",
+                "name1": "${customer_data.customer.firstName}",
+                "name2": "${customer_data.customer.secondName}",
+                "lastName1": "${customer_data.customer.lastName}",
+                "lastName2": "${customer_data.customer.secondLastName}",
+                "credits": [
+                    <#list offer_data.offer.creditList as credit>
+                    {
+                        "amount": ${credit.capital?c}, 
+                        "letter": {
+                            "iva": ${credit.iva?c},
+                            "monto": ${credit.totalLiquidacion?c},
+                            "interes": ${credit.interes?c}
+                        },
+                        "accountId": "${credit.creditNumber?c}"
+                    }<#if credit?has_next>,</#if>
+                    </#list>
+                ],
+                "regimenFiscal": {
+                    "key": "string",
+                    "description": "string"
+                }
+            },
+            "promotorBp": "${promoter_data.bpId}",
+            "priceGroupId": "${offer_data.offer.priceGroupId}",
+            "biometricTask": {
+                "taskCRMId": "string",
+                "createDate": "2024-05-15",
+                "probankNumber": "",
+                "taskStatusCRM": {
+                    "key": "string",
+                    "description": "string"
+                }
+            }, 
+            "paymentData": {
+                "bankId": "${customer_data.preApplicationData.paymentData.bankId}",
+                "bankDesc": "${customer_data.preApplicationData.paymentData.bankDesc}",
+                "clabe": "${customer_data.preApplicationData.paymentData.clabe}",
+                "paymentMethodId": "${customer_data.preApplicationData.paymentData.paymentMethodId}",
+                "paymentMethodDesc": "${customer_data.preApplicationData.paymentData.paymentMethodDesc}"
+            },
+            "probankNumber": "${offer_data.offer.id}",
+            "discountamount": 0,
+            "promotorNFOFlag": true,
+            "reprocessNumber": 0,
+            "amountTotalToPay": 0,
+            "folioApplication": "${offer_data.offer.id}",
+            "sourceChannelApp": "RENEX", 
+
+            "promotorCompleteName": "${promotorCompleteName}"
+     }
     }
-  }
 }
