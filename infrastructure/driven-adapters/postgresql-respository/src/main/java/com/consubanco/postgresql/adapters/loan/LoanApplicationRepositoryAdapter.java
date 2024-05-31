@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.function.TupleUtils;
 
 import java.util.Map;
 
@@ -46,15 +47,7 @@ public class LoanApplicationRepositoryAdapter implements LoanApplicationReposito
     public Flux<LoanApplication> listByProcess(String processId) {
         return dataRepository.findByProcessId(processId)
                 .flatMap(data -> Mono.zip(jsonToMap(data.getRequest()), jsonToMap(data.getResponse()))
-                        .map(tuple -> LoanApplication.builder()
-                                .id(data.getId())
-                                .processId(data.getProcessId())
-                                .otp(data.getOtp())
-                                .request(tuple.getT1())
-                                .response(tuple.getT2())
-                                .createdAt(data.getCreatedAt())
-                                .updatedAt(data.getUpdatedAt())
-                                .build()))
+                        .map(TupleUtils.function(data::toEntityModel)))
                 .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(QUERY_ERROR_DB));
     }
 
