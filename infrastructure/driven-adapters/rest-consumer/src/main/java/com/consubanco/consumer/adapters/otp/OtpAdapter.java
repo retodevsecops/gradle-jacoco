@@ -8,8 +8,10 @@ import com.consubanco.model.entities.otp.gateway.OtpGateway;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
+import static com.consubanco.model.commons.exception.factory.ExceptionFactory.buildTechnical;
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
 import static com.consubanco.model.entities.otp.message.OtpTechnicalMessage.API_VALIDATE_OTP_ERROR;
 
@@ -42,6 +44,7 @@ public class OtpAdapter implements OtpGateway {
                 .retrieve()
                 .bodyToMono(ValidateOTPResDTO.class)
                 .map(ValidateOTPResDTO::getIsValid)
+                .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_VALIDATE_OTP_ERROR))
                 .onErrorMap(throwTechnicalError(API_VALIDATE_OTP_ERROR));
     }
 

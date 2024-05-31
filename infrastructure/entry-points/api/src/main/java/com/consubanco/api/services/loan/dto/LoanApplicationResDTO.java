@@ -22,11 +22,20 @@ public class LoanApplicationResDTO {
     @Schema(description = "Otp code with which the application was made.", example = "542654", requiredMode = REQUIRED)
     private String otp;
 
+    @Schema(description = "Application status.", example = "SUCCESSFUL", requiredMode = REQUIRED)
+    private String applicationStatus;
+
     @Schema(description = "Application data in json format.", example = "{}", requiredMode = REQUIRED)
     private Map<String, Object> request;
 
     @Schema(description = "Application response data in json format.", example = "{}", requiredMode = REQUIRED)
     private Map<String, Object> response;
+
+    @Schema(description = "Offer status.", example = "FINALIZED", requiredMode = REQUIRED)
+    private String offerStatus;
+
+    @Schema(description = "Email status.", example = "SENT", requiredMode = REQUIRED)
+    private String emailStatus;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "Created date.", example = "yyyy-MM-dd HH:mm:ss", requiredMode = REQUIRED)
@@ -44,5 +53,8 @@ public class LoanApplicationResDTO {
         this.response = loanApplication.getResponse();
         this.createdAt = loanApplication.getCreatedAt();
         this.updatedAt = loanApplication.getUpdatedAt();
+        this.offerStatus = loanApplication.getOfferStatus();
+        this.applicationStatus = loanApplication.getApplicationStatus();
+        this.emailStatus = loanApplication.getEmailStatus();
     }
 }

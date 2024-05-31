@@ -7,10 +7,12 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
+import static com.consubanco.model.commons.exception.factory.ExceptionFactory.buildTechnical;
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
 import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.API_CUSTOMER_ERROR;
 import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.CUSTOMER_HEALTH_ERROR;
@@ -34,6 +36,7 @@ public class CustomerApiService {
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_CUSTOMER_ERROR))
                 .onErrorMap(throwTechnicalError(API_CUSTOMER_ERROR));
     }
 

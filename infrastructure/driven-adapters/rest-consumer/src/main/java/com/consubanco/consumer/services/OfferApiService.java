@@ -16,6 +16,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
+import static com.consubanco.model.commons.exception.factory.ExceptionFactory.buildTechnical;
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
 import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.API_ACTIVE_OFFER_ERROR;
 import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.OFFER_HEALTH_ERROR;
@@ -42,6 +43,7 @@ public class OfferApiService {
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_ACTIVE_OFFER_ERROR))
                 .onErrorMap(throwTechnicalError(API_ACTIVE_OFFER_ERROR));
     }
 

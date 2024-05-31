@@ -11,6 +11,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Data
 @Builder
@@ -53,6 +54,21 @@ public class LoanApplicationData {
                 .emailStatus(this.emailStatus)
                 .createdAt(this.createdAt)
                 .updatedAt(this.updatedAt)
+                .build();
+    }
+
+    public LoanApplication toEntityModel(Map<String, Object> request, Map<String, Object> response) {
+        return LoanApplication.builder()
+                .id(id)
+                .processId(processId)
+                .otp(otp)
+                .applicationStatus(applicationStatus)
+                .request(request)
+                .response(response)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .emailStatus(emailStatus)
+                .offerStatus(offerStatus)
                 .build();
     }
 
