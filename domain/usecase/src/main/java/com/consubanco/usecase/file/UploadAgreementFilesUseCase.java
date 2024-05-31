@@ -6,9 +6,11 @@ import com.consubanco.model.entities.agreement.gateway.AgreementGateway;
 import com.consubanco.model.entities.agreement.vo.AgreementConfigVO;
 import com.consubanco.model.entities.document.gateway.PDFDocumentGateway;
 import com.consubanco.model.entities.file.File;
+import com.consubanco.model.entities.file.constant.FileConstants;
 import com.consubanco.model.entities.file.constant.FileExtensions;
 import com.consubanco.model.entities.file.gateway.FileRepository;
 import com.consubanco.model.entities.file.vo.FileUploadVO;
+import com.consubanco.model.entities.file.vo.FileWithStorageRouteVO;
 import com.consubanco.model.entities.process.Process;
 import com.consubanco.usecase.document.BuildAgreementDocumentsUseCase;
 import com.consubanco.usecase.document.BuildCompoundDocumentsUseCase;
@@ -45,9 +47,16 @@ public class UploadAgreementFilesUseCase {
     private Mono<Map<String, String>> startProcess(List<FileUploadVO> attachments, Process process) {
         Mono<Agreement> agreement = agreementGateway.findByNumber(process.getAgreementNumber());
         Mono<AgreementConfigVO> agreementConfig = agreementConfigRepository.getConfigByAgreement(process.getAgreementNumber());
-        return Mono.zip(agreement, agreementConfig)
-                .flatMap(tuple -> checkAttachments(tuple.getT2().getAttachmentsDocuments(), attachments)
+        Mono<List<String>> attachmentsInStorage = getAttachmentsInStorageByOffer(process.getOfferId());
+        return Mono.zip(agreement, agreementConfig, attachmentsInStorage)
+                .flatMap(tuple -> checkAttachments(tuple.getT2().getAttachmentsDocuments(), attachments, tuple.getT3())
                         .flatMap(validAttachments -> uploadAllDocuments(process, validAttachments, tuple.getT1())));
+    }
+
+    private Mono<List<String>> getAttachmentsInStorageByOffer(String offerId) {
+        return fileRepository.listByFolder(FileConstants.attachmentsDirectory(offerId))
+                .map(FileWithStorageRouteVO::getName)
+                .collectList();
     }
 
     private Mono<Map<String, String>> uploadAllDocuments(Process process, List<FileUploadVO> attachments, Agreement agreement) {

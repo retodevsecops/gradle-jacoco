@@ -18,6 +18,8 @@ import static com.consubanco.model.entities.file.message.FileMessage.maxSize;
 @UtilityClass
 public class AttachmentValidatorUtil {
 
+    private static final String DELIMITER = ", ";
+
     public Mono<Void> checkAttachmentsSize(List<FileUploadVO> attachments, Double maxSizeAllowed) {
         return Flux.fromIterable(attachments)
                 .filter(fileUploadVO -> fileUploadVO.getSizeInMB() > maxSizeAllowed)
@@ -30,11 +32,13 @@ public class AttachmentValidatorUtil {
                 .then();
     }
 
-    public Mono<List<FileUploadVO>> checkAttachments(List<AttachmentConfigVO> attachmentsByAgreement, List<FileUploadVO> attachmentsProvided) {
+    public Mono<List<FileUploadVO>> checkAttachments(List<AttachmentConfigVO> attachmentsByAgreement,
+                                                     List<FileUploadVO> attachmentsProvided,
+                                                     List<String> attachmentsInStorage) {
         List<String> attachmentNamesByAgreement = attachmentNames(attachmentsByAgreement);
         List<FileUploadVO> filteredAttachments = filteredAttachments(attachmentNamesByAgreement, attachmentsProvided);
         List<String> providedAttachmentNames = providedAttachmentNames(filteredAttachments);
-        return checkRequiredAttachments(attachmentsByAgreement, providedAttachmentNames)
+        return checkRequiredAttachments(attachmentsByAgreement, providedAttachmentNames, attachmentsInStorage)
                 .then(checkValidTypes(filteredAttachments, attachmentsByAgreement))
                 .thenReturn(filteredAttachments);
     }
@@ -65,15 +69,16 @@ public class AttachmentValidatorUtil {
     }
 
     private Mono<Void> checkRequiredAttachments(List<AttachmentConfigVO> attachmentsByAgreement,
-                                                List<String> providedAttachmentNames) {
+                                                List<String> attachmentsProvided,
+                                                List<String> attachmentsInStorage) {
         return Flux.fromIterable(attachmentsByAgreement)
                 .filter(AttachmentConfigVO::shouldBeValidated)
                 .map(AttachmentConfigVO::getTechnicalName)
-                .filter(attachmentRequired -> !providedAttachmentNames.contains(attachmentRequired))
+                .filter(attachment -> !attachmentsProvided.contains(attachment) && !attachmentsInStorage.contains(attachment))
                 .collectList()
                 .filter(list -> !list.isEmpty())
                 .map(list -> {
-                    throw ExceptionFactory.buildBusiness((String.join(", ", list)), MISSING_ATTACHMENT);
+                    throw ExceptionFactory.buildBusiness((String.join(DELIMITER, list)), MISSING_ATTACHMENT);
                 })
                 .then();
     }
