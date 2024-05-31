@@ -10,8 +10,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
+import static com.consubanco.model.commons.exception.factory.ExceptionFactory.buildTechnical;
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
 import static com.consubanco.model.entities.agreement.message.AgreementTechnicalMessage.API_ERROR;
 
@@ -39,6 +41,7 @@ public class AgreementConsumerAdapter implements AgreementGateway {
                 .retrieve()
                 .bodyToMono(GetAgreementResponseDTO.class)
                 .map(response -> modelMapper.map(response.getDetail().getAgreement(), Agreement.class))
+                .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_ERROR))
                 .onErrorMap(throwTechnicalError(API_ERROR));
     }
 

@@ -64,6 +64,7 @@ public class PayloadDocumentAdapter implements PayloadDocumentGateway, Applicati
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Mono<Map<String, Object>> buildPayload(String template, Map<String, Object> data) {
         return templateOperations.process(template, data, Map.class)
                 .map(map -> (Map<String, Object>) map)
