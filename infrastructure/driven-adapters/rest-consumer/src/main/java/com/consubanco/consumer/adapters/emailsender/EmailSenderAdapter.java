@@ -29,17 +29,17 @@ public class EmailSenderAdapter implements EmailGateway {
         this.logger = logger;
     }
     @Override
-    public Mono<Boolean> sendEmail(String bp, String base64File) {
+    public Mono<Boolean> sendEmail(String email, String bp, String base64File) {
         logger.info("Sending email contract to customer BP: " + bp);
         return this.sendGenericEmailClient.post()
                 .uri(apis.getApiConnect().getApiSearchInterlocutor())
-                .bodyValue(buildBodyRequest(bp, base64File))
+                .bodyValue(buildBodyRequest(email, bp, base64File))
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
                 .map(response -> Objects.nonNull(response) ? Boolean.TRUE : Boolean.FALSE)
                 .onErrorMap(throwTechnicalError(API_CREATE_APPLICATION_ERROR));
     }
-    private EmailSenderRequest buildBodyRequest(String bp, String base64File) {
+    private EmailSenderRequest buildBodyRequest(String email, String bp, String base64File) {
         return EmailSenderRequest.builder()
                 .build();
     }
