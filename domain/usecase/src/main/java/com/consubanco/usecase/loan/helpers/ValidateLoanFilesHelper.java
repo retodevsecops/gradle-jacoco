@@ -27,11 +27,12 @@ public class ValidateLoanFilesHelper {
     private final AgreementConfigRepository agreementConfigRepository;
     private final FileRepository fileRepository;
 
-    public Mono<Void> execute(Process process) {
+    public Mono<Process> execute(Process process) {
         Mono<List<String>> documentsRequiredForAgreement = documentsRequiredForAgreement(process.getAgreementNumber());
         Mono<List<String>> documentsInStorageByOffer = documentsInStorageByOffer(process.getOfferId());
         return Mono.zip(documentsRequiredForAgreement, documentsInStorageByOffer)
-                .flatMap(TupleUtils.function(this::checkDocuments));
+                .flatMap(TupleUtils.function(this::checkDocuments))
+                .thenReturn(process);
     }
 
     private Mono<Void> checkDocuments(List<String> documentsRequired, List<String> documentsInStorage) {
