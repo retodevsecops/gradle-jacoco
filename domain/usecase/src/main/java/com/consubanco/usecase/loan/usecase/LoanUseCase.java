@@ -1,4 +1,4 @@
-package com.consubanco.usecase.loan;
+package com.consubanco.usecase.loan.usecase;
 
 import com.consubanco.model.entities.loan.LoanApplication;
 import com.consubanco.model.entities.loan.gateway.LoanApplicationRepository;
