@@ -1,4 +1,4 @@
-package com.consubanco.usecase.loan;
+package com.consubanco.usecase.loan.usecase;
 
 import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.consubanco.model.entities.document.gateway.PayloadDocumentGateway;
