@@ -8,6 +8,7 @@ import com.consubanco.model.entities.document.vo.PreviousDocumentVO;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.gateway.FileRepository;
 import com.consubanco.model.entities.process.Process;
+import com.consubanco.usecase.document.BuildAllAgreementDocumentsUseCase;
 import com.consubanco.usecase.process.GetProcessByIdUseCase;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
@@ -25,12 +26,28 @@ public class GetAttachmentsByAgreementUseCase {
     private final AgreementConfigRepository agreementConfigRepository;
     private final DocumentGateway documentGateway;
     private final FileRepository fileRepository;
+    private final BuildAllAgreementDocumentsUseCase buildAllAgreementDocumentsUseCase;
 
     public Flux<AttachmentConfigVO> execute(String processId) {
         return getProcessByIdUseCase.execute(processId)
-                .flatMapMany(process -> agreementConfigRepository.getConfigByAgreement(process.getAgreementNumber())
-                        .map(AgreementConfigVO::attachments)
-                        .flatMapMany(attachments -> filterAttachments(process, attachments)));
+                .flatMapMany(this::processAttachmentQuery);
+    }
+
+    private Flux<AttachmentConfigVO> processAttachmentQuery(Process process) {
+        return getAttachmentByAgreement(process)
+                .collectList()
+                .flatMapMany(list -> checkAttachmentList(process, list));
+    }
+
+    private Flux<AttachmentConfigVO> checkAttachmentList(Process process, List<AttachmentConfigVO> list) {
+        if (list.isEmpty()) return buildAllAgreementDocumentsUseCase.execute(process).thenMany(Flux.empty());
+        return Flux.fromIterable(list);
+    }
+
+    private Flux<AttachmentConfigVO> getAttachmentByAgreement(Process process) {
+        return agreementConfigRepository.getConfigByAgreement(process.getAgreementNumber())
+                .map(AgreementConfigVO::attachments)
+                .flatMapMany(attachments -> filterAttachments(process, attachments));
     }
 
     private Flux<AttachmentConfigVO> filterAttachments(Process process, List<AttachmentConfigVO> attachments) {
@@ -107,7 +124,7 @@ public class GetAttachmentsByAgreementUseCase {
                 .findFirst();
     }
 
-    private static File buildFile(Process process, PreviousDocumentVO prevDocument, AttachmentConfigVO attachConfig) {
+    private File buildFile(Process process, PreviousDocumentVO prevDocument, AttachmentConfigVO attachConfig) {
         return File.builder()
                 .name(attachConfig.getTechnicalName())
                 .content(prevDocument.getContent())
