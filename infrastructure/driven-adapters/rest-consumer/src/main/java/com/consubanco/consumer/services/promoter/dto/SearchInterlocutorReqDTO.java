@@ -1,4 +1,4 @@
-package com.consubanco.consumer.adapters.document.dto;
+package com.consubanco.consumer.services.promoter.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

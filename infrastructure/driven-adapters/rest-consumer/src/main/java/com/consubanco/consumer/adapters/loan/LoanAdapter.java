@@ -47,7 +47,7 @@ public class LoanAdapter implements LoanGateway {
     public Mono<ApplicationResponseVO> createApplication(Map<String, Object> applicationData) {
         logger.info("This is request body of create application", applicationData);
         return this.apiConnectClient.post()
-                .uri(apisProperties.getCreateApplication())
+                .uri(apisProperties.getApiCreateApplication())
                 .bodyValue(applicationData)
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})

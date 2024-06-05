@@ -2,6 +2,7 @@ package com.consubanco.consumer.adapters.document;
 
 import com.consubanco.consumer.services.CustomerApiService;
 import com.consubanco.consumer.services.OfferApiService;
+import com.consubanco.consumer.services.promoter.PromoterApiConsumer;
 import com.consubanco.freemarker.ITemplateOperations;
 import com.consubanco.logger.CustomLogger;
 import com.consubanco.model.entities.document.gateway.PayloadDocumentGateway;
