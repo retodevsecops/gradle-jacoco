@@ -18,7 +18,8 @@ public enum DocumentTechnicalMessage implements IExceptionMessage {
     API_DOCS_PREVIOUS_TIMEOUT("TE_DOCUMENT_0008", "The API opp-service/findDocsPreviusApplication did not respond in the expected time."),
     API_NOM151_ERROR("TE_DOCUMENT_0009", "Error consuming the nom151 soap API."),
     NOM151_UNEXPECTED_FORMAT("TE_DOCUMENT_0010", "The nom151 api did not respond with the expected format."),
-    API_NOM151_RESPONSE_ERROR("TE_DOCUMENT_0011", "The api nom151 responded with error.");
+    API_NOM151_RESPONSE_ERROR("TE_DOCUMENT_0011", "The api nom151 responded with error."),
+    API_BRANCHES_BY_PROMOTER_ERROR("TE_DOCUMENT_0012", "Error when consuming branches by promoter API.");
 
 
     private final String code;
