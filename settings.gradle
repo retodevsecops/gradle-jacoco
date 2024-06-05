@@ -25,8 +25,8 @@ project(':gcs-storage').projectDir = file('./infrastructure/driven-adapters/gcs-
 include ':open-pdf'
 project(':open-pdf').projectDir = file('./infrastructure/driven-adapters/open-pdf')
 
-include ':postgresql-respository'
-project(':postgresql-respository').projectDir = file('./infrastructure/driven-adapters/postgresql-respository')
+include ':postgresql'
+project(':postgresql').projectDir = file('./infrastructure/driven-adapters/postgresql')
 
 include ':api'
 project(':api').projectDir = file('./infrastructure/entry-points/api')

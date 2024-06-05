@@ -70,6 +70,7 @@ public class FileOpenAPI {
                 .description("Upload all files of an agreement, including attachments and auto-generated documents.")
                 .summary("Upload all files of an agreement.")
                 .parameter(ParamsOpenAPI.path(FileParams.PROCESS_ID, "Process identifier"))
+                .requestBody(RequestsOpenAPI.formData())
                 .response(responseAccepted(Void.class))
                 .response(responseBusinessException())
                 .response(responseInternalError());
@@ -100,6 +101,7 @@ public class FileOpenAPI {
                 .operationId("uploadPayloadTemplate")
                 .description("Upload template file with which the payload is built to consume the api to generate documents.")
                 .summary("Upload payload template file.")
+                .requestBody(RequestsOpenAPI.formData())
                 .response(responseOk(FileResDTO.class))
                 .response(responseBusinessException())
                 .response(responseInternalError());
@@ -110,6 +112,7 @@ public class FileOpenAPI {
                 .operationId("uploadCreateApplicationTemplate")
                 .description("Upload template file with which the request to create application is built to consume the api.")
                 .summary("Upload create application template file.")
+                .requestBody(RequestsOpenAPI.formData())
                 .response(responseOk(FileResDTO.class))
                 .response(responseBusinessException())
                 .response(responseInternalError());
@@ -120,6 +123,7 @@ public class FileOpenAPI {
                 .operationId("uploadAgreementsConfig")
                 .description("Upload the configuration file of the agreements to storage.")
                 .summary("Upload agreements configuration file.")
+                .requestBody(RequestsOpenAPI.formData())
                 .response(responseOk(FileResDTO.class))
                 .response(responseBusinessException())
                 .response(responseInternalError());
