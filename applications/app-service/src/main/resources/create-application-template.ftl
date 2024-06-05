@@ -3,10 +3,32 @@ This is a freemarker template that is used to dynamically build the request obje
 to consume the api for create application. ${}
 -->
 <#assign
+fieldValues = {
+    "monto-a-liquidar": offer_data.offer.amount,
+    "aplica-mismo-dcsp": "true",
+    "nombre1": customer_data.customer.firstName,
+    "nombre2": customer_data.customer.secondName,
+    "apellido-paterno": customer_data.customer.lastName,
+    "apellido-materno": customer_data.customer.secondLastName,
+    "clabe": customer_data.preApplicationData.paymentData.clabe,
+    "banco": customer_data.preApplicationData.paymentData.bankDesc,
+    "numero-empleado": offer_data.offer.employeeNumber,
+    "rfc": customer_data.customer.rfc,
+    "importe-descuento": "",
+}
 current_date_timestamp = .now?long
 promotorCompleteName = promoter_data.name1 + " " + promoter_data.lastname1
 termDesc = offer_data.offer.term + " " + offer_data.offer.frequency
 >
+<#function getFieldValue(field)>
+    <#if field.value?has_content>
+        <#return field.value>
+    <#elseif fieldValues[field.technicalName]??>
+        <#return fieldValues[field.technicalName]>
+    <#else>
+        <#return "">
+    </#if>
+</#function>
 {
     "createApplicationRequestBO": {
         "applicationId": "CSB-RENEX",  
@@ -68,7 +90,7 @@ termDesc = offer_data.offer.term + " " + offer_data.offer.frequency
                                                 "clasification": "${field.clasification}",
                                                 "type": "${field.type}",
                                                 "required": ${field.required?c},
-                                                "value": <#if field.value??> "${field.value}" <#else> "" </#if>
+                                                "value": "${getFieldValue(field)}"
                                             }<#if field?has_next>,</#if>
                                             </#list>
                                         ], 
