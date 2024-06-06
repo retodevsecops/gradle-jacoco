@@ -22,10 +22,6 @@ public class FileUploadVO {
     private String extension;
     private Double sizeInMB;
 
-    public Boolean isPDF() {
-        return FileExtensions.PDF.equalsIgnoreCase(this.getExtension());
-    }
-
     public Boolean isNotPDF() {
         return !FileExtensions.PDF.equalsIgnoreCase(this.getExtension());
     }

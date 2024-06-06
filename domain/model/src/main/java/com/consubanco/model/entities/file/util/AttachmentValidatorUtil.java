@@ -1,6 +1,5 @@
 package com.consubanco.model.entities.file.util;
 
-import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.consubanco.model.entities.agreement.vo.AttachmentConfigVO;
 import com.consubanco.model.entities.file.vo.FileUploadVO;
 import lombok.experimental.UtilityClass;
@@ -26,9 +25,7 @@ public class AttachmentValidatorUtil {
                 .map(FileUploadVO::getName)
                 .collectList()
                 .filter(list -> !list.isEmpty())
-                .map(list -> {
-                    throw ExceptionFactory.buildBusiness((String.join(", ", list)), ATTACHMENT_INVALID_SIZE);
-                })
+                .handle((list, sink) -> sink.error(buildBusiness((String.join(", ", list)), ATTACHMENT_INVALID_SIZE)))
                 .then();
     }
 
@@ -77,9 +74,7 @@ public class AttachmentValidatorUtil {
                 .filter(attachment -> !attachmentsProvided.contains(attachment) && !attachmentsInStorage.contains(attachment))
                 .collectList()
                 .filter(list -> !list.isEmpty())
-                .map(list -> {
-                    throw ExceptionFactory.buildBusiness((String.join(DELIMITER, list)), MISSING_ATTACHMENT);
-                })
+                .handle((list, sink) -> sink.error(buildBusiness((String.join(DELIMITER, list)), MISSING_ATTACHMENT)))
                 .then();
     }
 
@@ -93,9 +88,7 @@ public class AttachmentValidatorUtil {
                 .map(FileUploadVO::getName)
                 .collectList()
                 .filter(list -> !list.isEmpty())
-                .map(list -> {
-                    throw ExceptionFactory.buildBusiness((String.join(", ", list)), ATTACHMENT_INVALID_TYPE);
-                })
+                .handle((list, sink) -> sink.error(buildBusiness((String.join(", ", list)), ATTACHMENT_INVALID_TYPE)))
                 .then();
 
     }
