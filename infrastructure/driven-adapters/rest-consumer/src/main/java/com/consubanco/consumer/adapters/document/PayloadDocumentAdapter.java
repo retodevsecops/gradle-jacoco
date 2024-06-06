@@ -51,7 +51,7 @@ public class PayloadDocumentAdapter implements PayloadDocumentGateway {
                     data.put("promoter_data", tuple.getT1());
                     data.put("customer_data", tuple.getT2());
                     data.put("offer_data", tuple.getT3());
-                    data.put("biometrics_tags_data", tuple.getT4());
+                    data.put("biometric_task_data", tuple.getT4());
                     return data;
                 })
                 .doOnNext(data -> logger.info("Data used to process template was consulted.", data));
