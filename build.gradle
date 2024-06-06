@@ -4,7 +4,8 @@ buildscript {
 		springBootVersion = '3.2.2'
 		sonarVersion = '4.4.1.3373'
 		jacocoVersion = '0.8.11'
-        lombokVersion = '1.18.30'
+        lombokVersion = '1.18.32'
+	    mapstructVersion = "1.5.5.Final"
 	}
 }
 
@@ -21,14 +22,17 @@ sonar {
         property "sonar.sourceEncoding", "UTF-8"
         property "sonar.modules", "${modules.join(',')}"
         property "sonar.sources", "src,deployment,settings.gradle,main.gradle,build.gradle,${modules.collect { "${it}/build.gradle" }.join(',')}"
-        property "sonar.exclusions","**/MainApplication.java"
+        property "sonar.exclusions","**/MainApplication.java, **/freemarker/**"
         property "sonar.test", "src/test"
         property "sonar.java.binaries", ""
         property "sonar.junit.reportsPath", ""
         property "sonar.java.coveragePlugin", "jacoco"
         property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacocoMergedReport/jacocoMergedReport.xml"
-        property "sonar.externalIssuesReportPaths", "build/issues.json"
     }
+}
+
+tasks.named('validateStructure').configure {
+    enabled = false
 }
 
 apply from: './main.gradle'

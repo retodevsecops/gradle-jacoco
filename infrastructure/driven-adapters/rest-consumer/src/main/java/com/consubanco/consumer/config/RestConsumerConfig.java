@@ -1,7 +1,7 @@
 package com.consubanco.consumer.config;
 
-import com.consubanco.logger.CustomLogger;
-import io.netty.handler.logging.LogLevel;
+import com.consubanco.consumer.config.filters.AuthTokenRenexFilter;
+import com.consubanco.consumer.config.filters.WebClientLoggingFilter;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
@@ -13,44 +13,28 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
-import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
-import reactor.netty.tcp.TcpClient;
-import reactor.netty.transport.logging.AdvancedByteBufFormat;
 
-import javax.net.ssl.SSLException;
+import java.time.Duration;
 
-import java.util.Map;
-
+import static com.consubanco.consumer.commons.Constants.AUTH_BEARER_VALUE;
+import static com.consubanco.consumer.commons.Constants.CLIENT_ID_HEADER;
 import static io.netty.channel.ChannelOption.CONNECT_TIMEOUT_MILLIS;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 @Configuration
+@RequiredArgsConstructor
 public class RestConsumerConfig {
 
-    private static final String CLIENT_ID_HEADER = "X-IBM-Client-Id";
-    private static final String AUTH_BEARER_VALUE = "Bearer %s";
-    private final String authTokenApiPromoter;
-    private final String clientIdApiConnect;
-    private final CustomLogger logger;
     private final HttpClientProperties clientProperties;
-
-    public RestConsumerConfig(final @Value("${adapter.rest-consumer.apis.promoter.auth-token}") String token,
-                              final @Value("${adapter.rest-consumer.apis.api-connect.client-id}") String clientId,
-                              final CustomLogger logger,
-                              final HttpClientProperties clientProperties) {
-        this.authTokenApiPromoter = token;
-        this.clientIdApiConnect = clientId;
-        this.logger = logger;
-        this.clientProperties = clientProperties;
-    }
+    private final WebClientLoggingFilter webClientLoggingFilter;
+    private final AuthTokenRenexFilter authTokenRenexFilter;
 
     @Bean
     public ModelMapper buildModelMapper() {
@@ -58,22 +42,58 @@ public class RestConsumerConfig {
     }
 
     @Bean("ApiPromoterClient")
-    public WebClient buildWebClient(WebClient.Builder builder) {
-        return builder
+    public WebClient buildClientPromoter(@Value("${adapter.rest-consumer.apis.promoter.auth-token}") String token) {
+        return WebClient.builder()
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .defaultHeader(HttpHeaders.AUTHORIZATION, String.format(AUTH_BEARER_VALUE, authTokenApiPromoter))
+                .defaultHeader(HttpHeaders.AUTHORIZATION, String.format(AUTH_BEARER_VALUE, token))
+                .exchangeStrategies(defineStrategy())
                 .clientConnector(getClientHttpConnector())
-                .filter(new WebClientLoggingFilter(logger))
+                .filter(webClientLoggingFilter)
                 .build();
     }
 
     @Bean("ApiConnectClient")
-    public WebClient buildWebClientApiConnect(WebClient.Builder builder) {
-        return builder
+    public WebClient buildClientApiConnect(@Value("${adapter.rest-consumer.apis.api-connect.client-id}") String clientId) {
+        return WebClient.builder()
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .defaultHeader(CLIENT_ID_HEADER, clientIdApiConnect)
+                .defaultHeader(CLIENT_ID_HEADER, clientId)
+                .exchangeStrategies(defineStrategy())
                 .clientConnector(getClientHttpConnector())
-                .filter(new WebClientLoggingFilter(logger))
+                .filter(webClientLoggingFilter)
+                .build();
+    }
+
+    @Bean("nom151Client")
+    public WebClient buildNom151Client() {
+        return WebClient.builder()
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_XML_VALUE + ";charset=utf-8")
+                .exchangeStrategies(defineStrategy())
+                .clientConnector(getClientHttpConnector())
+                .filter(webClientLoggingFilter)
+                .build();
+    }
+
+    @Bean("clientGetFiles")
+    public WebClient buildClientGetFiles(WebClient.Builder builder) {
+        return builder
+                .exchangeStrategies(defineStrategy())
+                .clientConnector(getClientHttpConnector())
+                .build();
+    }
+
+    private ExchangeStrategies defineStrategy() {
+        int maxBytes = clientProperties.getMemory() * 1024 * 1024;
+        return ExchangeStrategies.builder()
+                .codecs(config -> config.defaultCodecs().maxInMemorySize(maxBytes))
+                .build();
+    }
+
+    @Bean("ApiRenexClient")
+    public WebClient buildClientRenex() {
+        return WebClient.builder()
+                .clientConnector(getClientHttpConnector())
+                .filter(webClientLoggingFilter)
+                .filter(authTokenRenexFilter)
                 .build();
     }
 
@@ -91,6 +111,7 @@ public class RestConsumerConfig {
                 .compress(true)
                 .keepAlive(true)
                 .option(CONNECT_TIMEOUT_MILLIS, timeout)
+                .responseTimeout(Duration.ofMillis(timeout))
                 .secure(sslContextSpec -> sslContextSpec.sslContext(getBuildSslContext()))
                 .doOnConnected(connection -> {
                     connection.addHandlerLast(new ReadTimeoutHandler(timeout, MILLISECONDS));

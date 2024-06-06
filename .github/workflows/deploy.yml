@@ -1,4 +1,4 @@
-name: Build, Push and Deploy into Kubernetes
+name: SonarCloud analysis
 on:
   workflow_dispatch:
     inputs:
@@ -8,112 +8,8 @@ on:
         required: true
         type: string
 jobs:
-  validations:
-    name: 'Perform Validations'
-    runs-on: ubuntu-latest
-    steps:
-      - id: validate-env
-        run: |-
-          if [[ "${{ inputs.env }}" == "dev" ]] || [[ "${{ inputs.env }}" == "prod" ]]; then
-            echo "[INFO]: Environment name is valid."
-          else
-            echo "[ERROR]: Invalid environment name."
-            exit 1
-          fi
-      - id: perform-static-code-analysis
-        name: 'Perform static code analysis'
-        uses: InnovacionTecnologicaCSP/infra-tpl-github-actions/sonar-analysis@main
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          sonar-token: ${{ secrets.SONAR_TOKEN }}
-          sonar-organization: ${{ vars.SONAR_ORGANIZATION }}
-          sonar-project-key: ${{ vars.SONAR_PROJECT_KEY }}
-          break-on-quality-gate-failure: 'true'
-          sonar.branch.name: ${{ github.ref_name }}
-  build_and_push:
-    name: 'Build and Push Docker Image'
-    permissions:
-      contents: 'read'
-      id-token: 'write'
-    runs-on: ubuntu-latest
-    needs: validations
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - id: gcloud-auth
-        uses: google-github-actions/auth@v2
-        with:
-          project_id: ${{ secrets.CI_CD_PROJECT_ID }}
-          workload_identity_provider: ${{ secrets.CI_CD_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.CI_CD_SERVICE_ACCOUNT_PUC }}
-      - name: Setup Google Cloud SDK
-        uses: 'google-github-actions/setup-gcloud@v2'
-      - name: Authenticate to the Artifact Registry
-        run: gcloud auth configure-docker ${{ vars.DOCKER_ARTIFACT_REGISTRY }} -q
-      - name: Set up JDK 11
-        uses: actions/setup-java@v4
-        with:
-          java-version: '11'
-          distribution: 'adopt'
-          cache: maven
-      - name: Build Docker image with Maven
-        id: build_image
-        run: |-
-          mvn -DENVIRONMENT_NAME=${{ inputs.env }} clean package k8s:build k8s:resource -U
-          cp target/classes/META-INF/jkube/kubernetes.yml kubernetes.yml
-          echo "imageName=$(cat kubernetes.yml | grep "image:" | sed -n 's:image\:\(.*\):\1:p')" >> "$GITHUB_OUTPUT"
-      - name: Push Docker image into Artifact Registry
-        run: docker push ${{ steps.build_image.outputs.imageName }}
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: kubernetes
-          path: kubernetes.yml
-
-  deploy:
-    name: 'Deploy into Kubernetes'
-    permissions:
-      contents: 'read'
-      id-token: 'write'
-    runs-on: ubuntu-latest
-    needs: build_and_push
-    environment: ${{ inputs.env }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - id: gcloud-auth
-        uses: google-github-actions/auth@v2
-        with:
-          project_id: ${{ secrets.CI_CD_PROJECT_ID }}
-          workload_identity_provider: ${{ secrets.CI_CD_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.CI_CD_SERVICE_ACCOUNT_PUC }}
-      - name: Setup Google Cloud SDK
-        uses: 'google-github-actions/setup-gcloud@v2'
-      - name: Install GKE gcloud auth plugin
-        run: gcloud components install gke-gcloud-auth-plugin
-      - name: Authenticate to the Kubernetes cluster
-        uses: 'google-github-actions/get-gke-credentials@v2'
-        with:
-          cluster_name: ${{ vars.K8S_CLUSTER_NAME }}
-          location: ${{ vars.K8S_CLUSTER_LOCATION }}
-          project_id: ${{ vars.K8S_CLUSTER_PROJECT }}
-      - name: Connect to the GKE bastion
-        run: |-
-          gcloud compute ssh ${{ vars.K8S_BASTION_INSTANCE }} \
-              --project ${{ vars.K8S_BASTION_PROJECT }} \
-              --zone ${{ vars.K8S_BASTION_LOCATION }} \
-              --tunnel-through-iap \
-              --ssh-flag="-4 -L8888:localhost:8888 -N -q -f"
-      - name: Download Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: kubernetes
-      - name: Deploy into Kubernetes
-        env:
-          HTTPS_PROXY: localhost:8888
-        run: |-
-          kubectl apply -f kubernetes.yml
+  workflow:
+    uses: InnovacionTecnologicaCSP/devsecops-actions/.github/workflows/main.yml@main
+    with:
+      env: ${{ inputs.env }}
+    secrets: inherit

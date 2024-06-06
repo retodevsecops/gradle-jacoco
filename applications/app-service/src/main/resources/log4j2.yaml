@@ -1,0 +1,21 @@
+Configuration:
+  name: PropertiesConfig
+  Properties:
+    Property:
+      - name: filename
+        value: logs
+  Appenders:
+    Console:
+      name: STDOUT
+      type: Console
+      PatternLayout:
+        pattern: '{"date":"%d{yyyy-MM-dd HH:mm:ss.SSS}","level":"%p","thread":"%t","logger":"%c","message":%m}%n'
+  Loggers:
+    Root:
+      level: "${sys:LOG_LEVEL:-info}"
+      AppenderRef:
+        - ref: STDOUT
+    Logger:
+      - name: org.springframework.web
+        level: info
+        additivity: false
