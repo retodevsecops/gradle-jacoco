@@ -52,6 +52,7 @@ public class TemplateAdapter implements ITemplateOperations {
         return new Template(TEMPLATE_KEY, stringReader, this.configuration);
     }
 
+    @SuppressWarnings("unchecked")
     private Map<String, Object> buildDataMap(Object data) throws TemplateModelException {
         Map<String, Object> map = new ConcurrentHashMap<>();
         map.put(FUNCTIONS_KEY, templateHashModel.get(FunctionsUtil.class.getName()));

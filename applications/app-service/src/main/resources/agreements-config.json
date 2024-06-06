@@ -1,7 +1,9 @@
 [
   {
-    "agreement": "cdmx - csb",
+    "agreementName": "cdmx - csb",
     "agreementNumber": "10000041",
+    "promoterId": "0017123040",
+    "branchId": "51187515",
     "attachmentsDocuments": [
       {
         "name": "Identificacion oficial",

@@ -16,7 +16,10 @@ import static com.consubanco.model.entities.agreement.message.AgreementBusinessM
 @Builder(toBuilder = true)
 public class AgreementConfigVO {
 
+    private String agreementName;
     private String agreementNumber;
+    private String promoterId;
+    private String branchId;
     private List<CompoundDocument> compoundDocuments;
     private List<String> customerVisibleDocuments;
     private List<AttachmentConfigVO> attachmentsDocuments;
@@ -39,7 +42,7 @@ public class AgreementConfigVO {
 
     public AgreementConfigVO checkCustomerVisibleDocuments() {
         if (Objects.isNull(customerVisibleDocuments) || customerVisibleDocuments.isEmpty()){
-            ExceptionFactory.buildBusiness(DOCUMENTS_VISIBLE_NOT_CONFIG);
+            throw ExceptionFactory.business(DOCUMENTS_VISIBLE_NOT_CONFIG);
         }
         return this;
     }
