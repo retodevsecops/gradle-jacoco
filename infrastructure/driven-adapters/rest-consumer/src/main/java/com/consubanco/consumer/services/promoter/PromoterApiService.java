@@ -24,15 +24,15 @@ import static com.consubanco.model.entities.document.message.DocumentTechnicalMe
 import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.API_SEARCH_INTERLOCUTOR_ERROR;
 
 @Service
-public class PromoterApiConsumer {
+public class PromoterApiService {
 
     private final CustomLogger logger;
     private final WebClient apiConnectClient;
     private final PromoterApisProperties apis;
 
-    public PromoterApiConsumer(final @Qualifier("ApiConnectClient") WebClient apiConnectClient,
-                               final PromoterApisProperties apisProperties,
-                               final CustomLogger logger) {
+    public PromoterApiService(final @Qualifier("ApiConnectClient") WebClient apiConnectClient,
+                              final PromoterApisProperties apisProperties,
+                              final CustomLogger logger) {
         this.apiConnectClient = apiConnectClient;
         this.apis = apisProperties;
         this.logger = logger;

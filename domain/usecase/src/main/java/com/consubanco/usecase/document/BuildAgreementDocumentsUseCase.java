@@ -31,7 +31,7 @@ public class BuildAgreementDocumentsUseCase {
     public Flux<File> execute(Process process, List<Agreement.Document> documents) {
         List<String> documentsToGenerate = getListDocumentsToGenerate(documents);
         String directory = FileConstants.documentsDirectory(process.getOffer().getId());
-        return buildPayloadUseCase.execute(process.getId())
+        return buildPayloadUseCase.execute(process)
                 .flatMap(payload -> documentGateway.generateMultiple(documentsToGenerate, payload))
                 .flatMapMany(documentUrlsMap -> generateFilesFromUrls(documentUrlsMap, documentsToGenerate, directory))
                 .parallel()

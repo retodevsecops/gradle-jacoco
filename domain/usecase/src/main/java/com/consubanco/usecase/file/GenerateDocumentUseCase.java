@@ -6,7 +6,6 @@ import com.consubanco.model.entities.file.constant.FileExtensions;
 import com.consubanco.model.entities.file.gateway.FileConvertGateway;
 import com.consubanco.model.entities.file.gateway.FileRepository;
 import com.consubanco.model.entities.file.vo.FileDataVO;
-import com.consubanco.model.entities.process.Process;
 import com.consubanco.usecase.document.BuildPayloadDocumentUseCase;
 import com.consubanco.usecase.process.GetProcessByIdUseCase;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +25,6 @@ public class GenerateDocumentUseCase {
 
     public Mono<String> getAsUrl(FileDataVO fileData, String processId) {
         return getProcessByIdUseCase.execute(processId)
-                .map(Process::getId)
                 .flatMap(buildPayloadUseCase::execute)
                 .flatMap(payload -> documentGateway.generate(fileData.getDocuments(), fileData.getAttachments(), payload));
     }
@@ -38,11 +36,10 @@ public class GenerateDocumentUseCase {
 
     public Mono<File> getAndUpload(String processId, FileDataVO fileData, String fileName) {
         return getProcessByIdUseCase.execute(processId)
-                .map(Process::getOffer)
-                .flatMap(offer -> buildPayloadUseCase.execute(processId)
+                .flatMap(process -> buildPayloadUseCase.execute(process)
                         .flatMap(payload -> documentGateway.generate(fileData.getDocuments(), fileData.getAttachments(), payload))
                         .flatMap(fileConvertGateway::getFileContentAsBase64)
-                        .map(encodedFile -> buildFile(offer.getId(), fileName, encodedFile)))
+                        .map(encodedFile -> buildFile(process.getOfferId(), fileName, encodedFile)))
                 .flatMap(fileRepository::save);
     }
 

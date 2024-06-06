@@ -22,9 +22,6 @@ spring:
     sql-migration-prefix: "V"
     sql-migration-suffixes: ".sql"
     baseline-on-migrate: true
-app:
-  init:
-    promoter-id: ${INIT_PROMOTER_ID:0017123040}
 
 adapter:
   rest-consumer:

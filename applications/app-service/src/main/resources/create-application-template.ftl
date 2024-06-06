@@ -2,7 +2,7 @@
 <#-- Variables -->
 <#assign
     fieldValues = {
-        "monto-a-liquidar": offer_data.offer.amount,
+        "monto-a-liquidar": offer_data.offer.amount?c,
         "aplica-mismo-dcsp": "true",
         "nombre1": customer_data.customer.firstName,
         "nombre2": customer_data.customer.secondName,
@@ -32,24 +32,28 @@
     "createApplicationRequestBO": {
         "applicationId": "CSB-RENEX",  
         "aplicationInfo": {
-            "branch": {
-                "bp": "0017002818",
-                "id": "51187515",
-                "name": "Equipo 360° - Digital MN",
-                "company": {
-                    "bp": "0017000012",
-                    "id": "50000004",
-                    "name": "Consupago",
-                    "acronym": "271"
+        <#list promoter_data.branches as branch>
+            <#if branch.branchID == agreement_configuration_data.branchId>
+                "branch": {
+                    "id": "${branch.branchID}",
+                    "bp": "${branch.branchBPID}",
+                    "name": "${branch.branchName}",
+                    "company": {
+                        "id": "${branch.empresa.enterpriseID}",
+                        "bp": "${branch.empresa.enterpriseBPID}",
+                        "name": "${branch.empresa.enterpriseName}",
+                        "acronym": "${branch.empresa.enterpriseSigla}"
+                    },
+                    "distributor": {
+                        "id": "${branch.distribuidor.distributorID}",
+                        "bp": "${branch.distribuidor.distributorBPID}",
+                        "name": "${branch.distribuidor.distributorName}",
+                        "acronym": "${branch.distribuidor.distributorSigla}"
+                    },
+                    "branchNFOFlag": ${branch.branchNFOFlag?c}
                 },
-                "distributor": {
-                    "bp": "0017002817",
-                    "id": "51187514",
-                    "name": "CANAL DIGITAL",
-                    "acronym": "CANDIG"
-                },
-                "branchNFOFlag": true
-            },
+            </#if>
+        </#list>
             "cat": ${offer_data.offer.cat?c},
             "amount": ${offer_data.offer.amount?c}, 
             "isCNCA": true,  
