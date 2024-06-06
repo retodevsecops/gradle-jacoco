@@ -39,6 +39,15 @@ public class CustomerApiService {
                 .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_CUSTOMER_ERROR))
                 .onErrorMap(throwTechnicalError(API_CUSTOMER_ERROR));
     }
+    public Mono<Map<String, Object>> customerBiometricValidation(String processId) {
+        return this.renexClient.get()
+                .uri(apis.getRenex().getApiCustomerBiometricValidation(), processId)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_CUSTOMER_ERROR))
+                .onErrorMap(throwTechnicalError(API_CUSTOMER_ERROR));
+    }
 
     public Mono<String> getCustomerHealth() {
         return this.renexClient.get()
