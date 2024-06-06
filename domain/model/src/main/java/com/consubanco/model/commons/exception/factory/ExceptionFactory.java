@@ -12,15 +12,19 @@ import java.util.function.Function;
 public class ExceptionFactory {
 
     public static <T> Mono<T> monoBusiness(IExceptionMessage exceptionMessage, String detail) {
-        return Mono.error(new BusinessException(detail, exceptionMessage));
+        return Mono.error(buildBusiness(detail, exceptionMessage));
     }
 
     public static <T> Mono<T> buildBusiness(IExceptionMessage exceptionMessage) {
-        return Mono.error(new BusinessException(exceptionMessage));
+        return Mono.error(business(exceptionMessage));
     }
 
     public static BusinessException buildBusiness(String detail, IExceptionMessage exceptionMessage) {
         return new BusinessException(detail, exceptionMessage);
+    }
+
+    public static BusinessException business(IExceptionMessage exceptionMessage) {
+        return new BusinessException(exceptionMessage);
     }
 
     public static TechnicalException buildTechnical(IExceptionMessage exceptionMessage) {

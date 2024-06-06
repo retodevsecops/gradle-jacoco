@@ -2,7 +2,7 @@
 <#-- Variables -->
 <#assign
     fieldValues = {
-        "monto-a-liquidar": offer_data.offer.amount,
+        "monto-a-liquidar": offer_data.offer.amount?c,
         "aplica-mismo-dcsp": "true",
         "nombre1": customer_data.customer.firstName,
         "nombre2": customer_data.customer.secondName,
