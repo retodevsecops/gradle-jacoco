@@ -30,9 +30,9 @@ public class BuildCNCALettersUseCase {
 
     public Mono<File> execute(String processId) {
         return getProcessByIdUseCase.execute(processId)
-                .map(Process::getOffer)
+                .flatMap(Process::checkRequiredData)
+                .flatMap(Process::checkOfferLoans)
                 .flatMap(this::processCNCALetter);
-
     }
 
     private Mono<File> processCNCALetter(Process.Offer offer) {

@@ -1,7 +1,6 @@
 package com.consubanco.api.services.file.dto;
 
-import com.consubanco.model.entities.file.vo.AttachmentVO;
-import com.consubanco.model.entities.file.vo.FileDataVO;
+import com.consubanco.model.entities.document.vo.GenerateDocumentVO;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -42,18 +41,18 @@ public class GenerateDocumentReqDTO {
         private List<String> urls;
     }
 
-    public List<AttachmentVO> attachmentsFromDTO() {
+    public List<GenerateDocumentVO.Attachment> attachmentsFromDTO() {
         if (attachments == null) return Collections.emptyList();
         return this.attachments.stream()
-                .map(attachmentDTO -> AttachmentVO.builder()
+                .map(attachmentDTO -> GenerateDocumentVO.Attachment.builder()
                         .name(attachmentDTO.getName())
                         .urls(attachmentDTO.getUrls())
                         .build())
                 .toList();
     }
 
-    public FileDataVO buildFileDataVO(){
-        return FileDataVO.builder()
+    public GenerateDocumentVO buildGenerateDocumentVO(){
+        return GenerateDocumentVO.builder()
                 .documents(this.getDocuments())
                 .attachments(this.attachmentsFromDTO())
                 .build();

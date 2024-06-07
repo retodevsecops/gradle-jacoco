@@ -423,12 +423,41 @@
       ],
       "enabled": true,
       "responseMode": null
+    },
+    {
+      "uuid": "89f1e17c-0c41-495e-b22e-c6096173a3b3",
+      "type": "http",
+      "documentation": "",
+      "method": "get",
+      "endpoint": "customers-api/biometric-validation/biometric-task/950dc9af-83d3-4fbe-bffd-09dfa7459d87",
+      "responses": [
+        {
+          "uuid": "7d4d0f53-f765-4506-9e31-e9141be98607",
+          "body": "{\r\n    \"biometricTaskId\": null,\r\n    \"biometricTaskDate\": \"2024-06-05\"\r\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id"
+        }
+      ],
+      "enabled": true,
+      "responseMode": null
     }
   ],
   "rootChildren": [
     {
       "type": "route",
-      "uuid": "a0e0f77b-279d-4624-b65a-68ccc31ab88a"
+      "uuid": "eef8e783-f29f-44c4-925e-a0604cdbc1ee"
     },
     {
       "type": "route",
@@ -448,6 +477,10 @@
     },
     {
       "type": "route",
+      "uuid": "89f1e17c-0c41-495e-b22e-c6096173a3b3"
+    },
+    {
+      "type": "route",
       "uuid": "de29247c-26bd-4f48-add5-8779cc21c60b"
     },
     {
@@ -457,10 +490,6 @@
     {
       "type": "route",
       "uuid": "6a0d59b5-4af6-4fcd-b647-a4451d805064"
-    },
-    {
-      "type": "route",
-      "uuid": "eef8e783-f29f-44c4-925e-a0604cdbc1ee"
     },
     {
       "type": "route",
@@ -481,6 +510,10 @@
     {
       "type": "route",
       "uuid": "a6a83b8f-684b-4f18-a1e0-e8994b1f69ca"
+    },
+    {
+      "type": "route",
+      "uuid": "a0e0f77b-279d-4624-b65a-68ccc31ab88a"
     }
   ],
   "proxyMode": false,
