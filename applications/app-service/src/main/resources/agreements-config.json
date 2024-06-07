@@ -10,7 +10,7 @@
         "technicalName": "identificacion-oficial",
         "maxFiles": 1,
         "isOcr": true,
-        "isRecoverable": true,
+        "isRecoverable": false,
         "namePreviousDocument": "IDENTIFICACIONOFICIAL",
         "isRequired": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]

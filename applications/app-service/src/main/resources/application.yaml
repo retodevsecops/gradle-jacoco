@@ -67,7 +67,7 @@ adapter:
           get-nom151: ${ACTION_GET_NOM151:http://tempuri.org/IDoc2SignLite/GETNOM}
 
   gcs-storage:
-    max-file-size-mb: ${GCS_MAX_FILE_SIZE_IN_MB:0.5}
+    max-file-size-mb: ${GCS_MAX_FILE_SIZE_IN_MB:10}
     bucket-name: ${GCS_BUCKET_NAME:csb-venta-digital}
     sign-url-days: ${GCS_SIGN_URL_DAYS:1}
     files-path:
