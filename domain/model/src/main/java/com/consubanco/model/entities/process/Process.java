@@ -61,7 +61,7 @@ public class Process {
     }
 
     public Mono<Offer> checkOfferLoans() {
-        return Objects.isNull(offer.loansId) ? buildBusiness(ProcessBusinessMessage.NOT_LOANS) : Mono.just(offer);
+        return Objects.isNull(offer.loansId) || offer.loansId.isEmpty() ? buildBusiness(ProcessBusinessMessage.NOT_LOANS) : Mono.just(offer);
     }
 
 }
