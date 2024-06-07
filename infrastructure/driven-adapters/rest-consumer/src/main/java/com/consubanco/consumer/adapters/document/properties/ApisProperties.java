@@ -22,6 +22,7 @@ public class ApisProperties {
     public static class Renex {
         private String apiHealthCustomer;
         private String apiCustomerProcess;
+        private String apiCustomerBiometricValidation;
         private String apiActiveOffer;
         private String apiHealthOffer;
         private String apiAcceptOffer;

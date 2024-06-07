@@ -43,13 +43,15 @@ public class PayloadDocumentAdapter implements PayloadDocumentGateway {
     public Mono<Map<String, Object>> getAllData(String processId, AgreementConfigVO agreementConfigVO) {
         return Mono.zip(promoterApiService.getPromoterById(agreementConfigVO.getPromoterId()),
                         customerApiService.customerDataByProcess(processId),
-                        offerApiService.activeOfferByProcess(processId))
+                        offerApiService.activeOfferByProcess(processId),
+                        customerApiService.customerBiometricValidation(processId))
                 .map(tuple -> {
                     Map<String, Object> data = new HashMap<>();
                     data.put("agreement_configuration_data", agreementConfigVO);
                     data.put("promoter_data", tuple.getT1());
                     data.put("customer_data", tuple.getT2());
                     data.put("offer_data", tuple.getT3());
+                    data.put("biometric_task_data", tuple.getT4());
                     return data;
                 })
                 .doOnNext(data -> logger.info("Data used to process template was consulted.", data));

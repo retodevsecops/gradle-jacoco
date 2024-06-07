@@ -1,6 +1,6 @@
 package com.consubanco.consumer.adapters.document.dto;
 
-import com.consubanco.model.entities.file.vo.AttachmentVO;
+import com.consubanco.model.entities.document.vo.GenerateDocumentVO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,9 +18,9 @@ public class GenerateDocumentRequestDTO {
     private List<DocumentDTO> documents;
     private Map<String, Object> payload;
 
-    public GenerateDocumentRequestDTO(List<String> documents, List<AttachmentVO> attachments, Map<String, Object> payload) {
-        this.documents = documentsToDTO(documents);
-        this.payload = addAttachmentsToPayload(payload, attachments);
+    public GenerateDocumentRequestDTO(GenerateDocumentVO generateDocumentVO, Map<String, Object> payload) {
+        this.documents = documentsToDTO(generateDocumentVO.getDocuments());
+        this.payload = addAttachmentsToPayload(payload, generateDocumentVO);
     }
 
     public GenerateDocumentRequestDTO(List<String> documents, Map<String, Object> payload) {
@@ -53,9 +53,9 @@ public class GenerateDocumentRequestDTO {
         private String url;
     }
 
-    private Map<String, Object> addAttachmentsToPayload(Map<String, Object> payload, List<AttachmentVO> attachmentsList) {
-        if (Objects.nonNull(attachmentsList) && !attachmentsList.isEmpty()) {
-            List<AttachmentDTO> attachments = attachmentsList.stream().map(this::getAttachmentDTO).toList();
+    private Map<String, Object> addAttachmentsToPayload(Map<String, Object> payload, GenerateDocumentVO generateDocumentVO) {
+        if (Objects.nonNull(generateDocumentVO.getAttachments()) && !generateDocumentVO.getAttachments().isEmpty()) {
+            List<AttachmentDTO> attachments = generateDocumentVO.getAttachments().stream().map(this::getAttachmentDTO).toList();
             payload.put("documents", attachments);
         }
         return payload;
@@ -66,7 +66,7 @@ public class GenerateDocumentRequestDTO {
         return payload;
     }
 
-    private AttachmentDTO getAttachmentDTO(AttachmentVO attachmentVO) {
+    private AttachmentDTO getAttachmentDTO(GenerateDocumentVO.Attachment attachmentVO) {
         List<UrlDTO> urlsListDTO = attachmentVO.getUrls().stream().map(UrlDTO::new).toList();
         return new AttachmentDTO(attachmentVO.getName(), urlsListDTO);
     }

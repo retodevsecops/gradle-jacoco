@@ -1,5 +1,6 @@
 package com.consubanco.model.entities.process;
 
+import com.consubanco.model.entities.process.message.ProcessBusinessMessage;
 import lombok.*;
 import reactor.core.publisher.Mono;
 
@@ -57,6 +58,10 @@ public class Process {
 
     public String getOfferId() {
         return this.offer.id;
+    }
+
+    public Mono<Offer> checkOfferLoans() {
+        return Objects.isNull(offer.loansId) ? buildBusiness(ProcessBusinessMessage.NOT_LOANS) : Mono.just(offer);
     }
 
 }
