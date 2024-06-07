@@ -5,8 +5,8 @@ import com.consubanco.consumer.adapters.document.properties.DocumentApisProperti
 import com.consubanco.model.commons.exception.TechnicalException;
 import com.consubanco.model.entities.agreement.vo.AttachmentConfigVO;
 import com.consubanco.model.entities.document.gateway.DocumentGateway;
+import com.consubanco.model.entities.document.vo.GenerateDocumentVO;
 import com.consubanco.model.entities.document.vo.PreviousDocumentVO;
-import com.consubanco.model.entities.file.vo.AttachmentVO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.handler.timeout.TimeoutException;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -69,7 +69,7 @@ public class DocumentAdapter implements DocumentGateway {
 
     @Override
     public Mono<String> generate(String document, Map<String, Object> payload) {
-        return generate(List.of(document), null, payload);
+        return generate(GenerateDocumentVO.builder().documents(List.of(document)).build(), payload);
     }
 
     @Override
@@ -109,10 +109,10 @@ public class DocumentAdapter implements DocumentGateway {
     }
 
     @Override
-    public Mono<String> generate(List<String> documents, List<AttachmentVO> attachments, Map<String, Object> payload) {
+    public Mono<String> generate(GenerateDocumentVO generateDocumentVO, Map<String, Object> payload) {
         return this.apiPromoterClient.post()
                 .uri(apis.generateDocumentApiEndpoint())
-                .bodyValue(new GenerateDocumentRequestDTO(documents, attachments, payload))
+                .bodyValue(new GenerateDocumentRequestDTO(generateDocumentVO, payload))
                 .retrieve()
                 .bodyToMono(GenerateDocumentResponseDTO.class)
                 .map(GenerateDocumentResponseDTO::getPublicUrl)

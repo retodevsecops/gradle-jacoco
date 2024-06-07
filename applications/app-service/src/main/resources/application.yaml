@@ -32,6 +32,7 @@ adapter:
         audience: ${GCP_AUDIENCE:renovacion-dev}
         api-health-customer: ${API_HEALTH_CUSTOMER:http://localhost:3001/customers-api/actuator/health}
         api-customer-process: ${API_CUSTOMER_PROCESS:http://localhost:3001/customers-api/customer/all-info/{processId}}
+        api-customer-biometric-validation: ${API_CUSTOMER_BIOMETRIC_VALIDATION:http://localhost:3001/customers-api/biometric-validation/biometric-task/{processId}}
         api-health-offer: ${API_HEALTH_OFFER:http://localhost:3001/offers-api/offers/actuator/health}
         api-active-offer: ${API_ACTIVE_OFFER:http://localhost:3001/offers-api/offers/active-offering?processId={processId}}
         api-validate-otp: ${API_VALIDATE_OTP:http://localhost:3001/authorization-api/otp/validate}
@@ -66,7 +67,7 @@ adapter:
           get-nom151: ${ACTION_GET_NOM151:http://tempuri.org/IDoc2SignLite/GETNOM}
 
   gcs-storage:
-    max-file-size-mb: ${GCS_MAX_FILE_SIZE_IN_MB:0.5}
+    max-file-size-mb: ${GCS_MAX_FILE_SIZE_IN_MB:10}
     bucket-name: ${GCS_BUCKET_NAME:csb-venta-digital}
     sign-url-days: ${GCS_SIGN_URL_DAYS:1}
     files-path:

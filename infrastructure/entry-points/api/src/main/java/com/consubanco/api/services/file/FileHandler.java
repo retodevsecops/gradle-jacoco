@@ -45,7 +45,7 @@ public class FileHandler {
     public Mono<ServerResponse> generateFileWithDocuments(ServerRequest request) {
         String processId = request.pathVariable(PROCESS_ID);
         return request.bodyToMono(GenerateDocumentReqDTO.class)
-                .map(GenerateDocumentReqDTO::buildFileDataVO)
+                .map(GenerateDocumentReqDTO::buildGenerateDocumentVO)
                 .flatMap(req -> generateDocUseCase.getAsUrl(req, processId))
                 .map(GenerateDocumentResDTO::new)
                 .flatMap(HttpResponseUtil::Ok);
@@ -54,7 +54,7 @@ public class FileHandler {
     public Mono<ServerResponse> generateFileEncoded(ServerRequest request) {
         String processId = request.pathVariable(PROCESS_ID);
         return request.bodyToMono(GenerateDocumentReqDTO.class)
-                .map(GenerateDocumentReqDTO::buildFileDataVO)
+                .map(GenerateDocumentReqDTO::buildGenerateDocumentVO)
                 .flatMap(req -> generateDocUseCase.getAsEncodedFile(req, processId))
                 .map(GenerateDocumentResDTO::new)
                 .flatMap(HttpResponseUtil::Ok);
