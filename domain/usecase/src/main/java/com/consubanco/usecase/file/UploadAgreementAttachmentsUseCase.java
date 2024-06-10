@@ -63,9 +63,8 @@ public class UploadAgreementAttachmentsUseCase {
     private Mono<Map<String, String>> uploadAllDocuments(Process process, List<AttachmentFileVO> attachments, Agreement agreement) {
         Flux<File> uploadAttachments = uploadAttachments(attachments, process.getOffer().getId());
         Flux<File> uploadGeneratedDocuments = buildAgreementDocumentsUseCase.execute(process, agreement.getDocuments());
-        return Flux.merge(uploadGeneratedDocuments, uploadAttachments)
-                .collectList()
-                .flatMap(files -> buildCompoundDocumentsUseCase.execute(process, files))
+        return Mono.zip(uploadAttachments.collectList(), uploadGeneratedDocuments.collectList())
+                .flatMap(tuple -> buildCompoundDocumentsUseCase.execute(process, tuple.getT2()))
                 .thenReturn(Map.of("message", "Files uploaded and generated successfully."));
     }
 
