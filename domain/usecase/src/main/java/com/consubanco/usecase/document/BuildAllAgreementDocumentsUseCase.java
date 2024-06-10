@@ -16,7 +16,7 @@ public class BuildAllAgreementDocumentsUseCase {
         return agreementUseCase.findByNumber(process.getAgreementNumber())
                 .flatMapMany(agreement -> buildAgreementDocumentsUseCase.execute(process, agreement.getDocuments()))
                 .collectList()
-                .flatMap(docs -> buildCompoundDocumentsUseCase.execute(process, docs));
+                .flatMap(docsGenerated -> buildCompoundDocumentsUseCase.execute(process, docsGenerated));
     }
 
 }

@@ -25,7 +25,7 @@ public class AgreementHandler {
         String agreementNumber = serverRequest.pathVariable(AgreementPathParams.AGREEMENT_NUMBER);
         return agreementUseCase.findByNumber(agreementNumber)
                 .map(agreement -> mapper.map(agreement, GetAgreementResponseDTO.class))
-                .flatMap(HttpResponseUtil::Ok);
+                .flatMap(HttpResponseUtil::ok);
     }
 
     public Mono<ServerResponse> getAttachments(ServerRequest serverRequest) {
@@ -34,7 +34,7 @@ public class AgreementHandler {
                 .flatMapMany(getAttachmentsByAgreementUseCase::execute)
                 .map(attachment -> mapper.map(attachment, AttachmentResDTO.class))
                 .collectList()
-                .flatMap(HttpResponseUtil::Ok);
+                .flatMap(HttpResponseUtil::ok);
     }
 
 }

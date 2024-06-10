@@ -16,6 +16,7 @@ import reactor.core.scheduler.Schedulers;
 import reactor.util.function.Tuple2;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static com.consubanco.model.entities.document.constant.DocumentNames.UNSIGNED_APPLICANT_RECORD;
 import static com.consubanco.model.entities.document.message.DocumentBusinessMessage.CNCA_NOT_FOUND;
@@ -26,24 +27,27 @@ import static com.consubanco.model.entities.document.message.DocumentMessage.doc
 @RequiredArgsConstructor
 public class BuildCompoundDocumentsUseCase {
 
+    private static final String PATTERN_NAME_ATTACHMENT = ".*-\\d+$";
     private final AgreementConfigRepository agreementConfigRepository;
     private final PDFDocumentGateway pdfDocumentGateway;
     private final FileRepository fileRepository;
     private final GenerateNom151UseCase generateNom151UseCase;
 
-    public Mono<Void> execute(Process process, List<File> files) {
+    public Mono<Void> execute(Process process, List<File> docsGenerated) {
         Mono<List<File>> attachments = getAttachmentsByOfferId(process.getOfferId());
         Mono<File> cncaLetter = getCNCALetterByOfferId(process.getOfferId());
         return Mono.zip(attachments, cncaLetter)
-                .map(tuple -> mergeFiles(files, tuple.getT1(), tuple.getT2()))
+                .map(tuple -> mergeFiles(docsGenerated, tuple.getT1(), tuple.getT2()))
                 .flatMap(allFiles -> processCompoundDocuments(process, allFiles))
                 .then();
     }
 
     private Mono<List<File>> getAttachmentsByOfferId(String offerId) {
+        Pattern pattern = Pattern.compile(PATTERN_NAME_ATTACHMENT);
         return Mono.just(offerId)
                 .map(FileConstants::attachmentsDirectory)
                 .flatMapMany(fileRepository::listByFolderWithoutUrls)
+                .filter(file -> !pattern.matcher(file.getName()).matches())
                 .collectList();
     }
 
