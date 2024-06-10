@@ -11,7 +11,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @UtilityClass
 public class HttpResponseUtil {
 
-    public static <T> Mono<ServerResponse> Ok(T body){
+    public static <T> Mono<ServerResponse> ok(T body){
         return buildResponse(OK, body);
     }
 
@@ -24,7 +24,7 @@ public class HttpResponseUtil {
     }
 
 
-    public static <T> Mono<ServerResponse> InternalError(T body){
+    public static <T> Mono<ServerResponse> internalError(T body){
         return buildResponse(INTERNAL_SERVER_ERROR, body);
     }
 

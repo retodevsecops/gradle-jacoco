@@ -45,13 +45,13 @@ public class OfferFileHandler {
         String processId = request.pathVariable(PROCESS_ID);
         return AttachmentFactoryUtil.extractAttachments(request)
                 .flatMap(attachments -> uploadFilesAgreementUseCase.execute(processId, attachments))
-                .flatMap(HttpResponseUtil::accepted);
+                .flatMap(HttpResponseUtil::ok);
     }
 
     public Mono<ServerResponse> getPayloadData(ServerRequest request) {
         String processId = request.pathVariable(PROCESS_ID);
         return getPayloadDataUseCase.execute(processId)
-                .flatMap(HttpResponseUtil::Ok);
+                .flatMap(HttpResponseUtil::ok);
     }
 
     public Mono<ServerResponse> uploadOfficialID(ServerRequest request) {
@@ -60,14 +60,14 @@ public class OfferFileHandler {
                 .flatMap(UploadOfficialIdentificationReqDTO::check)
                 .flatMap(dto -> uploadOfficialIDUseCase.execute(processId, dto.front(), dto.back()))
                 .map(FileResDTO::new)
-                .flatMap(HttpResponseUtil::Ok);
+                .flatMap(HttpResponseUtil::ok);
     }
 
     private Mono<ServerResponse> executeUseCase(String parameter, Function<String, Flux<File>> useCase) {
         return useCase.apply(parameter)
                 .map(FileResDTO::new)
                 .collectList()
-                .flatMap(HttpResponseUtil::Ok);
+                .flatMap(HttpResponseUtil::ok);
     }
 
 }

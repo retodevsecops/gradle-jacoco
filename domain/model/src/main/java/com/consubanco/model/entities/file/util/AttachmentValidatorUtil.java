@@ -124,11 +124,11 @@ public class AttachmentValidatorUtil {
     }
 
     private Boolean isNumberOfFilesExceeded(List<AttachmentConfigVO> attachmentsByAgreement,
-                                            AttachmentFileVO attachmentFileVO) {
+                                            AttachmentFileVO attachment) {
         return attachmentsByAgreement.stream()
-                .filter(config -> config.getTechnicalName().equalsIgnoreCase(attachmentFileVO.getName()))
+                .filter(config -> config.getTechnicalName().equalsIgnoreCase(attachment.getName()))
                 .findFirst()
-                .map(config -> attachmentFileVO.getFiles().size() > config.getMaxFiles())
+                .map(config -> attachment.getFiles().size() > config.getMaxFiles())
                 .orElse(false);
     }
 
