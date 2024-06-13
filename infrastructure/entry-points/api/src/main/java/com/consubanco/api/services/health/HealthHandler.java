@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 public class HealthHandler {
 
     public Mono<ServerResponse> health(ServerRequest serverRequest) {
-        return HttpResponseUtil.Ok("ok");
+        return HttpResponseUtil.ok("ok");
     }
 
 }

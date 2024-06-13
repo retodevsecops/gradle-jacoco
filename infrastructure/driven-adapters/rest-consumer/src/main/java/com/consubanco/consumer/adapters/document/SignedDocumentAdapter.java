@@ -52,7 +52,7 @@ public class SignedDocumentAdapter implements SignedDocumentGateway {
     }
 
     @Override
-    public Integer getValidDays() {
+    public Integer getValidMinutes() {
         return nom151ApiService.getValidDays();
     }
 

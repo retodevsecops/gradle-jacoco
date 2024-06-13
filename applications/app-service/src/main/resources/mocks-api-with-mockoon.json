@@ -134,7 +134,7 @@
       "type": "http",
       "documentation": "",
       "method": "get",
-      "endpoint": "customers-api/customer/all-info/950dc9af-83d3-4fbe-bffd-09dfa7459d87",
+      "endpoint": "customers-api/customer/all-info/f9adc4e6-5821-4dcb-b8c5-522b796c71f2",
       "responses": [
         {
           "uuid": "60b9808e-07bf-4249-adc6-18b541a170f0",
@@ -308,7 +308,7 @@
       "type": "http",
       "documentation": "",
       "method": "post",
-      "endpoint": "offers-api/offers/accept/950dc9af-83d3-4fbe-bffd-09dfa7459d87",
+      "endpoint": "offers-api/offers/accept/f9adc4e6-5821-4dcb-b8c5-522b796c71f2",
       "responses": [
         {
           "uuid": "df86456b-6e46-49cb-a4f7-1115ed76ea96",
@@ -429,11 +429,11 @@
       "type": "http",
       "documentation": "",
       "method": "get",
-      "endpoint": "customers-api/biometric-validation/biometric-task/950dc9af-83d3-4fbe-bffd-09dfa7459d87",
+      "endpoint": "customers-api/biometric-validation/biometric-task/f9adc4e6-5821-4dcb-b8c5-522b796c71f2",
       "responses": [
         {
           "uuid": "7d4d0f53-f765-4506-9e31-e9141be98607",
-          "body": "{\r\n    \"biometricTaskId\": null,\r\n    \"biometricTaskDate\": \"2024-06-05\"\r\n}",
+          "body": "{\r\n    \"biometricTaskId\": null,\r\n    \"probankFolio\": null,\r\n    \"biometricTaskDate\": \"2024-06-12\"\r\n}",
           "latency": 0,
           "statusCode": 200,
           "label": "",
