@@ -32,7 +32,7 @@ public class GenerateNom151UseCase {
     public Mono<File> execute(Process process) {
         return process.checkRequiredData()
                 .flatMap(this::getSignedApplicationRecord)
-                .filter(file -> file.checkCreationDays(signedDocumentGateway.getValidDays()))
+                .filter(file -> file.checkCreationMinutes(signedDocumentGateway.getValidMinutes()))
                 .switchIfEmpty(signDocumentWithNom151(process));
     }
 

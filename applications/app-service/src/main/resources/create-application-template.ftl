@@ -138,9 +138,9 @@
             "promotorBp": "${promoter_data.bpId}",
             "priceGroupId": "${offer_data.offer.priceGroupId}",
             "biometricTask": {
-                "taskCRMId": "string",
-                "createDate": "2024-05-15",
-                "probankNumber": "",
+                "taskCRMId": "${biometric_task_data.biometricTaskId}",
+                "createDate": "${biometric_task_data.biometricTaskDate}",
+                "probankNumber": "${biometric_task_data.probankFolio}",
                 "taskStatusCRM": {
                     "key": "string",
                     "description": "string"
