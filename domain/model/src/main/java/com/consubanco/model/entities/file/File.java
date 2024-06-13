@@ -53,4 +53,9 @@ public class File {
         return daysBetween <= days;
     }
 
+    public boolean checkCreationMinutes(Integer minutes) {
+        long minutesBetween = ChronoUnit.MINUTES.between(creationDate, LocalDateTime.now());
+        return minutesBetween <= minutes;
+    }
+
 }

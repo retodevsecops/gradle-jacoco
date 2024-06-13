@@ -15,6 +15,6 @@ public interface SignedDocumentGateway {
     Mono<String> getNom151ForCSB(String documentId);
 
     Mono<String> getNom151ForMN(String documentId);
-    Integer getValidDays();
+    Integer getValidMinutes();
 
 }

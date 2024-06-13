@@ -56,7 +56,7 @@ public class ValidateLoanFilesHelper {
                 .map(tuple -> {
                     tuple.getT1().addAll(tuple.getT2());
                     tuple.getT1().add(DocumentNames.CNCA_LETTER);
-                    tuple.getT1().add(DocumentNames.APPLICANT_RECORD);
+                    tuple.getT1().add(DocumentNames.UNSIGNED_APPLICANT_RECORD);
                     tuple.getT1().add(DocumentNames.COLLECTION_DOCUMENTS);
                     return tuple.getT1();
                 });
