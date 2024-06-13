@@ -41,7 +41,7 @@ public class AttachmentFactoryUtil {
 
     private String defineFileName(FilePart filePart, Map<String, AtomicInteger> counters) {
         String attachmentName = filePart.name();
-        int pos = counters.computeIfAbsent(attachmentName, key -> new AtomicInteger(1)).getAndIncrement();
+        int pos = counters.computeIfAbsent(attachmentName, key -> new AtomicInteger(0)).getAndIncrement();
         return String.format(FILE_NAME_STRUCTURE, attachmentName, pos);
     }
 

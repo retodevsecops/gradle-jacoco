@@ -52,7 +52,7 @@ adapter:
         api-docs-previous: ${API_DOCS_PREVIOUS:https://apic.consubanco.com/csb/qa/opp-service/findDocsPreviusApplication}
         api-create-application: ${API_CREATE_APPLICATION:http://localhost:3001/csb/qa/opp-service/createApplication}
       nom151:
-        valid-days: ${VALID_DAYS_NOM151:5}
+        valid-time-min: ${VALID_TIME_IN_MINUTES_NOM151:30}
         endpoint: ${API_ENDPOINT_NOM151:https://wstestautosign.doc2sign.com/Doc2SignLite.svc}
         credentials:
           csb:
