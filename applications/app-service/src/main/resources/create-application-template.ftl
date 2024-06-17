@@ -50,7 +50,7 @@
                         "name": "${branch.distribuidor.distributorName}",
                         "acronym": "${branch.distribuidor.distributorSigla}"
                     },
-                    "branchNFOFlag": ${branch.branchNFOFlag?c}
+                    "branchNFOFlag": true
                 },
             </#if>
         </#list>

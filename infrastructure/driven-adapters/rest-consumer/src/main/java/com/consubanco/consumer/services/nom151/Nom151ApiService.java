@@ -66,11 +66,19 @@ public class Nom151ApiService {
                 .onErrorMap(e -> !(e instanceof TechnicalException), error -> buildTechnical(error, API_NOM151_ERROR));
     }
 
+    /**
+     * TODO: agregar logs
+     * @param user
+     * @param password
+     * @param documentId
+     * @return
+     */
     private Mono<String> getSignedDocument(String user, String password, String documentId) {
+        String bodyValue = buildRequest(user, password, documentId);
         return nom151Client.post()
                 .uri(properties.getEndpoint())
                 .header(SOAP_ACTION, properties.getActions().getGetDocumentSigned())
-                .bodyValue(buildRequest(user, password, documentId))
+                .bodyValue(bodyValue)
                 .exchangeToMono(response -> getResponse(response, GetSignedDocumentUtil::getSuccessfulResponse))
                 .onErrorMap(e -> !(e instanceof TechnicalException), error -> buildTechnical(error, API_NOM151_ERROR));
     }

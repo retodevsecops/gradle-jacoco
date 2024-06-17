@@ -6,11 +6,11 @@
     "branchId": "51187515",
     "attachmentsDocuments": [
       {
-        "name": "Identificacion oficial",
+        "name": "Identificación oficial",
         "technicalName": "identificacion-oficial",
         "maxFiles": 1,
         "isOcr": true,
-        "isRecoverable": false,
+        "isRecoverable": true,
         "namePreviousDocument": "IDENTIFICACIONOFICIAL",
         "isRequired": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
