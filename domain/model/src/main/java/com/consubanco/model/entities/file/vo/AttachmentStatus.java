@@ -19,9 +19,10 @@ public class AttachmentStatus {
 
     @Getter
     @Setter
+    @Builder
+    @ToString
     @NoArgsConstructor
     @AllArgsConstructor
-    @Builder(toBuilder = true)
     public static class InvalidAttachment {
         private String name;
         private String code;
