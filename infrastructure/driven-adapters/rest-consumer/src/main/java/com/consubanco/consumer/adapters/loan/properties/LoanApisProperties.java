@@ -8,5 +8,5 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "adapter.rest-consumer.apis.api-connect")
 public class LoanApisProperties {
-    private String createApplication;
+    private String apiCreateApplication;
 }

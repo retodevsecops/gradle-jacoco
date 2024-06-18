@@ -1,27 +1,29 @@
 [
   {
-    "agreement": "cdmx - csb",
+    "agreementName": "cdmx - csb",
     "agreementNumber": "10000041",
+    "promoterId": "0017123040",
+    "branchId": "51187515",
     "attachmentsDocuments": [
       {
         "name": "Identificacion oficial",
         "technicalName": "identificacion-oficial",
         "maxFiles": 1,
         "isOcr": true,
-        "isRecoverable": true,
+        "isRecoverable": false,
         "namePreviousDocument": "IDENTIFICACIONOFICIAL",
         "isRequired": true,
-        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF"]
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       },
       {
         "name": "Recibos de nomina",
         "technicalName": "recibo-nomina",
         "maxFiles": 2,
         "isOcr": true,
-        "isRecoverable": true,
+        "isRecoverable": false,
         "namePreviousDocument": "RECIBO-NOMINA",
         "isRequired": true,
-        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF"]
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       },
       {
         "name": "Comprobante de domicilio",
@@ -31,7 +33,7 @@
         "isRecoverable": true,
         "namePreviousDocument": "COMPROBANTE-DOMICILIO",
         "isRequired": true,
-        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF"]
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       }
     ],
     "compoundDocuments": [

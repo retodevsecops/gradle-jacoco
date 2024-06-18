@@ -71,6 +71,8 @@ public class Agreement {
         @NoArgsConstructor
         @Builder(toBuilder = true)
         public static class Field {
+
+            private final static String REGEX = "/";
             private String id;
             private Integer order;
             private String name;
@@ -82,6 +84,15 @@ public class Agreement {
             private Boolean isSpecial;
             private String convertTo;
             private String value;
+
+            public String getNameFromTechnicalName() {
+                if (technicalName != null && technicalName.contains(REGEX)) {
+                    int index = technicalName.lastIndexOf(REGEX);
+                    return technicalName.substring(index + 1);
+                }
+                return technicalName;
+            }
+
         }
 
     }

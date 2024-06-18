@@ -1,11 +1,13 @@
-package com.consubanco.usecase.loan;
+package com.consubanco.usecase.loan.usecase;
 
 import com.consubanco.model.commons.exception.factory.ExceptionFactory;
+import com.consubanco.model.entities.agreement.vo.AgreementConfigVO;
 import com.consubanco.model.entities.document.gateway.PayloadDocumentGateway;
 import com.consubanco.model.entities.file.constant.FileConstants;
 import com.consubanco.model.entities.file.gateway.FileRepository;
 import com.consubanco.model.entities.file.vo.FileWithStorageRouteVO;
 import com.consubanco.model.entities.process.Process;
+import com.consubanco.usecase.agreement.GetAgreementConfigUseCase;
 import com.consubanco.usecase.document.GenerateNom151UseCase;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -19,18 +21,18 @@ import static com.consubanco.model.entities.loan.message.LoanMessage.requiredFil
 @RequiredArgsConstructor
 public class BuildDataForApplicationUseCase {
 
+    private static final String FILES_KEY = "files_data";
+
     private final FileRepository fileRepository;
     private final GenerateNom151UseCase generateNom151UseCase;
     private final PayloadDocumentGateway payloadDocGateway;
+    private final GetAgreementConfigUseCase getAgreementConfigUseCase;
 
     public Mono<Map<String, Object>> execute(Process process) {
-        Mono<Map<String, Object>> allDataMap = payloadDocGateway.getAllData(process.getId());
+        Mono<AgreementConfigVO> agreementConfigVO = getAgreementConfigUseCase.execute(process.getAgreementNumber());
         Mono<List<FileWithStorageRouteVO>> allFiles = getAllFiles(process);
-        return Mono.zip(allDataMap, allFiles)
-                .map(tuple -> {
-                    tuple.getT1().put("files_data", tuple.getT2());
-                    return tuple.getT1();
-                });
+        return Mono.zip(agreementConfigVO, allFiles)
+                .flatMap(tuple -> getData(process, tuple.getT1(), tuple.getT2()));
 
     }
 
@@ -46,6 +48,16 @@ public class BuildDataForApplicationUseCase {
                 .collectList()
                 .filter(files -> !files.isEmpty())
                 .switchIfEmpty(ExceptionFactory.monoBusiness(FILES_NOT_FOUND, requiredFiles(process.getOfferId())));
+    }
+
+    private Mono<Map<String, Object>> getData(Process process, AgreementConfigVO config, List<FileWithStorageRouteVO> files) {
+        return payloadDocGateway.getAllData(process.getId(), config)
+                .map(data -> addFilesToData(data, files));
+    }
+
+    private Map<String, Object> addFilesToData(Map<String, Object> data, List<FileWithStorageRouteVO> files) {
+        data.put(FILES_KEY, files);
+        return data;
     }
 
 }

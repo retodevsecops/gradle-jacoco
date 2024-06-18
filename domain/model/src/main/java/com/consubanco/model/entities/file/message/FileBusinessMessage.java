@@ -19,7 +19,8 @@ public enum FileBusinessMessage implements IExceptionMessage {
     ATTACHMENT_INVALID_TYPE("BE_FILE_0009", "Attachments come with not allowed file types."),
     DATA_MISSING_TO_UPLOAD("BE_FILE_0010", "Missing data to upload the file."),
     MIN_INVALID_SIZE("BE_FILE_0011", "Minimum file size is invalid."),
-    INCOMPLETE_DATA("BE_FILE_0011", "The file data is incomplete");
+    INCOMPLETE_DATA("BE_FILE_0012", "The file data is incomplete"),
+    ATTACHMENT_EXCEEDED("BE_FILE_0013", "The number of files for the attachment exceeds the allowed.");
 
     private final String code;
     private final String message;

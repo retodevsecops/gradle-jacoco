@@ -39,25 +39,25 @@ public class FileHandler {
         loadDocumentsFromPreviousApplication(processId);
         return buildCNCALettersUseCase.execute(processId)
                 .map(FileResDTO::new)
-                .flatMap(HttpResponseUtil::Ok);
+                .flatMap(HttpResponseUtil::ok);
     }
 
     public Mono<ServerResponse> generateFileWithDocuments(ServerRequest request) {
         String processId = request.pathVariable(PROCESS_ID);
         return request.bodyToMono(GenerateDocumentReqDTO.class)
-                .map(GenerateDocumentReqDTO::buildFileDataVO)
+                .map(GenerateDocumentReqDTO::buildGenerateDocumentVO)
                 .flatMap(req -> generateDocUseCase.getAsUrl(req, processId))
                 .map(GenerateDocumentResDTO::new)
-                .flatMap(HttpResponseUtil::Ok);
+                .flatMap(HttpResponseUtil::ok);
     }
 
     public Mono<ServerResponse> generateFileEncoded(ServerRequest request) {
         String processId = request.pathVariable(PROCESS_ID);
         return request.bodyToMono(GenerateDocumentReqDTO.class)
-                .map(GenerateDocumentReqDTO::buildFileDataVO)
+                .map(GenerateDocumentReqDTO::buildGenerateDocumentVO)
                 .flatMap(req -> generateDocUseCase.getAsEncodedFile(req, processId))
                 .map(GenerateDocumentResDTO::new)
-                .flatMap(HttpResponseUtil::Ok);
+                .flatMap(HttpResponseUtil::ok);
     }
 
     public Mono<ServerResponse> getAndUpload(ServerRequest request) {
@@ -65,7 +65,7 @@ public class FileHandler {
         return request.bodyToMono(GetAndUploadDocumentReqDTO.class)
                 .flatMap(req -> generateDocUseCase.getAndUpload(processId, req.getData(), req.getFileName()))
                 .map(FileResDTO::new)
-                .flatMap(HttpResponseUtil::Ok);
+                .flatMap(HttpResponseUtil::ok);
     }
 
     public Mono<ServerResponse> uploadPayloadTemplate(ServerRequest request) {
@@ -84,7 +84,7 @@ public class FileHandler {
         return fileUseCase.getManagementFiles()
                 .map(FileResDTO::new)
                 .collectList()
-                .flatMap(HttpResponseUtil::Ok);
+                .flatMap(HttpResponseUtil::ok);
     }
 
     private Mono<ServerResponse> processUploadCase(ServerRequest request, Function<FileUploadVO, Mono<File>> useCase) {
@@ -94,7 +94,7 @@ public class FileHandler {
                 .flatMap(FilePartUtil::buildFileUploadVOFromFilePart)
                 .flatMap(useCase)
                 .map(FileResDTO::new)
-                .flatMap(HttpResponseUtil::Ok);
+                .flatMap(HttpResponseUtil::ok);
     }
 
     private void loadDocumentsFromPreviousApplication(String processId) {

@@ -16,24 +16,46 @@ import reactor.core.scheduler.Schedulers;
 import reactor.util.function.Tuple2;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static com.consubanco.model.entities.document.constant.DocumentNames.UNSIGNED_APPLICANT_RECORD;
+import static com.consubanco.model.entities.document.message.DocumentBusinessMessage.CNCA_NOT_FOUND;
 import static com.consubanco.model.entities.document.message.DocumentBusinessMessage.DOCUMENT_NOT_FOUND;
+import static com.consubanco.model.entities.document.message.DocumentMessage.GENERATE_CNCA;
 import static com.consubanco.model.entities.document.message.DocumentMessage.documentNotFound;
 
 @RequiredArgsConstructor
 public class BuildCompoundDocumentsUseCase {
 
+    private static final String PATTERN_NAME_ATTACHMENT = ".*-\\d+$";
     private final AgreementConfigRepository agreementConfigRepository;
     private final PDFDocumentGateway pdfDocumentGateway;
     private final FileRepository fileRepository;
     private final GenerateNom151UseCase generateNom151UseCase;
 
-    public Mono<Void> execute(Process process, List<File> files) {
-        return mergeFiles(process.getOffer().getId(), files)
-                .collectList()
+    public Mono<Void> execute(Process process, List<File> docsGenerated) {
+        Mono<List<File>> attachments = getAttachmentsByOfferId(process.getOfferId());
+        Mono<File> cncaLetter = getCNCALetterByOfferId(process.getOfferId());
+        return Mono.zip(attachments, cncaLetter)
+                .map(tuple -> mergeFiles(docsGenerated, tuple.getT1(), tuple.getT2()))
                 .flatMap(allFiles -> processCompoundDocuments(process, allFiles))
                 .then();
+    }
+
+    private Mono<List<File>> getAttachmentsByOfferId(String offerId) {
+        Pattern pattern = Pattern.compile(PATTERN_NAME_ATTACHMENT);
+        return Mono.just(offerId)
+                .map(FileConstants::attachmentsDirectory)
+                .flatMapMany(fileRepository::listByFolderWithoutUrls)
+                .filter(file -> !pattern.matcher(file.getName()).matches())
+                .collectList();
+    }
+
+    private Mono<File> getCNCALetterByOfferId(String offerId) {
+        return Mono.just(offerId)
+                .map(FileConstants::cncaLetterRoute)
+                .flatMap(fileRepository::getByNameWithoutSignedUrl)
+                .switchIfEmpty(ExceptionFactory.monoBusiness(CNCA_NOT_FOUND, GENERATE_CNCA));
     }
 
     private Mono<Tuple2<File, List<File>>> processCompoundDocuments(Process process, List<File> allFiles) {
@@ -112,16 +134,12 @@ public class BuildCompoundDocumentsUseCase {
                 .build();
     }
 
-    private Flux<File> mergeFiles(String offerId, List<File> files) {
-        return Flux.fromIterable(files)
-                .concatWith(getAttachmentsUploaded(offerId)
-                        .filter(file -> !checkIfExists(files, file.getName())));
-    }
-
-    private Flux<File> getAttachmentsUploaded(String offerId) {
-        return Mono.just(offerId)
-                .map(FileConstants::attachmentsDirectory)
-                .flatMapMany(fileRepository::listByFolderWithoutUrls);
+    private List<File> mergeFiles(List<File> files, List<File> attachments, File cncaLetter) {
+        files.add(cncaLetter);
+        files.addAll(attachments.stream()
+                .filter(attachment -> !checkIfExists(files, attachment.getName()))
+                .toList());
+        return files;
     }
 
     private Boolean checkIfExists(List<File> files, String nameAttachment) {

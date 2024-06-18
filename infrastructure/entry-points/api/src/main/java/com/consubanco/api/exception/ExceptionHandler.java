@@ -63,7 +63,7 @@ public class ExceptionHandler extends AbstractErrorWebExceptionHandler {
         return technicalException -> ParamsUtil.getDomain(request)
                 .flatMap(domain -> buildFromTechnicalException(technicalException, domain))
                 .doOnNext(logger::error)
-                .flatMap(HttpResponseUtil::InternalError);
+                .flatMap(HttpResponseUtil::internalError);
     }
 
     private Function<BusinessException, Mono<ServerResponse>> responseBusinessError(ServerRequest request) {
@@ -83,7 +83,7 @@ public class ExceptionHandler extends AbstractErrorWebExceptionHandler {
     private Function<Throwable, Mono<ServerResponse>> responseDefaultError(ServerRequest serverRequest) {
         return exception -> ParamsUtil.getDomain(serverRequest)
                 .flatMap(domain -> buildResponseDefault(exception.getMessage(), domain))
-                .flatMap(HttpResponseUtil::InternalError);
+                .flatMap(HttpResponseUtil::internalError);
     }
 
 

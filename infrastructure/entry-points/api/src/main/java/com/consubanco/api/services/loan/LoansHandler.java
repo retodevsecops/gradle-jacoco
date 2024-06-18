@@ -4,9 +4,9 @@ import com.consubanco.api.commons.util.HttpResponseUtil;
 import com.consubanco.api.services.loan.constants.LoanHeaderParams;
 import com.consubanco.api.services.loan.dto.LoanApplicationResDTO;
 import com.consubanco.model.entities.otp.Otp;
-import com.consubanco.usecase.loan.BuildDataForApplicationUseCase;
-import com.consubanco.usecase.loan.CreateApplicationLoanUseCase;
-import com.consubanco.usecase.loan.LoanUseCase;
+import com.consubanco.usecase.loan.usecase.BuildDataForApplicationUseCase;
+import com.consubanco.usecase.loan.usecase.CreateApplicationLoanUseCase;
+import com.consubanco.usecase.loan.usecase.LoanUseCase;
 import com.consubanco.usecase.process.GetProcessByIdUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -29,7 +29,7 @@ public class LoansHandler {
         String processId = serverRequest.pathVariable(PROCESS_ID);
         Otp otp = buildOtp(serverRequest);
         return createApplicationLoanUseCase.execute(processId, otp)
-                .flatMap(HttpResponseUtil::Ok);
+                .flatMap(HttpResponseUtil::ok);
     }
 
     public Mono<ServerResponse> listByProcess(ServerRequest serverRequest) {
@@ -37,14 +37,14 @@ public class LoansHandler {
         return loanUseCase.listByProcess(processId)
                 .map(LoanApplicationResDTO::new)
                 .collectList()
-                .flatMap(HttpResponseUtil::Ok);
+                .flatMap(HttpResponseUtil::ok);
     }
 
     public Mono<ServerResponse> applicationData(ServerRequest serverRequest) {
         String processId = serverRequest.pathVariable(PROCESS_ID);
         return getProcessByIdUseCase.execute(processId)
                 .flatMap(buildDataForApplicationUseCase::execute)
-                .flatMap(HttpResponseUtil::Ok);
+                .flatMap(HttpResponseUtil::ok);
     }
 
     private Otp buildOtp(ServerRequest request) {

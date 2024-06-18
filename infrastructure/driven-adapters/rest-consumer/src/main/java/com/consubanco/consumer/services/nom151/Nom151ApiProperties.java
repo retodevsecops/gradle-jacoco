@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "adapter.rest-consumer.apis.nom151")
 public class Nom151ApiProperties {
 
-    private Integer validDays;
+    private Integer validTimeMin;
     private String endpoint;
     private Credential credentials;
     private Action actions;

@@ -11,6 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class AttachmentConfigVO {
+
     private String name;
     private String technicalName;
     private Integer maxFiles;
