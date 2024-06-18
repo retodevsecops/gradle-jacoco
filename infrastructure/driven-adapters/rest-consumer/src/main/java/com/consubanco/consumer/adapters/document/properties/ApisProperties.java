@@ -16,6 +16,7 @@ public class ApisProperties {
     public static class ApiConnect {
         private String applicationId;
         private String apiSearchInterlocutor;
+        private String apiSendGenericEmail;
     }
 
     @Data
