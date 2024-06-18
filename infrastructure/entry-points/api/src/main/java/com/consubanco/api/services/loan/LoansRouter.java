@@ -24,10 +24,10 @@ public class LoansRouter {
         return RouterFunctions.nest(
                 path(loansServicePath),
                 route()
-                    .POST(PROCESS_PATH, handler::createApplication, createApplication())
-                    .GET(PROCESS_PATH, handler::listByProcess, listByProcess())
-                    .GET(APPLICATION_DATA_PATH, handler::applicationData, applicationData())
-                    .build()
+                        .POST(PROCESS_PATH, handler::createApplication, createApplication())
+                        .GET(PROCESS_PATH, handler::listByProcess, listByProcess())
+                        .GET(APPLICATION_DATA_PATH, handler::applicationData, applicationData())
+                        .build()
         );
     }
 

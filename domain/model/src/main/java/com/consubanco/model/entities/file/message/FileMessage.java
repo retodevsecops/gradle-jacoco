@@ -14,23 +14,23 @@ public class FileMessage {
     private final static String FILES_INVALID_TYPES = "The files: %s are invalid file types.";
     private final static String ATTACHMENT_EXCEEDED = "The attachments: %s exceed the number of files required.";
 
-    public static String maxSize(Double size){
+    public static String maxSize(Double size) {
         return String.format(MAX_SIZE, size);
     }
 
-    public static String filesExceedSize(List<String> files, Double size){
+    public static String filesExceedSize(List<String> files, Double size) {
         return String.format(FILES_EXCEED_SIZE, String.join(DELIMITER, files), size);
     }
 
-    public static String attachmentRequired(List<String> files){
+    public static String attachmentRequired(List<String> files) {
         return String.format(ATTACHMENT_REQUIRED, String.join(DELIMITER, files));
     }
 
-    public static String filesInvalidTypes(List<String> files){
+    public static String filesInvalidTypes(List<String> files) {
         return String.format(FILES_INVALID_TYPES, String.join(DELIMITER, files));
     }
 
-    public static String attachmentExceeded(List<String> files){
+    public static String attachmentExceeded(List<String> files) {
         return String.format(ATTACHMENT_EXCEEDED, String.join(DELIMITER, files));
     }
 

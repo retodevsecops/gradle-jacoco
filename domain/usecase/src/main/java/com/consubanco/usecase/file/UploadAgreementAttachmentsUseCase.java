@@ -12,9 +12,11 @@ import com.consubanco.model.entities.file.gateway.FileRepository;
 import com.consubanco.model.entities.file.vo.AttachmentFileVO;
 import com.consubanco.model.entities.file.vo.FileUploadVO;
 import com.consubanco.model.entities.file.vo.FileWithStorageRouteVO;
+import com.consubanco.model.entities.ocr.OcrDocument;
 import com.consubanco.model.entities.process.Process;
 import com.consubanco.usecase.document.BuildAgreementDocumentsUseCase;
 import com.consubanco.usecase.document.BuildCompoundDocumentsUseCase;
+import com.consubanco.usecase.ocr.NotifyOcrDocumentsUseCase;
 import com.consubanco.usecase.process.GetProcessByIdUseCase;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
@@ -38,20 +40,23 @@ public class UploadAgreementAttachmentsUseCase {
     private final GetProcessByIdUseCase getProcessByIdUseCase;
     private final BuildAgreementDocumentsUseCase buildAgreementDocumentsUseCase;
     private final BuildCompoundDocumentsUseCase buildCompoundDocumentsUseCase;
+    private final NotifyOcrDocumentsUseCase notifyOcrDocumentsUseCase;
 
-    public Mono<Map<String, String>> execute(String processId, List<AttachmentFileVO> attachments) {
+    public Flux<OcrDocument> execute(String processId, List<AttachmentFileVO> attachments) {
         return checkAttachmentsSize(attachments, fileRepository.getMaxSizeOfFileInMBAllowed())
                 .then(getProcessByIdUseCase.execute(processId))
-                .flatMap(process -> startProcess(attachments, process));
+                .flatMapMany(process -> startProcess(attachments, process));
     }
 
-    private Mono<Map<String, String>> startProcess(List<AttachmentFileVO> attachments, Process process) {
+    private Flux<OcrDocument> startProcess(List<AttachmentFileVO> attachments, Process process) {
         Mono<Agreement> agreement = agreementGateway.findByNumber(process.getAgreementNumber());
         Mono<AgreementConfigVO> agreementConfig = agreementConfigRepository.getConfigByAgreement(process.getAgreementNumber());
         Mono<List<String>> attachmentsInStorage = getAttachmentsInStorageByOffer(process.getOfferId());
         return Mono.zip(agreement, agreementConfig, attachmentsInStorage)
-                .flatMap(tuple -> checkAttachments(tuple.getT2().getAttachmentsDocuments(), attachments, tuple.getT3())
-                        .flatMap(validAttachments -> uploadAllDocuments(process, validAttachments, tuple.getT1())));
+                .flatMapMany(tuple -> checkAttachments(tuple.getT2().getAttachmentsDocuments(), attachments, tuple.getT3())
+                        .flatMapMany(validAttachments -> uploadAttachments(validAttachments, process.getOfferId()))
+                        .collectList()
+                        .flatMapMany(list -> notifyOcrDocumentsUseCase.execute(process, tuple.getT2(), list)));
     }
 
     private Mono<List<String>> getAttachmentsInStorageByOffer(String offerId) {

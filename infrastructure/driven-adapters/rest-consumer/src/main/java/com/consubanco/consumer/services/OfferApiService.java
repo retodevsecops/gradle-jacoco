@@ -42,7 +42,8 @@ public class OfferApiService {
                 .uri(apis.getRenex().getApiActiveOffer(), processId)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
+                })
                 .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_ACTIVE_OFFER_ERROR))
                 .onErrorMap(throwTechnicalError(API_ACTIVE_OFFER_ERROR));
     }

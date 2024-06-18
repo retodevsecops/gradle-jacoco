@@ -98,7 +98,7 @@ public class PDFDocumentAdapter implements PDFDocumentGateway {
         if (pageAbsolute > numberOfPagesPDF)
             throw new IndexOutOfBoundsException("The required page exceeds the number of pages in the pdf file.");
         if (pageRequired > 0) return pageRequired;
-        return numberOfPagesPDF - (pageAbsolute-1);
+        return numberOfPagesPDF - (pageAbsolute - 1);
     }
 
     private void addImageToPdf(Document document, String imageBase64) {

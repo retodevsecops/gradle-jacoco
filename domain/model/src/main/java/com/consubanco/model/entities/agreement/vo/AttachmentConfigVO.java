@@ -21,7 +21,7 @@ public class AttachmentConfigVO {
     private Boolean isRequired;
     private List<String> typeFile;
 
-    public boolean shouldBeValidated(){
+    public boolean shouldBeValidated() {
         return isRequired && !isRecoverable;
     }
 

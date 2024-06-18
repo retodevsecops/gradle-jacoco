@@ -41,7 +41,7 @@ public class GenerateNom151UseCase {
                 .map(FileConstants::signedApplicantRecordRoute)
                 .flatMap(fileRepository::getByNameWithoutSignedUrl);
     }
-    
+
     private Mono<File> signDocumentWithNom151(Process process) {
         return getData(process)
                 .flatMap(TupleUtils.function(this::processNom151));

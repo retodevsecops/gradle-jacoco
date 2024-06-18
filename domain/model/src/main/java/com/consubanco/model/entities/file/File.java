@@ -19,6 +19,7 @@ import static com.consubanco.model.entities.file.message.FileBusinessMessage.INC
 @Builder(toBuilder = true)
 public class File {
 
+    private String id;
     private String name;
     private String content;
     private String url;
@@ -43,7 +44,7 @@ public class File {
         return Base64.getDecoder().decode(this.content);
     }
 
-    public Mono<File> checkRequiredData(){
+    public Mono<File> checkRequiredData() {
         if (Objects.isNull(name) || Objects.isNull(content)) return buildBusiness(INCOMPLETE_DATA);
         return Mono.just(this);
     }

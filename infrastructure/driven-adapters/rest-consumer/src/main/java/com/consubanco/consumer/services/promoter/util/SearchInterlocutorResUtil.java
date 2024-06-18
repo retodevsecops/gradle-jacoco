@@ -12,7 +12,7 @@ public class SearchInterlocutorResUtil {
 
     private static final String RESPONSE_OBJECT_KEY = "searchInterlocutorResBO";
     private static final String PEOPLE_DATA_KEY = "people";
-    private static final String CODE_RESPONSE_KEY ="code";
+    private static final String CODE_RESPONSE_KEY = "code";
 
     @SuppressWarnings("unchecked")
     public Boolean checkIfSuccessResponse(Map<String, Object> response) {

@@ -28,13 +28,16 @@ public class Otp {
     private final String userAgent;
 
 
-    public Mono<Otp> checkRequiredData(){
+    public Mono<Otp> checkRequiredData() {
         if (Objects.isNull(code) || code.isBlank()) return ExceptionFactory.monoBusiness(REQUIRED_OTP, DATA_REQUIRED);
-        if (Objects.isNull(latitude) || latitude.isBlank()) return ExceptionFactory.monoBusiness(REQUIRED_OTP, DATA_REQUIRED);
-        if (Objects.isNull(longitude) || longitude.isBlank()) return ExceptionFactory.monoBusiness(REQUIRED_OTP, DATA_REQUIRED);
+        if (Objects.isNull(latitude) || latitude.isBlank())
+            return ExceptionFactory.monoBusiness(REQUIRED_OTP, DATA_REQUIRED);
+        if (Objects.isNull(longitude) || longitude.isBlank())
+            return ExceptionFactory.monoBusiness(REQUIRED_OTP, DATA_REQUIRED);
         if (Objects.isNull(ip) || ip.isBlank()) return ExceptionFactory.monoBusiness(REQUIRED_OTP, DATA_REQUIRED);
-        if (Objects.isNull(userAgent) || userAgent.isBlank()) return ExceptionFactory.monoBusiness(REQUIRED_OTP, DATA_REQUIRED);
-        if(!code.matches(REGEX)) return ExceptionFactory.buildBusiness(INCORRECT_OTP);
+        if (Objects.isNull(userAgent) || userAgent.isBlank())
+            return ExceptionFactory.monoBusiness(REQUIRED_OTP, DATA_REQUIRED);
+        if (!code.matches(REGEX)) return ExceptionFactory.buildBusiness(INCORRECT_OTP);
         return Mono.just(this);
     }
 

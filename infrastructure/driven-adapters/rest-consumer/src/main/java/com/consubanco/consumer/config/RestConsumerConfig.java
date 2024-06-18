@@ -81,19 +81,28 @@ public class RestConsumerConfig {
                 .build();
     }
 
-    private ExchangeStrategies defineStrategy() {
-        int maxBytes = clientProperties.getMemory() * 1024 * 1024;
-        return ExchangeStrategies.builder()
-                .codecs(config -> config.defaultCodecs().maxInMemorySize(maxBytes))
-                .build();
-    }
-
     @Bean("ApiRenexClient")
     public WebClient buildClientRenex() {
         return WebClient.builder()
                 .clientConnector(getClientHttpConnector())
                 .filter(webClientLoggingFilter)
                 .filter(authTokenRenexFilter)
+                .build();
+    }
+
+    @Bean("ocrClient")
+    public WebClient buildOcrClient() {
+        return WebClient.builder()
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .clientConnector(getClientHttpConnector())
+                .filter(webClientLoggingFilter)
+                .build();
+    }
+
+    private ExchangeStrategies defineStrategy() {
+        int maxBytes = clientProperties.getMemory() * 1024 * 1024;
+        return ExchangeStrategies.builder()
+                .codecs(config -> config.defaultCodecs().maxInMemorySize(maxBytes))
                 .build();
     }
 

@@ -57,7 +57,7 @@ public class LoanAdapter implements LoanGateway {
 
     private String getApplicationStatus(Map<String, Object> response) {
         Integer status = CreateApplicationResponseUtil.getCodeResponse(response);
-        return  (status == HttpStatus.SC_OK) ? ApplicationStatus.SUCCESSFUL.name() : ApplicationStatus.ERROR.name();
+        return (status == HttpStatus.SC_OK) ? ApplicationStatus.SUCCESSFUL.name() : ApplicationStatus.ERROR.name();
     }
 
 

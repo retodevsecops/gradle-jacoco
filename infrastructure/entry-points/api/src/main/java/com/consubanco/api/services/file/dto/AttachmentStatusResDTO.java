@@ -39,7 +39,7 @@ public class AttachmentStatusResDTO {
 
     public AttachmentStatusResDTO(AttachmentStatus attachmentStatus) {
         this.status = attachmentStatus.getStatus();
-        this.invalidAttachments = attachmentStatus.getInvalidAttachments() != null ? toListDTO(attachmentStatus) : null ;
+        this.invalidAttachments = attachmentStatus.getInvalidAttachments() != null ? toListDTO(attachmentStatus) : null;
     }
 
     private static List<InvalidAttachment> toListDTO(AttachmentStatus attachmentStatus) {

@@ -1,13 +1,13 @@
 apply plugin: 'org.springframework.boot'
 
 dependencies {
-	implementation project(':api')
-	implementation project(':rest-consumer')
+    implementation project(':api')
+    implementation project(':rest-consumer')
     implementation project(':gcs-storage')
     implementation project(':gcs-storage')
     implementation project(":custom-logger")
     implementation project(":open-pdf")
-	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation project(':model')
     implementation project(':usecase')
     implementation project(':postgresql')

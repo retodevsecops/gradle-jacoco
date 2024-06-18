@@ -65,6 +65,10 @@ adapter:
           load-document: ${ACTION_LOAD_DOCUMENT_NOM151:http://tempuri.org/IDoc2SignLite/Load}
           get-document-signed: ${ACTION_GET_DOCUMENT_SIGNED_NOM151:http://tempuri.org/IDoc2SignLite/GETDocFirmado}
           get-nom151: ${ACTION_GET_NOM151:http://tempuri.org/IDoc2SignLite/GETNOM}
+      ocr:
+        application-id: ${API_CONNECT_APPLICATION_ID:CSB-RENEX}
+        api-notify-document: ${API_NOTIFY_DOCUMENT_OCR:https://docia-integration-msa-flg4kcx2lq-uw.a.run.app/doc-ia/notify-files}
+        api-get-data-document: ${API_GET_DATA_DOCUMENT_OCR:https://docia-integration-msa-flg4kcx2lq-uw.a.run.app/doc-ia/get-metadata}
 
   gcs-storage:
     max-file-size-mb: ${GCS_MAX_FILE_SIZE_IN_MB:10}

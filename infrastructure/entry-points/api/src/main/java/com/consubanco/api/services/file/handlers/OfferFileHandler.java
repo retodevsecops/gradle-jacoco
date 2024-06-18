@@ -4,6 +4,7 @@ import com.consubanco.api.commons.util.AttachmentFactoryUtil;
 import com.consubanco.api.commons.util.HttpResponseUtil;
 import com.consubanco.api.services.file.dto.AttachmentStatusResDTO;
 import com.consubanco.api.services.file.dto.FileResDTO;
+import com.consubanco.api.services.file.dto.UploadAttachmentsResDTO;
 import com.consubanco.api.services.file.dto.UploadOfficialIdentificationReqDTO;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.usecase.document.GetPayloadDataUseCase;
@@ -43,7 +44,9 @@ public class OfferFileHandler {
     public Mono<ServerResponse> uploadAgreementFiles(ServerRequest request) {
         String processId = request.pathVariable(PROCESS_ID);
         return AttachmentFactoryUtil.extractAttachments(request)
-                .flatMap(attachments -> uploadFilesAgreementUseCase.execute(processId, attachments))
+                .flatMapMany(attachments -> uploadFilesAgreementUseCase.execute(processId, attachments))
+                .collectList()
+                .map(UploadAttachmentsResDTO::new)
                 .flatMap(HttpResponseUtil::ok);
     }
 

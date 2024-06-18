@@ -28,9 +28,9 @@ public class GetStatusAttachmentUseCase {
             case 1 -> AttachmentStatus.builder()
                     .status(AttachmentStatusEnum.FAILED)
                     .invalidAttachments(List.of(AttachmentStatus.InvalidAttachment.builder()
-                                    .code("001")
-                                    .name("recibo-nomina-0")
-                                    .reason("any reason jejejeje")
+                            .code("001")
+                            .name("recibo-nomina-0")
+                            .reason("any reason jejejeje")
                             .build()))
                     .build();
             default -> AttachmentStatus.builder()

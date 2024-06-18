@@ -50,7 +50,8 @@ public class PromoterApiService {
                 .uri(apis.getApiSearchInterlocutor())
                 .bodyValue(new SearchInterlocutorReqDTO(apis.getApplicationId(), promoterBpId))
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
+                })
                 .filter(SearchInterlocutorResUtil::checkIfSuccessResponse)
                 .flatMap(SearchInterlocutorResUtil::getDataInterlocutor)
                 .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_SEARCH_INTERLOCUTOR_ERROR))
@@ -62,7 +63,8 @@ public class PromoterApiService {
                 .uri(apis.getApiBranchesPromoter())
                 .bodyValue(new BranchesByPromoterReqDTO(apis.getApplicationId(), promoterBpId))
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
+                })
                 .filter(BranchesByPromoterResUtil::checkIfSuccessResponse)
                 .flatMap(BranchesByPromoterResUtil::getBranches)
                 .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_BRANCHES_BY_PROMOTER_ERROR))
@@ -73,5 +75,5 @@ public class PromoterApiService {
         promoter.put(BRANCHES, branches);
         return promoter;
     }
-    
+
 }

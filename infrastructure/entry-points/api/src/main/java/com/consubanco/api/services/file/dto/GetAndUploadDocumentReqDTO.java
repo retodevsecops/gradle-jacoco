@@ -54,7 +54,7 @@ public class GetAndUploadDocumentReqDTO {
                 .toList();
     }
 
-    public GenerateDocumentVO getData(){
+    public GenerateDocumentVO getData() {
         return GenerateDocumentVO.builder()
                 .documents(this.getDocuments())
                 .attachments(this.attachmentsFromDTO())

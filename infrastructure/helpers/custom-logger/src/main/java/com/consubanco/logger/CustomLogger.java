@@ -54,7 +54,7 @@ public class CustomLogger {
         try {
             logger.info((data instanceof String) ? String.format(FORMAT_STRING_DATA, data) : mapper.writeValueAsString(data));
         } catch (JsonProcessingException error) {
-            logger.info("\""+data+"\"");
+            logger.info("\"" + data + "\"");
         }
     }
 

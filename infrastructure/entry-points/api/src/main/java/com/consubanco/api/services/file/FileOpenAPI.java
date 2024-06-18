@@ -64,6 +64,7 @@ public class FileOpenAPI {
                 .response(responseBusinessException())
                 .response(responseInternalError());
     }
+
     public static Consumer<Builder> uploadAgreementFiles() {
         return ops -> ops.tag(TAG_OFFER)
                 .operationId("uploadAgreementFiles")
@@ -71,10 +72,11 @@ public class FileOpenAPI {
                 .summary("Upload all files of an agreement.")
                 .parameter(ParamsOpenAPI.path(FileParams.PROCESS_ID, "Process identifier"))
                 .requestBody(RequestsOpenAPI.formData())
-                .response(responseAccepted(Void.class))
+                .response(responseOk(UploadAttachmentsResDTO.class))
                 .response(responseBusinessException())
                 .response(responseInternalError());
     }
+
     public static Consumer<Builder> getFilesOfferByProcess() {
         return ops -> ops.tag(TAG_OFFER)
                 .operationId("getFilesOfferByProcess")
@@ -85,6 +87,7 @@ public class FileOpenAPI {
                 .response(responseBusinessException())
                 .response(responseInternalError());
     }
+
     public static Consumer<Builder> getCustomerVisibleFiles() {
         return ops -> ops.tag(TAG_OFFER)
                 .operationId("getCustomerVisibleFiles")

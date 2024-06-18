@@ -78,7 +78,8 @@ public class DocumentAdapter implements DocumentGateway {
                 .uri(apis.generateDocumentApiEndpoint())
                 .bodyValue(new GenerateDocumentRequestDTO(documents, payload))
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {})
+                .bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {
+                })
                 .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_PROMOTER_ERROR))
                 .onErrorMap(throwTechnicalError(API_PROMOTER_ERROR));
     }
@@ -103,7 +104,8 @@ public class DocumentAdapter implements DocumentGateway {
                 })
                 .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_DOCS_PREVIOUS_ERROR))
                 .onErrorMap(error -> {
-                    if (error.getCause() instanceof TimeoutException) return buildTechnical(error.getCause(), API_DOCS_PREVIOUS_TIMEOUT);
+                    if (error.getCause() instanceof TimeoutException)
+                        return buildTechnical(error.getCause(), API_DOCS_PREVIOUS_TIMEOUT);
                     return buildTechnical(error.getCause(), API_DOCS_PREVIOUS_ERROR);
                 });
     }
