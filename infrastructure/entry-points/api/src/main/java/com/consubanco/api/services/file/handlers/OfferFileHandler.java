@@ -44,8 +44,7 @@ public class OfferFileHandler {
     public Mono<ServerResponse> uploadAgreementFiles(ServerRequest request) {
         String processId = request.pathVariable(PROCESS_ID);
         return AttachmentFactoryUtil.extractAttachments(request)
-                .flatMapMany(attachments -> uploadFilesAgreementUseCase.execute(processId, attachments))
-                .collectList()
+                .flatMap(attachments -> uploadFilesAgreementUseCase.execute(processId, attachments))
                 .map(UploadAttachmentsResDTO::new)
                 .flatMap(HttpResponseUtil::ok);
     }

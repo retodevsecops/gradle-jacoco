@@ -9,6 +9,7 @@ import com.consubanco.model.entities.ocr.gateway.OcrDocumentGateway;
 import com.consubanco.model.entities.ocr.gateway.OcrDocumentRepository;
 import com.consubanco.model.entities.ocr.vo.OcrDocumentSaveVO;
 import com.consubanco.model.entities.process.Process;
+import com.consubanco.usecase.document.BuildAllAgreementDocumentsUseCase;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -27,18 +28,26 @@ public class NotifyOcrDocumentsUseCase {
     private static final Pattern BASE_NAME_PATTERN = Pattern.compile("^(.*?)(-\\d+)?$");
     private final OcrDocumentGateway ocrDocumentGateway;
     private final OcrDocumentRepository ocrDocumentRepository;
+    private final BuildAllAgreementDocumentsUseCase buildAllAgreementDocumentsUseCase;
 
-    public Flux<OcrDocument> execute(Process process, AgreementConfigVO agreementConfig, List<File> attachments) {
-        List<String> ocrAttachments = agreementConfig.getOcrAttachmentsTechnicalNames();
-        List<File> filteredFiles = removeCompoundAttachments(attachments);
-        return Flux.fromIterable(filteredFiles)
-                .filter(file -> ocrAttachments.contains(getBaseFileName(file.getName())))
+    public Mono<List<OcrDocument>> execute(Process process, AgreementConfigVO agreementConfig, List<File> attachments) {
+        return filteredFiles(agreementConfig, attachments)
                 .parallel()
                 .runOn(Schedulers.parallel())
                 .flatMap(file -> notifyDocument(process, file))
                 .sequential()
                 .collectList()
-                .flatMapMany(ocrDocumentRepository::saveAll);
+                .flatMapMany(ocrDocumentRepository::saveAll)
+                .collectList()
+                .filter(list -> !list.isEmpty())
+                .switchIfEmpty(buildAllAgreementDocumentsUseCase.execute(process).thenReturn(List.of()));
+    }
+
+    private Flux<File> filteredFiles(AgreementConfigVO agreementConfig, List<File> attachments) {
+        List<String> ocrAttachments = agreementConfig.getOcrAttachmentsTechnicalNames();
+        List<File> filteredFiles = removeCompoundAttachments(attachments);
+        return Flux.fromIterable(filteredFiles)
+                .filter(file -> ocrAttachments.contains(getBaseFileName(file.getName())));
     }
 
     private List<File> removeCompoundAttachments(List<File> files) {

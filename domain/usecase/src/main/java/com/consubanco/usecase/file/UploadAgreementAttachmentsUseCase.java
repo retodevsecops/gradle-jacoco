@@ -14,8 +14,6 @@ import com.consubanco.model.entities.file.vo.FileUploadVO;
 import com.consubanco.model.entities.file.vo.FileWithStorageRouteVO;
 import com.consubanco.model.entities.ocr.OcrDocument;
 import com.consubanco.model.entities.process.Process;
-import com.consubanco.usecase.document.BuildAgreementDocumentsUseCase;
-import com.consubanco.usecase.document.BuildCompoundDocumentsUseCase;
 import com.consubanco.usecase.ocr.NotifyOcrDocumentsUseCase;
 import com.consubanco.usecase.process.GetProcessByIdUseCase;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +22,6 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
-import java.util.Map;
 
 import static com.consubanco.model.entities.file.constant.FileConstants.attachmentsDirectory;
 import static com.consubanco.model.entities.file.util.AttachmentValidatorUtil.checkAttachments;
@@ -38,25 +35,22 @@ public class UploadAgreementAttachmentsUseCase {
     private final FileRepository fileRepository;
     private final PDFDocumentGateway pdfDocumentGateway;
     private final GetProcessByIdUseCase getProcessByIdUseCase;
-    private final BuildAgreementDocumentsUseCase buildAgreementDocumentsUseCase;
-    private final BuildCompoundDocumentsUseCase buildCompoundDocumentsUseCase;
     private final NotifyOcrDocumentsUseCase notifyOcrDocumentsUseCase;
 
-    public Flux<OcrDocument> execute(String processId, List<AttachmentFileVO> attachments) {
+    public Mono<List<OcrDocument>> execute(String processId, List<AttachmentFileVO> attachments) {
         return checkAttachmentsSize(attachments, fileRepository.getMaxSizeOfFileInMBAllowed())
                 .then(getProcessByIdUseCase.execute(processId))
-                .flatMapMany(process -> startProcess(attachments, process));
+                .flatMap(process -> startProcess(attachments, process));
     }
 
-    private Flux<OcrDocument> startProcess(List<AttachmentFileVO> attachments, Process process) {
+    private Mono<List<OcrDocument>> startProcess(List<AttachmentFileVO> attachments, Process process) {
         Mono<Agreement> agreement = agreementGateway.findByNumber(process.getAgreementNumber());
         Mono<AgreementConfigVO> agreementConfig = agreementConfigRepository.getConfigByAgreement(process.getAgreementNumber());
         Mono<List<String>> attachmentsInStorage = getAttachmentsInStorageByOffer(process.getOfferId());
         return Mono.zip(agreement, agreementConfig, attachmentsInStorage)
-                .flatMapMany(tuple -> checkAttachments(tuple.getT2().getAttachmentsDocuments(), attachments, tuple.getT3())
-                        .flatMapMany(validAttachments -> uploadAttachments(validAttachments, process.getOfferId()))
-                        .collectList()
-                        .flatMapMany(list -> notifyOcrDocumentsUseCase.execute(process, tuple.getT2(), list)));
+                .flatMap(tuple -> checkAttachments(tuple.getT2().getAttachmentsDocuments(), attachments, tuple.getT3())
+                        .flatMap(validAttachments -> uploadAttachments(validAttachments, process.getOfferId()))
+                        .flatMap(list -> notifyOcrDocumentsUseCase.execute(process, tuple.getT2(), list)));
     }
 
     private Mono<List<String>> getAttachmentsInStorageByOffer(String offerId) {
@@ -65,20 +59,13 @@ public class UploadAgreementAttachmentsUseCase {
                 .collectList();
     }
 
-    private Mono<Map<String, String>> uploadAllDocuments(Process process, List<AttachmentFileVO> attachments, Agreement agreement) {
-        Flux<File> uploadAttachments = uploadAttachments(attachments, process.getOffer().getId());
-        Flux<File> uploadGeneratedDocuments = buildAgreementDocumentsUseCase.execute(process, agreement.getDocuments());
-        return Mono.zip(uploadAttachments.collectList(), uploadGeneratedDocuments.collectList())
-                .flatMap(tuple -> buildCompoundDocumentsUseCase.execute(process, tuple.getT2()))
-                .thenReturn(Map.of("message", "Files uploaded and generated successfully."));
-    }
-
-    private Flux<File> uploadAttachments(List<AttachmentFileVO> attachments, String offerId) {
+    private Mono<List<File>> uploadAttachments(List<AttachmentFileVO> attachments, String offerId) {
         return buildAttachmentList(attachments, offerId)
                 .parallel()
                 .runOn(Schedulers.parallel())
                 .concatMap(fileRepository::save)
-                .sequential();
+                .sequential()
+                .collectList();
     }
 
     private Flux<File> buildAttachmentList(List<AttachmentFileVO> attachments, String offerId) {
