@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "adapter.rest-consumer.apis.ocr")
 public class OcrApiProperties {
     private String applicationId;
+    private Integer delayTime;
     private String apiNotifyDocument;
     private String apiGetDataDocument;
 }

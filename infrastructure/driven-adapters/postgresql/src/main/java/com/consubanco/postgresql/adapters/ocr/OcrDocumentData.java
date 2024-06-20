@@ -3,6 +3,7 @@ package com.consubanco.postgresql.adapters.ocr;
 import com.consubanco.model.entities.ocr.OcrDocument;
 import com.consubanco.model.entities.ocr.constant.OcrStatus;
 import com.consubanco.model.entities.ocr.vo.OcrDocumentSaveVO;
+import com.consubanco.model.entities.ocr.vo.OcrDocumentUpdateVO;
 import io.r2dbc.postgresql.codec.Json;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -74,6 +75,17 @@ public class OcrDocumentData {
 
     public OcrDocument toEntity() {
         return this.toEntity(null);
+    }
+
+    public OcrDocumentData update(OcrDocumentUpdateVO ocrDocumentUpdateVO, Json data) {
+        this.data = data;
+        return update(ocrDocumentUpdateVO);
+    }
+
+    public OcrDocumentData update(OcrDocumentUpdateVO ocrDocumentUpdateVO) {
+        this.detail = ocrDocumentUpdateVO.getDetail();
+        this.status = ocrDocumentUpdateVO.getStatus();
+        return this;
     }
 
 }

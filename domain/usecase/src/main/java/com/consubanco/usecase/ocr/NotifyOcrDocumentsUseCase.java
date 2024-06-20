@@ -9,6 +9,7 @@ import com.consubanco.model.entities.ocr.constant.OcrStatus;
 import com.consubanco.model.entities.ocr.gateway.OcrDocumentGateway;
 import com.consubanco.model.entities.ocr.gateway.OcrDocumentRepository;
 import com.consubanco.model.entities.ocr.vo.OcrDocumentSaveVO;
+import com.consubanco.model.entities.ocr.vo.OcrDocumentUpdateVO;
 import com.consubanco.model.entities.process.Process;
 import com.consubanco.usecase.document.BuildAllAgreementDocumentsUseCase;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 public class NotifyOcrDocumentsUseCase {
@@ -26,6 +28,9 @@ public class NotifyOcrDocumentsUseCase {
     private final BuildAllAgreementDocumentsUseCase buildAllAgreementDocumentsUseCase;
 
     public Mono<List<OcrDocument>> execute(Process process, AgreementConfigVO agreementConfig, List<File> attachments) {
+        buildAllAgreementDocumentsUseCase.execute(process)
+                .subscribeOn(Schedulers.parallel())
+                .subscribe();
         return filteredFiles(agreementConfig, attachments)
                 .parallel()
                 .runOn(Schedulers.parallel())
@@ -65,7 +70,48 @@ public class NotifyOcrDocumentsUseCase {
     }
 
     private void processOcrDocuments(List<OcrDocument> ocrDocuments) {
-        System.out.println("AQUI SE VA A QUEDAR PROCESANDO");
+        ocrDocumentGateway.getDelayTime()
+                .flatMap(Mono::delay)
+                .flatMap(e -> analyzeOcrDocuments(ocrDocuments))
+                .subscribeOn(Schedulers.parallel())
+                .subscribe();
+    }
+
+    private Mono<Void> analyzeOcrDocuments(List<OcrDocument> ocrDocuments) {
+        return Flux.fromIterable(ocrDocuments)
+                .parallel()
+                .runOn(Schedulers.parallel())
+                .flatMap(this::updateOcrDocument)
+                .sequential()
+                .then();
+    }
+
+    private Mono<Void> updateOcrDocument(OcrDocument ocrDocument) {
+        return getOcrDocumentStatus(ocrDocument)
+                .flatMap(ocrDocumentRepository::update);
+    }
+
+    private Mono<OcrDocumentUpdateVO> getOcrDocumentStatus(OcrDocument ocrDocument) {
+        return ocrDocumentGateway.getAnalysisData(ocrDocument.getAnalysisId())
+                .map(data -> buildUpdateSuccess(ocrDocument, data))
+                .onErrorResume(error -> Mono.just(buildUpdateFailed(ocrDocument)));
+    }
+
+    private OcrDocumentUpdateVO buildUpdateSuccess(OcrDocument ocrDocument, Map<String, Object> data) {
+        return OcrDocumentUpdateVO.builder()
+                .id(ocrDocument.getId())
+                .status(OcrStatus.SUCCESS)
+                .data(data)
+                .detail("NO SE HA VALIDADO AUN")
+                .build();
+    }
+
+    private static OcrDocumentUpdateVO buildUpdateFailed(OcrDocument ocrDocument) {
+        return OcrDocumentUpdateVO.builder()
+                .id(ocrDocument.getId())
+                .status(OcrStatus.FAILED)
+                .detail("No data was obtained from the ocr document.")
+                .build();
     }
 
 }

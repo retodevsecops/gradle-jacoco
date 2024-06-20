@@ -1,5 +1,6 @@
 package com.consubanco.postgresql.adapters.ocr;
 
+import com.consubanco.logger.CustomLogger;
 import com.consubanco.model.commons.exception.TechnicalException;
 import com.consubanco.model.entities.ocr.OcrDocument;
 import com.consubanco.model.entities.ocr.gateway.OcrDocumentRepository;
@@ -24,6 +25,7 @@ import static com.consubanco.model.entities.ocr.message.OcrTechnicalMessage.*;
 @RequiredArgsConstructor
 public class OcrDocumentDocumentRepositoryAdapter implements OcrDocumentRepository {
 
+    private final CustomLogger logger;
     private final OcrDocumentDataRepository dataRepository;
     private final ObjectMapper mapper;
 
@@ -39,20 +41,26 @@ public class OcrDocumentDocumentRepositoryAdapter implements OcrDocumentReposito
     }
 
     @Override
-    public Mono<OcrDocument> update(OcrDocumentUpdateVO ocrDocumentUpdateVO) {
-        return null;
+    public Mono<Void> update(OcrDocumentUpdateVO ocrDocumentUpdateVO) {
+        return dataRepository.findById(ocrDocumentUpdateVO.getId())
+                .flatMap(ocrData -> updateData(ocrDocumentUpdateVO, ocrData))
+                .flatMap(dataRepository::save)
+                .then()
+                .doOnError(error -> logger.error(UPDATE_ERROR.getMessage(), error))
+                .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(UPDATE_ERROR));
     }
 
     @Override
     public Flux<OcrDocument> findByProcessId(String processId) {
         return dataRepository.findByProcessId(processId)
-                .flatMap(this::buildOcrDocument);
+                .flatMap(this::buildOcrDocument)
+                .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(FIND_ERROR));
     }
 
-    private Mono<OcrDocument> buildOcrDocument(OcrDocumentData data) {
-        if (Objects.isNull(data.getData())) return Mono.just(data.toEntity());
-        return jsonToMap(data.getData())
-                .map(data::toEntity);
+    private Mono<OcrDocument> buildOcrDocument(OcrDocumentData ocrDocumentData) {
+        if (Objects.isNull(ocrDocumentData.getData())) return Mono.just(ocrDocumentData.toEntity());
+        return jsonToMap(ocrDocumentData.getData())
+                .map(ocrDocumentData::toEntity);
     }
 
     private <T> Mono<Json> valueToJson(T value) {
@@ -64,6 +72,12 @@ public class OcrDocumentDocumentRepositoryAdapter implements OcrDocumentReposito
     private Mono<Map<String, Object>> jsonToMap(Json json) {
         return Mono.fromCallable(() -> mapper.readValue(json.asString(), new TypeReference<Map<String, Object>>() {}))
                 .onErrorMap(throwTechnicalError(CONVERT_MAP_ERROR));
+    }
+
+    private Mono<OcrDocumentData> updateData(OcrDocumentUpdateVO ocrDocumentUpdateVO, OcrDocumentData ocrData) {
+        if(Objects.isNull(ocrDocumentUpdateVO.getData())) return Mono.just(ocrData.update(ocrDocumentUpdateVO));
+        return valueToJson(ocrDocumentUpdateVO.getData())
+                .map(data -> ocrData.update(ocrDocumentUpdateVO, data));
     }
 
 }

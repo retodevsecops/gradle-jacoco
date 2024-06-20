@@ -153,7 +153,6 @@ public class FileStorageAdapter implements FileRepository {
         return properties.getMaxFileSizeMB();
     }
 
-
     @Override
     @Cacheable("createApplicationTemplate")
     public Mono<File> getCreateApplicationTemplate() {

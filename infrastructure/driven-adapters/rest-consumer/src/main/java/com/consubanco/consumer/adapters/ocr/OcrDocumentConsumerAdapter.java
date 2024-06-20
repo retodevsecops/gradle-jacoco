@@ -1,7 +1,6 @@
 package com.consubanco.consumer.adapters.ocr;
 
 import com.consubanco.consumer.adapters.ocr.dto.GetMetadataReqDTO;
-import com.consubanco.consumer.adapters.ocr.dto.GetMetadataResDTO;
 import com.consubanco.consumer.adapters.ocr.dto.NotifyDocumentReqDTO;
 import com.consubanco.consumer.adapters.ocr.dto.NotifyDocumentResDTO;
 import com.consubanco.logger.CustomLogger;
@@ -11,11 +10,13 @@ import com.consubanco.model.entities.ocr.gateway.OcrDocumentGateway;
 import com.consubanco.model.entities.ocr.message.OcrMessage;
 import com.consubanco.model.entities.ocr.message.OcrTechnicalMessage;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.Map;
 
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.buildTechnical;
@@ -35,6 +36,11 @@ public class OcrDocumentConsumerAdapter implements OcrDocumentGateway {
         this.logger = logger;
         this.ocrClient = ocrClient;
         this.apiProperties = ocrApiProperties;
+    }
+
+    @Override
+    public Mono<Duration> getDelayTime() {
+        return Mono.just(Duration.ofSeconds(apiProperties.getDelayTime()));
     }
 
     @Override
@@ -63,10 +69,10 @@ public class OcrDocumentConsumerAdapter implements OcrDocumentGateway {
                 .uri(apiProperties.getApiGetDataDocument())
                 .bodyValue(request)
                 .retrieve()
-                .bodyToMono(GetMetadataResDTO.class)
-                .map(GetMetadataResDTO::getData)
+                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
                 .onErrorMap(WebClientResponseException.class, error -> customError(error, API_GET_METADATA_RESPONSE_ERROR))
-                .onErrorMap(e -> !(e instanceof  TechnicalException), throwTechnicalError(API_GET_METADATA_ERROR));
+                .onErrorMap(e -> !(e instanceof  TechnicalException), throwTechnicalError(API_GET_METADATA_ERROR))
+                .doOnError(error -> logger.error("Error when get ocr document data by transactionId " + transactionId, error));
     }
 
     private TechnicalException customError(WebClientResponseException error, OcrTechnicalMessage message) {
