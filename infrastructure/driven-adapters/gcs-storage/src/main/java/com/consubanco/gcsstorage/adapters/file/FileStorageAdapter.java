@@ -12,10 +12,7 @@ import com.consubanco.model.entities.file.gateway.FileRepository;
 import com.consubanco.model.entities.file.vo.FileUploadVO;
 import com.consubanco.model.entities.file.vo.FileWithStorageRouteVO;
 import com.google.api.gax.paging.Page;
-import com.google.cloud.storage.Blob;
-import com.google.cloud.storage.BlobId;
-import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -26,11 +23,13 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.net.URL;
+import java.util.Objects;
 
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
 import static com.consubanco.model.entities.file.message.FileTechnicalMessage.*;
 import static com.google.cloud.storage.Storage.SignUrlOption.withV4Signature;
 import static java.util.concurrent.TimeUnit.DAYS;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -96,8 +95,10 @@ public class FileStorageAdapter implements FileRepository {
     public Mono<File> getByNameWithoutSignedUrl(String name) {
         BlobId blobId = BlobId.of(properties.getBucketName(), name);
         return Mono.justOrEmpty(storage.get(blobId))
-                .onErrorMap(throwTechnicalError(FIND_FILE_ERROR))
-                .map(FileFactoryUtil::buildFromBlob);
+                .filter(Objects::nonNull)
+                .map(FileFactoryUtil::buildFromBlob)
+                .onErrorResume(StorageException.class, e -> e.getCode() == NOT_FOUND.value() ? Mono.empty() : Mono.error(e))
+                .onErrorMap(throwTechnicalError(FIND_FILE_ERROR));
     }
 
     @Override

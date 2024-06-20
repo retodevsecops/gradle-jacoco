@@ -24,7 +24,7 @@ public class LoanApplication {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Boolean applicationIsSuccessful() {
+    public boolean applicationIsSuccessful() {
         return ApplicationStatus.SUCCESSFUL.name().equalsIgnoreCase(this.applicationStatus);
     }
 

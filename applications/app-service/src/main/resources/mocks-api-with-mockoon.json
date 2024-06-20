@@ -433,7 +433,7 @@
       "responses": [
         {
           "uuid": "7d4d0f53-f765-4506-9e31-e9141be98607",
-          "body": "{\r\n    \"biometricTaskId\": null,\r\n    \"probankFolio\": null,\r\n    \"biometricTaskDate\": \"2024-06-12\"\r\n}",
+          "body": "{\r\n    \"biometricTaskId\": \"1244367855\",\r\n    \"probankFolio\": \"r2024061964654\",\r\n    \"biometricTaskDate\": \"2024-06-12\"\r\n}",
           "latency": 0,
           "statusCode": 200,
           "label": "",
