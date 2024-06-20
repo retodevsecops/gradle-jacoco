@@ -6,6 +6,7 @@ import com.consubanco.logger.CustomLogger;
 import com.consubanco.model.entities.loan.constant.ApplicationStatus;
 import com.consubanco.model.entities.loan.gateway.LoanGateway;
 import com.consubanco.model.entities.loan.vo.ApplicationResponseVO;
+import com.consubanco.model.entities.process.Process;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
@@ -53,6 +54,12 @@ public class LoanAdapter implements LoanGateway {
                 .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
                 .map(map -> new ApplicationResponseVO(getApplicationStatus(map), map))
                 .onErrorMap(throwTechnicalError(API_CREATE_APPLICATION_ERROR));
+    }
+
+    @Override
+    public Mono<String> sendMail(Process process, String signedRecordAsBase64) {
+        // TODO: AQUI LLAMAR AL API DE ENVIO DE CORREO
+        return Mono.just("SENT");
     }
 
     private String getApplicationStatus(Map<String, Object> response) {

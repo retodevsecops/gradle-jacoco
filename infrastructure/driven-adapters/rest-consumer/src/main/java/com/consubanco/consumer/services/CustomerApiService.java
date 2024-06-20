@@ -34,8 +34,7 @@ public class CustomerApiService {
                 .uri(apis.getRenex().getApiCustomerProcess(), processId)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
-                })
+                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
                 .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_CUSTOMER_ERROR))
                 .onErrorMap(throwTechnicalError(API_CUSTOMER_ERROR));
     }
@@ -45,8 +44,7 @@ public class CustomerApiService {
                 .uri(apis.getRenex().getApiCustomerBiometricValidation(), processId)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
-                })
+                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
                 .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_BIOMETRIC_TASK))
                 .onErrorMap(throwTechnicalError(API_BIOMETRIC_TASK));
     }
