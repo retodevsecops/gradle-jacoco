@@ -45,7 +45,8 @@ public class OcrDocumentDocumentRepositoryAdapter implements OcrDocumentReposito
 
     @Override
     public Flux<OcrDocument> findByProcessId(String processId) {
-        return null;
+        return dataRepository.findByProcessId(processId)
+                .flatMap(this::buildOcrDocument);
     }
 
     private Mono<OcrDocument> buildOcrDocument(OcrDocumentData data) {

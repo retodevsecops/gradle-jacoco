@@ -5,6 +5,7 @@ import com.consubanco.model.entities.file.vo.AttachmentStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class AttachmentStatusResDTO {
     private List<InvalidAttachment> invalidAttachments;
 
     @Data
+    @Builder
     @AllArgsConstructor
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public static class InvalidAttachment {
@@ -35,6 +37,14 @@ public class AttachmentStatusResDTO {
 
         @Schema(description = "Reason why the attachment is invalid.", example = "Not the last pay stub.", requiredMode = REQUIRED)
         private String reason;
+
+        @Schema(description = "Identifier of the attachment in the storage.", example = "csb-venta-digital/renewal/offer/55555/attachments/recibo-nomina-0/1718905983780836", requiredMode = REQUIRED)
+        private String storageId;
+
+        @Schema(description = "Analysis identifier ocr to attachment.", example = "78614611560244378651149944825175340201", requiredMode = REQUIRED)
+        private String analysisId;
+
+
     }
 
     public AttachmentStatusResDTO(AttachmentStatus attachmentStatus) {
@@ -45,7 +55,13 @@ public class AttachmentStatusResDTO {
     private static List<InvalidAttachment> toListDTO(AttachmentStatus attachmentStatus) {
         return attachmentStatus.getInvalidAttachments()
                 .stream()
-                .map(entity -> new InvalidAttachment(entity.getName(), entity.getCode(), entity.getReason()))
+                .map(entity -> InvalidAttachment.builder()
+                        .name(entity.getName())
+                        .code(entity.getCode())
+                        .reason(entity.getReason())
+                        .storageId(entity.getStorageId())
+                        .analysisId(entity.getAnalysisId())
+                        .build())
                 .toList();
     }
 

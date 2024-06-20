@@ -13,6 +13,7 @@ public class FileMessage {
     private final static String ATTACHMENT_REQUIRED = "The attachments are required: %s.";
     private final static String FILES_INVALID_TYPES = "The files: %s are invalid file types.";
     private final static String ATTACHMENT_EXCEEDED = "The attachments: %s exceed the number of files required.";
+    private final static String ATTACHMENTS_NOT_FOUND = "No uploaded attachments found for offer %s.";
 
     public static String maxSize(Double size) {
         return String.format(MAX_SIZE, size);
@@ -32,6 +33,10 @@ public class FileMessage {
 
     public static String attachmentExceeded(List<String> files) {
         return String.format(ATTACHMENT_EXCEEDED, String.join(DELIMITER, files));
+    }
+
+    public static String attachmentsNotFound(String offerId) {
+        return String.format(ATTACHMENTS_NOT_FOUND, offerId);
     }
 
 

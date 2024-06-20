@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum OcrBusinessMessage implements IExceptionMessage {
 
-    UNDEFINED_TYPE("BE_OCR_0001", "No ocr file type defined for the document.");
+    UNDEFINED_TYPE("BE_OCR_0001", "No ocr file type defined for the document."),
+    OCR_NOT_FOUND("BE_OCR_0002", "No ocr document associated with attachment was found.");
 
     private final String code;
     private final String message;

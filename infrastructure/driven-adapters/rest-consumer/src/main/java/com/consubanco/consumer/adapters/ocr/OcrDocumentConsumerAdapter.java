@@ -1,5 +1,7 @@
 package com.consubanco.consumer.adapters.ocr;
 
+import com.consubanco.consumer.adapters.ocr.dto.GetMetadataReqDTO;
+import com.consubanco.consumer.adapters.ocr.dto.GetMetadataResDTO;
 import com.consubanco.consumer.adapters.ocr.dto.NotifyDocumentReqDTO;
 import com.consubanco.consumer.adapters.ocr.dto.NotifyDocumentResDTO;
 import com.consubanco.logger.CustomLogger;
@@ -7,6 +9,7 @@ import com.consubanco.model.commons.exception.TechnicalException;
 import com.consubanco.model.entities.ocr.constant.OcrDocumentType;
 import com.consubanco.model.entities.ocr.gateway.OcrDocumentGateway;
 import com.consubanco.model.entities.ocr.message.OcrMessage;
+import com.consubanco.model.entities.ocr.message.OcrTechnicalMessage;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -17,8 +20,7 @@ import java.util.Map;
 
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.buildTechnical;
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
-import static com.consubanco.model.entities.ocr.message.OcrTechnicalMessage.API_NOTIFY_ERROR;
-import static com.consubanco.model.entities.ocr.message.OcrTechnicalMessage.API_NOTIFY_RESPONSE_ERROR;
+import static com.consubanco.model.entities.ocr.message.OcrTechnicalMessage.*;
 
 @Service
 public class OcrDocumentConsumerAdapter implements OcrDocumentGateway {
@@ -38,28 +40,41 @@ public class OcrDocumentConsumerAdapter implements OcrDocumentGateway {
     @Override
     public Mono<String> notifyDocumentForAnalysis(String storageRoute, OcrDocumentType ocrDocumentType) {
         NotifyDocumentReqDTO request = new NotifyDocumentReqDTO(apiProperties.getApplicationId(), storageRoute, ocrDocumentType.getType());
-        logger.info("Ocr document notification request detail", request);
+        logger.info(apiProperties.getApiNotifyDocument() + ": body request to notify ocr document", request);
         return ocrClient.post()
                 .uri(apiProperties.getApiNotifyDocument())
                 .bodyValue(request)
                 .retrieve()
                 .bodyToMono(NotifyDocumentResDTO.class)
                 .map(NotifyDocumentResDTO::getTransactionId)
-                .onErrorMap(WebClientResponseException.class, this::customError)
+                .onErrorMap(WebClientResponseException.class, error -> customError(error, API_NOTIFY_RESPONSE_ERROR))
                 .onErrorMap(e -> !(e instanceof  TechnicalException), throwTechnicalError(API_NOTIFY_ERROR));
-    }
-
-    private TechnicalException customError(WebClientResponseException error) {
-        String api = apiProperties.getApiNotifyDocument();
-        String status = error.getStatusText();
-        String body = error.getResponseBodyAsString();
-        String detail = OcrMessage.apiError(api, status, body);
-        return buildTechnical(detail, API_NOTIFY_RESPONSE_ERROR);
     }
 
     @Override
     public Mono<Map<String, Object>> getAnalysisData(String analysisId) {
-        return null;
+        return getMetadata(analysisId);
+    }
+
+    public Mono<Map<String, Object>> getMetadata(String transactionId) {
+        GetMetadataReqDTO request = new GetMetadataReqDTO(apiProperties.getApplicationId(), transactionId);
+        logger.info(apiProperties.getApiGetDataDocument() + ": body request to get ocr document data", request);
+        return ocrClient.post()
+                .uri(apiProperties.getApiGetDataDocument())
+                .bodyValue(request)
+                .retrieve()
+                .bodyToMono(GetMetadataResDTO.class)
+                .map(GetMetadataResDTO::getData)
+                .onErrorMap(WebClientResponseException.class, error -> customError(error, API_GET_METADATA_RESPONSE_ERROR))
+                .onErrorMap(e -> !(e instanceof  TechnicalException), throwTechnicalError(API_GET_METADATA_ERROR));
+    }
+
+    private TechnicalException customError(WebClientResponseException error, OcrTechnicalMessage message) {
+        String api = apiProperties.getApiNotifyDocument();
+        String status = error.getStatusText();
+        String body = error.getResponseBodyAsString();
+        String detail = OcrMessage.apiError(api, status, body);
+        return buildTechnical(detail, message);
     }
 
 }

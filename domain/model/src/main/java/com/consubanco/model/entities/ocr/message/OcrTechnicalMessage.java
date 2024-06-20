@@ -12,7 +12,9 @@ public enum OcrTechnicalMessage implements IExceptionMessage {
     API_NOTIFY_ERROR("TE_OCR_0002", "An error occurred with the api to notify ocr document."),
     SAVE_ALL_ERROR("TE_OCR_0003", "Error when saving ocr documents in database"),
     CONVERT_JSON_ERROR("TE_OCR_0004", "Error converting object to json."),
-    CONVERT_MAP_ERROR("TE_OCR_0005", "Error converting json to map.");
+    CONVERT_MAP_ERROR("TE_OCR_0005", "Error converting json to map."),
+    API_GET_METADATA_RESPONSE_ERROR("TE_OCR_0006", "The api for get ocr document data responded with error."),
+    API_GET_METADATA_ERROR("TE_OCR_0007", "An error occurred with the api to get ocr document data.");
 
     private final String code;
     private final String message;
