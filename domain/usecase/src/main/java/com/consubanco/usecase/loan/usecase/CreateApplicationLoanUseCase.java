@@ -81,7 +81,7 @@ public class CreateApplicationLoanUseCase {
     private Mono<Void> finishProcess(Process process, LoanApplication loanApplication) {
         Mono.zip(finishOffer(process.getId()), sendMail(process))
                 .flatMap(tuple -> loanRepository.updateOfferAndEmailStatus(loanApplication.getId(), tuple.getT1(), tuple.getT2()))
-                .subscribeOn(Schedulers.boundedElastic())
+                .subscribeOn(Schedulers.parallel())
                 .subscribe();
         return Mono.empty();
     }
@@ -92,7 +92,8 @@ public class CreateApplicationLoanUseCase {
 
     private Mono<String> sendMail(Process process) {
         return getSignedRecordAsBase64(process.getOfferId())
-                .flatMap(signedRecordAsBase64 -> loanGateway.sendMail(process, signedRecordAsBase64));
+                .flatMap(signedRecordAsBase64 -> loanGateway.sendMail(process, signedRecordAsBase64))
+                .map(Enum::name);
     }
 
     private Mono<String> getSignedRecordAsBase64(String offerId) {

@@ -1,8 +1,12 @@
 package com.consubanco.consumer.adapters.loan;
 
 import com.consubanco.consumer.adapters.loan.properties.LoanApisProperties;
+import com.consubanco.consumer.services.CustomerApiService;
 import com.consubanco.freemarker.ITemplateOperations;
 import com.consubanco.logger.CustomLogger;
+import com.consubanco.model.commons.exception.factory.ExceptionFactory;
+import com.consubanco.model.entities.email.constants.EmailStatus;
+import com.consubanco.model.entities.email.gateway.EmailGateway;
 import com.consubanco.model.entities.loan.constant.ApplicationStatus;
 import com.consubanco.model.entities.loan.gateway.LoanGateway;
 import com.consubanco.model.entities.loan.vo.ApplicationResponseVO;
@@ -15,8 +19,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
+import static com.consubanco.model.entities.loan.message.LoanBusinessMessage.CUSTOMER_ATTRIBUTE_NOT_FOUND;
 import static com.consubanco.model.entities.loan.message.LoanTechnicalMessage.API_CREATE_APPLICATION_ERROR;
 
 @Service
@@ -26,15 +32,21 @@ public class LoanAdapter implements LoanGateway {
     private final WebClient apiConnectClient;
     private final LoanApisProperties apisProperties;
     private final ITemplateOperations templateOperations;
+    private final EmailGateway emailGateway;
+    private final CustomerApiService customerApiService;
 
     public LoanAdapter(final @Qualifier("ApiConnectClient") WebClient apiConnectClient,
                        final CustomLogger logger,
                        final LoanApisProperties apisProperties,
-                       final ITemplateOperations templateOperations) {
+                       final ITemplateOperations templateOperations,
+                       final EmailGateway emailGateway,
+                       final CustomerApiService customerApiService) {
         this.logger = logger;
         this.apiConnectClient = apiConnectClient;
         this.apisProperties = apisProperties;
         this.templateOperations = templateOperations;
+        this.emailGateway = emailGateway;
+        this.customerApiService = customerApiService;
     }
 
     @Override
@@ -57,14 +69,28 @@ public class LoanAdapter implements LoanGateway {
     }
 
     @Override
-    public Mono<String> sendMail(Process process, String signedRecordAsBase64) {
-        // TODO: AQUI LLAMAR AL API DE ENVIO DE CORREO
-        return Mono.just("SENT");
+    public Mono<EmailStatus> sendMail(Process process, String signedRecordAsBase64) {
+        return customerApiService.customerDataByProcess(process.getId())
+                .flatMap(customerInfo -> emailGateway.sendEmail(getAttribute(customerInfo,"email"),
+                                                                getAttribute(customerInfo,"bpId"),
+                                                                getAttribute(customerInfo,"firstName"),
+                                                                signedRecordAsBase64))
+                .map(status -> status ? EmailStatus.MAIL_SENT : EmailStatus.UNSENT_MAIL)
+                .doOnError(error -> logger.error("Error sending email", error))
+                .onErrorResume(error -> Mono.just(EmailStatus.FAILED));
     }
 
     private String getApplicationStatus(Map<String, Object> response) {
         Integer status = CreateApplicationResponseUtil.getCodeResponse(response);
-        return (status == HttpStatus.SC_OK) ? ApplicationStatus.SUCCESSFUL.name() : ApplicationStatus.ERROR.name();
+        return  (status == HttpStatus.SC_OK) ? ApplicationStatus.SUCCESSFUL.name() : ApplicationStatus.ERROR.name();
+    }
+    private String getAttribute(Map<String, Object> attributes, String attribute) {
+        return Optional.ofNullable(attributes.getOrDefault(attribute, null))
+                .map(Object::toString)
+                .orElseThrow(() -> ExceptionFactory.buildBusiness(String.format("Customer attribute: %s not found in customer response:%s",
+                                attribute,
+                                attributes),
+                        CUSTOMER_ATTRIBUTE_NOT_FOUND));
     }
 
 
