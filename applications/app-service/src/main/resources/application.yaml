@@ -68,8 +68,8 @@ adapter:
       ocr:
         delay-time: ${DELAY_TIME_OCR:50}
         application-id: ${API_CONNECT_APPLICATION_ID:CSB-RENEX}
-        api-notify-document: ${API_NOTIFY_DOCUMENT_OCR:https://docia-integration-msa-flg4kcx2lq-uw.a.run.app/doc-ia/notify-files}
-        api-get-data-document: ${API_GET_DATA_DOCUMENT_OCR:http://localhost:3001/doc-ia/get-metadata}
+        api-notify-document: ${API_NOTIFY_DOCUMENT_OCR:https://docia-integration-msa-24yvwrh62q-uw.a.run.app/doc-ia/notify-files}
+        api-get-data-document: ${API_GET_DATA_DOCUMENT_OCR:https://docia-integration-msa-24yvwrh62q-uw.a.run.app/doc-ia/get-metadata}
 
   gcs-storage:
     max-file-size-mb: ${GCS_MAX_FILE_SIZE_IN_MB:10}

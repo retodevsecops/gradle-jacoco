@@ -11,7 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class AttachmentConfigVO {
-
     private String name;
     private String technicalName;
     private Integer maxFiles;
@@ -20,9 +19,4 @@ public class AttachmentConfigVO {
     private String namePreviousDocument;
     private Boolean isRequired;
     private List<String> typeFile;
-
-    public boolean shouldBeValidated() {
-        return isRequired && !isRecoverable;
-    }
-
 }

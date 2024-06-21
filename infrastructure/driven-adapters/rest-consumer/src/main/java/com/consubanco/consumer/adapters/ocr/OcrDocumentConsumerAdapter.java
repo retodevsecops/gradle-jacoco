@@ -1,6 +1,7 @@
 package com.consubanco.consumer.adapters.ocr;
 
 import com.consubanco.consumer.adapters.ocr.dto.GetMetadataReqDTO;
+import com.consubanco.consumer.adapters.ocr.dto.GetMetadataResDTO;
 import com.consubanco.consumer.adapters.ocr.dto.NotifyDocumentReqDTO;
 import com.consubanco.consumer.adapters.ocr.dto.NotifyDocumentResDTO;
 import com.consubanco.logger.CustomLogger;
@@ -9,15 +10,16 @@ import com.consubanco.model.entities.ocr.constant.OcrDocumentType;
 import com.consubanco.model.entities.ocr.gateway.OcrDocumentGateway;
 import com.consubanco.model.entities.ocr.message.OcrMessage;
 import com.consubanco.model.entities.ocr.message.OcrTechnicalMessage;
+import com.consubanco.model.entities.ocr.vo.OcrDataVO;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
-import java.util.Map;
+import java.util.List;
+import java.util.Objects;
 
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.buildTechnical;
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
@@ -58,18 +60,20 @@ public class OcrDocumentConsumerAdapter implements OcrDocumentGateway {
     }
 
     @Override
-    public Mono<Map<String, Object>> getAnalysisData(String analysisId) {
-        return getMetadata(analysisId);
+    public Mono<List<OcrDataVO>> getAnalysisData(String analysisId) {
+        return getMetadata(analysisId)
+                .filter(metadata -> Objects.nonNull(metadata.getData()))
+                .map(GetMetadataResDTO::extractionFieldsToModel);
     }
 
-    public Mono<Map<String, Object>> getMetadata(String transactionId) {
+    public Mono<GetMetadataResDTO> getMetadata(String transactionId) {
         GetMetadataReqDTO request = new GetMetadataReqDTO(apiProperties.getApplicationId(), transactionId);
         logger.info(apiProperties.getApiGetDataDocument() + ": body request to get ocr document data", request);
         return ocrClient.post()
                 .uri(apiProperties.getApiGetDataDocument())
                 .bodyValue(request)
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                .bodyToMono(GetMetadataResDTO.class)
                 .onErrorMap(WebClientResponseException.class, error -> customError(error, API_GET_METADATA_RESPONSE_ERROR))
                 .onErrorMap(e -> !(e instanceof  TechnicalException), throwTechnicalError(API_GET_METADATA_ERROR))
                 .doOnError(error -> logger.error("Error when get ocr document data by transactionId " + transactionId, error));

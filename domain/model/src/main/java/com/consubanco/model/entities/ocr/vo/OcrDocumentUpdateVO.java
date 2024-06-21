@@ -3,7 +3,7 @@ package com.consubanco.model.entities.ocr.vo;
 import com.consubanco.model.entities.ocr.constant.OcrStatus;
 import lombok.*;
 
-import java.util.Map;
+import java.util.List;
 
 @Getter
 @Setter
@@ -14,6 +14,6 @@ import java.util.Map;
 public class OcrDocumentUpdateVO {
     private Integer id;
     private OcrStatus status;
-    private Map<String, Object> data;
+    private List<OcrDataVO> data;
     private String detail;
 }

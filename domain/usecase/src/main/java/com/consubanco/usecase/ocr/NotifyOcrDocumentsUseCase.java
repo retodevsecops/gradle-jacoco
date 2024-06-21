@@ -8,6 +8,7 @@ import com.consubanco.model.entities.ocr.constant.OcrDocumentType;
 import com.consubanco.model.entities.ocr.constant.OcrStatus;
 import com.consubanco.model.entities.ocr.gateway.OcrDocumentGateway;
 import com.consubanco.model.entities.ocr.gateway.OcrDocumentRepository;
+import com.consubanco.model.entities.ocr.vo.OcrDataVO;
 import com.consubanco.model.entities.ocr.vo.OcrDocumentSaveVO;
 import com.consubanco.model.entities.ocr.vo.OcrDocumentUpdateVO;
 import com.consubanco.model.entities.process.Process;
@@ -18,7 +19,6 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
-import java.util.Map;
 
 @RequiredArgsConstructor
 public class NotifyOcrDocumentsUseCase {
@@ -97,7 +97,7 @@ public class NotifyOcrDocumentsUseCase {
                 .onErrorResume(error -> Mono.just(buildUpdateFailed(ocrDocument)));
     }
 
-    private OcrDocumentUpdateVO buildUpdateSuccess(OcrDocument ocrDocument, Map<String, Object> data) {
+    private OcrDocumentUpdateVO buildUpdateSuccess(OcrDocument ocrDocument, List<OcrDataVO> data) {
         return OcrDocumentUpdateVO.builder()
                 .id(ocrDocument.getId())
                 .status(OcrStatus.SUCCESS)

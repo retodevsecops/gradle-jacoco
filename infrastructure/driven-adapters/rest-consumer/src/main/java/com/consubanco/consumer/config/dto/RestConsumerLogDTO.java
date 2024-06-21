@@ -34,7 +34,6 @@ public class RestConsumerLogDTO implements Serializable {
     public static class RequestDTO implements Serializable {
         private String endpoint;
         private String method;
-        private Map<String, Object> attributes;
         private Map<String, Object> headers;
         private Object body;
     }

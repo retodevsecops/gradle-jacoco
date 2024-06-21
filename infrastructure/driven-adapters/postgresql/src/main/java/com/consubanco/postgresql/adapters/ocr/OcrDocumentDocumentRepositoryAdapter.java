@@ -4,6 +4,7 @@ import com.consubanco.logger.CustomLogger;
 import com.consubanco.model.commons.exception.TechnicalException;
 import com.consubanco.model.entities.ocr.OcrDocument;
 import com.consubanco.model.entities.ocr.gateway.OcrDocumentRepository;
+import com.consubanco.model.entities.ocr.vo.OcrDataVO;
 import com.consubanco.model.entities.ocr.vo.OcrDocumentSaveVO;
 import com.consubanco.model.entities.ocr.vo.OcrDocumentUpdateVO;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -15,7 +16,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
@@ -43,7 +43,7 @@ public class OcrDocumentDocumentRepositoryAdapter implements OcrDocumentReposito
     @Override
     public Mono<Void> update(OcrDocumentUpdateVO ocrDocumentUpdateVO) {
         return dataRepository.findById(ocrDocumentUpdateVO.getId())
-                .flatMap(ocrData -> updateData(ocrDocumentUpdateVO, ocrData))
+                .flatMap(ocrData -> updateDataDB(ocrDocumentUpdateVO, ocrData))
                 .flatMap(dataRepository::save)
                 .then()
                 .doOnError(error -> logger.error(UPDATE_ERROR.getMessage(), error))
@@ -59,25 +59,26 @@ public class OcrDocumentDocumentRepositoryAdapter implements OcrDocumentReposito
 
     private Mono<OcrDocument> buildOcrDocument(OcrDocumentData ocrDocumentData) {
         if (Objects.isNull(ocrDocumentData.getData())) return Mono.just(ocrDocumentData.toEntity());
-        return jsonToMap(ocrDocumentData.getData())
+        return jsonToOcrDataList(ocrDocumentData.getData())
                 .map(ocrDocumentData::toEntity);
+    }
+
+    private Mono<List<OcrDataVO>> jsonToOcrDataList(Json json) {
+        return Mono.fromCallable(() -> mapper.readValue(json.asString(), new TypeReference<List<OcrDataVO>>() {}))
+                .onErrorMap(throwTechnicalError(CONVERT_MAP_ERROR));
+    }
+
+    private Mono<OcrDocumentData> updateDataDB(OcrDocumentUpdateVO ocrDocumentUpdateVO, OcrDocumentData ocrData) {
+        List<OcrDataVO> data = ocrDocumentUpdateVO.getData();
+        if(Objects.isNull(data) || data.isEmpty()) return Mono.just(ocrData.update(ocrDocumentUpdateVO));
+        return valueToJson(ocrDocumentUpdateVO.getData())
+                .map(json -> ocrData.update(ocrDocumentUpdateVO, json));
     }
 
     private <T> Mono<Json> valueToJson(T value) {
         return Mono.fromCallable(() -> mapper.writeValueAsString(value))
                 .map(Json::of)
                 .onErrorMap(throwTechnicalError(CONVERT_JSON_ERROR));
-    }
-
-    private Mono<Map<String, Object>> jsonToMap(Json json) {
-        return Mono.fromCallable(() -> mapper.readValue(json.asString(), new TypeReference<Map<String, Object>>() {}))
-                .onErrorMap(throwTechnicalError(CONVERT_MAP_ERROR));
-    }
-
-    private Mono<OcrDocumentData> updateData(OcrDocumentUpdateVO ocrDocumentUpdateVO, OcrDocumentData ocrData) {
-        if(Objects.isNull(ocrDocumentUpdateVO.getData())) return Mono.just(ocrData.update(ocrDocumentUpdateVO));
-        return valueToJson(ocrDocumentUpdateVO.getData())
-                .map(data -> ocrData.update(ocrDocumentUpdateVO, data));
     }
 
 }

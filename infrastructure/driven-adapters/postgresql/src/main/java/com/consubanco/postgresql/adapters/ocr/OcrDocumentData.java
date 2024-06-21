@@ -2,6 +2,7 @@ package com.consubanco.postgresql.adapters.ocr;
 
 import com.consubanco.model.entities.ocr.OcrDocument;
 import com.consubanco.model.entities.ocr.constant.OcrStatus;
+import com.consubanco.model.entities.ocr.vo.OcrDataVO;
 import com.consubanco.model.entities.ocr.vo.OcrDocumentSaveVO;
 import com.consubanco.model.entities.ocr.vo.OcrDocumentUpdateVO;
 import io.r2dbc.postgresql.codec.Json;
@@ -14,7 +15,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
-import java.util.Map;
+import java.util.List;
 
 @Data
 @Builder
@@ -57,7 +58,7 @@ public class OcrDocumentData {
         this.status = ocrDocumentSaveVO.getStatus();
     }
 
-    public OcrDocument toEntity(Map<String, Object> data) {
+    public OcrDocument toEntity(List<OcrDataVO> data) {
         return OcrDocument.builder()
                 .id(this.id)
                 .name(this.name)
