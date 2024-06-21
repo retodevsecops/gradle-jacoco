@@ -40,12 +40,12 @@ public class AttachmentStatus {
 
     private AttachmentStatusEnum getStatus(List<OcrDocument> ocrDocuments) {
         if (ocrDocuments == null || ocrDocuments.isEmpty()) return AttachmentStatusEnum.SUCCESS;
-        return isAllPending(ocrDocuments) ? AttachmentStatusEnum.PENDING : AttachmentStatusEnum.FAILED;
+        return areAnyFailed(ocrDocuments) ? AttachmentStatusEnum.FAILED : AttachmentStatusEnum.PENDING;
     }
 
-    private static boolean isAllPending(List<OcrDocument> ocrDocuments) {
+    private static boolean areAnyFailed(List<OcrDocument> ocrDocuments) {
         return ocrDocuments.stream()
-                .allMatch(ocrDocument -> ocrDocument.getStatus().equals(OcrStatus.PENDING));
+                .anyMatch(ocrDocument -> ocrDocument.getStatus().equals(OcrStatus.FAILED));
     }
 
     private List<InvalidAttachment> getListInvalidDocuments(List<OcrDocument> ocrDocuments) {
