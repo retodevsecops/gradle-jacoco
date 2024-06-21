@@ -2,6 +2,7 @@ package com.consubanco.usecase.loan.usecase;
 
 import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.consubanco.model.entities.file.File;
+import com.consubanco.model.entities.file.constant.FileConstants;
 import com.consubanco.model.entities.file.gateway.FileRepository;
 import com.consubanco.model.entities.loan.LoanApplication;
 import com.consubanco.model.entities.loan.gateway.LoanApplicationRepository;
@@ -21,6 +22,7 @@ import reactor.function.TupleUtils;
 import java.util.Map;
 
 import static com.consubanco.model.entities.loan.message.LoanBusinessMessage.API_CREATE_APPLICATION_RESPONSE_ERROR;
+import static com.consubanco.model.entities.loan.message.LoanBusinessMessage.APPLICANT_RECORD_SIGNED_NOT_FOUND;
 
 @RequiredArgsConstructor
 public class CreateApplicationLoanUseCase {
@@ -91,7 +93,7 @@ public class CreateApplicationLoanUseCase {
     }
 
     private Mono<Void> finishProcess(Process process, LoanApplication loanApplication) {
-        Mono.zip(finishOffer(process.getId()), sendMail(process.getId()))
+        Mono.zip(finishOffer(process.getId()), sendMail(process))
                 .flatMap(tuple -> loanRepository.updateOfferAndEmailStatus(loanApplication.getId(), tuple.getT1(), tuple.getT2()))
                 .subscribeOn(Schedulers.boundedElastic())
                 .subscribe();
@@ -102,8 +104,16 @@ public class CreateApplicationLoanUseCase {
         return processGateway.finish(processId);
     }
 
-    private Mono<String> sendMail(String processId) {
-        return Mono.just("SENT");
+    private Mono<String> sendMail(Process process) {
+        return getSignedRecordAsBase64(process.getOfferId())
+                .flatMap(signedRecordAsBase64 -> loanGateway.sendMail(process, signedRecordAsBase64));
+    }
+
+    private Mono<String> getSignedRecordAsBase64(String offerId) {
+        String route = FileConstants.signedApplicantRecordRoute(offerId);
+        return fileRepository.getByNameWithoutSignedUrl(route)
+                .map(File::getContent)
+                .switchIfEmpty(ExceptionFactory.monoBusiness(APPLICANT_RECORD_SIGNED_NOT_FOUND, route));
     }
 
 }
