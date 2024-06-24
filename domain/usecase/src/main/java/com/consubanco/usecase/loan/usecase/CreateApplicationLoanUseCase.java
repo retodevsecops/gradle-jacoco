@@ -11,8 +11,7 @@ import com.consubanco.model.entities.loan.vo.ApplicationResponseVO;
 import com.consubanco.model.entities.otp.Otp;
 import com.consubanco.model.entities.process.Process;
 import com.consubanco.model.entities.process.gateway.ProcessGateway;
-import com.consubanco.usecase.loan.helpers.ValidateLoanFilesHelper;
-import com.consubanco.usecase.otp.CheckOtpUseCase;
+import com.consubanco.usecase.loan.helpers.LoanApplicationValidationHelper;
 import com.consubanco.usecase.process.GetProcessByIdUseCase;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -28,8 +27,7 @@ import static com.consubanco.model.entities.loan.message.LoanBusinessMessage.APP
 public class CreateApplicationLoanUseCase {
 
     private final static String MESSAGE = "The loan application has been successfully completed.";
-    private final CheckOtpUseCase checkOtpUseCase;
-    private final ValidateLoanFilesHelper validateLoanFilesHelper;
+    private final LoanApplicationValidationHelper loanApplicationValidationHelper;
     private final GetProcessByIdUseCase getProcessByIdUseCase;
     private final FileRepository fileRepository;
     private final LoanGateway loanGateway;
@@ -39,21 +37,9 @@ public class CreateApplicationLoanUseCase {
 
     public Mono<Map<String, String>> execute(String processId, Otp otp) {
         return getProcessByIdUseCase.execute(processId)
-                .flatMap(process -> executeValidations(process, otp))
+                .flatMap(process -> loanApplicationValidationHelper.execute(process, otp))
                 .flatMap(process -> processLoanApplication(otp, process))
                 .thenReturn(Map.of("message", MESSAGE));
-    }
-
-    private Mono<Process> executeValidations(Process process, Otp otp) {
-        return Mono.zip(validateLoanFilesHelper.execute(process), verifyOtp(process, otp))
-                .thenReturn(process);
-    }
-
-    private Mono<Process> verifyOtp(Process process, Otp otp) {
-        return Mono.just(process.getCustomer().getBpId())
-                .map(otp::addCustomerBp)
-                .flatMap(checkOtpUseCase::execute)
-                .thenReturn(process);
     }
 
     private Mono<Void> processLoanApplication(Otp otp, Process process) {
@@ -95,7 +81,7 @@ public class CreateApplicationLoanUseCase {
     private Mono<Void> finishProcess(Process process, LoanApplication loanApplication) {
         Mono.zip(finishOffer(process.getId()), sendMail(process))
                 .flatMap(tuple -> loanRepository.updateOfferAndEmailStatus(loanApplication.getId(), tuple.getT1(), tuple.getT2()))
-                .subscribeOn(Schedulers.boundedElastic())
+                .subscribeOn(Schedulers.parallel())
                 .subscribe();
         return Mono.empty();
     }
@@ -106,7 +92,8 @@ public class CreateApplicationLoanUseCase {
 
     private Mono<String> sendMail(Process process) {
         return getSignedRecordAsBase64(process.getOfferId())
-                .flatMap(signedRecordAsBase64 -> loanGateway.sendMail(process, signedRecordAsBase64));
+                .flatMap(signedRecordAsBase64 -> loanGateway.sendMail(process, signedRecordAsBase64))
+                .map(Enum::name);
     }
 
     private Mono<String> getSignedRecordAsBase64(String offerId) {

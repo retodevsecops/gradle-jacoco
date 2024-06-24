@@ -11,9 +11,14 @@ import java.util.Map;
 
 public interface DocumentGateway {
     Mono<String> generateContentCNCALetter(String loanId);
+
     Integer validDaysCNCA();
+
     Mono<String> generate(GenerateDocumentVO generateDocumentVO, Map<String, Object> payload);
+
     Mono<String> generate(String document, Map<String, Object> payload);
+
     Mono<Map<String, String>> generateMultiple(List<String> documents, Map<String, Object> payload);
-    Flux<PreviousDocumentVO>  getDocsFromPreviousApplication(String previousApplicationId, List<AttachmentConfigVO> docs);
+
+    Flux<PreviousDocumentVO> getDocsFromPreviousApplication(String previousApplicationId, List<AttachmentConfigVO> docs);
 }

@@ -51,7 +51,7 @@ public class GenerateDocumentReqDTO {
                 .toList();
     }
 
-    public GenerateDocumentVO buildGenerateDocumentVO(){
+    public GenerateDocumentVO buildGenerateDocumentVO() {
         return GenerateDocumentVO.builder()
                 .documents(this.getDocuments())
                 .attachments(this.attachmentsFromDTO())

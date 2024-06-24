@@ -36,7 +36,7 @@ public class ParamsValidator {
         });
     }
 
-    public static Mono<String> checkQueryParamIsUrl(ServerRequest request, String paramName){
+    public static Mono<String> checkQueryParamIsUrl(ServerRequest request, String paramName) {
         return queryParam(request, paramName)
                 .flatMap(ParamsValidator::paramIsUrl);
     }

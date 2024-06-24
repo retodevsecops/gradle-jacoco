@@ -21,8 +21,8 @@ public class HealthRouter {
         return RouterFunctions.nest(
                 path(healthServicePath),
                 route()
-                    .GET(handler::health, HealthOpenAPI.health())
-                    .build()
+                        .GET(handler::health, HealthOpenAPI.health())
+                        .build()
         );
     }
 

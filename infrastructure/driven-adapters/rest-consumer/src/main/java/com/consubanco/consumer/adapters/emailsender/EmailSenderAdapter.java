@@ -19,10 +19,12 @@ import static com.consubanco.model.entities.loan.message.LoanTechnicalMessage.AP
 
 @Service
 public class EmailSenderAdapter implements EmailGateway {
+
     private final WebClient sendGenericEmailClient;
     private final ApisProperties apis;
     private final CustomLogger logger;
     private static final String templateId = "csb-renex-confirmacion-credito-mail";
+
     public EmailSenderAdapter(final @Qualifier("ApiConnectClient") WebClient sendGenericEmailClient,
                            final ApisProperties apisProperties,
                            final CustomLogger logger) {
@@ -30,6 +32,7 @@ public class EmailSenderAdapter implements EmailGateway {
         this.apis = apisProperties;
         this.logger = logger;
     }
+
     @Override
     public Mono<Boolean> sendEmail(String email, String bp, String fullName, String base64File) {
         logger.info("Sending email contract to customer BP: " + bp);
@@ -41,8 +44,8 @@ public class EmailSenderAdapter implements EmailGateway {
                 .map(response -> Objects.nonNull(response) ? Boolean.TRUE : Boolean.FALSE)
                 .onErrorMap(throwTechnicalError(API_CREATE_APPLICATION_ERROR));
     }
-    private EmailSenderRequest buildBodyRequest(String email, String bp, String fullName, String base64File) {
 
+    private EmailSenderRequest buildBodyRequest(String email, String bp, String fullName, String base64File) {
         var mail = EmailSenderRequest.Mail.builder()
                 .to(List.of(email))
                 .subject("Confirmación Renovación Crédito")

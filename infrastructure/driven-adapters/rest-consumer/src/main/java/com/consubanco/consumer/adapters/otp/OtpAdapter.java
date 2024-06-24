@@ -3,6 +3,7 @@ package com.consubanco.consumer.adapters.otp;
 import com.consubanco.consumer.adapters.otp.dto.ValidateOTPReqDTO;
 import com.consubanco.consumer.adapters.otp.dto.ValidateOTPResDTO;
 import com.consubanco.consumer.adapters.otp.properties.OtpApisProperties;
+import com.consubanco.model.commons.exception.TechnicalException;
 import com.consubanco.model.entities.otp.Otp;
 import com.consubanco.model.entities.otp.gateway.OtpGateway;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -45,7 +46,7 @@ public class OtpAdapter implements OtpGateway {
                 .bodyToMono(ValidateOTPResDTO.class)
                 .map(ValidateOTPResDTO::getIsValid)
                 .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_VALIDATE_OTP_ERROR))
-                .onErrorMap(throwTechnicalError(API_VALIDATE_OTP_ERROR));
+                .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(API_VALIDATE_OTP_ERROR));
     }
 
 }

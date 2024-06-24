@@ -44,6 +44,7 @@ public class Nom151ApiProperties {
     public String getUserMN() {
         return this.credentials.masNomina.user;
     }
+
     public String getPasswordMN() {
         return this.credentials.masNomina.password;
     }

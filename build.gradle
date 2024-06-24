@@ -1,19 +1,19 @@
 buildscript {
-	ext {
-		cleanArchitectureVersion = '3.15.1'
-		springBootVersion = '3.2.2'
-		sonarVersion = '4.4.1.3373'
-		jacocoVersion = '0.8.11'
+    ext {
+        cleanArchitectureVersion = '3.15.1'
+        springBootVersion = '3.2.2'
+        sonarVersion = '4.4.1.3373'
+        jacocoVersion = '0.8.11'
         lombokVersion = '1.18.32'
-	    mapstructVersion = "1.5.5.Final"
-	}
+        mapstructVersion = "1.5.5.Final"
+    }
 }
 
 plugins {
-	id 'co.com.bancolombia.cleanArchitecture' version "${cleanArchitectureVersion}"
-	id 'org.springframework.boot' version "${springBootVersion}" apply false
-	id 'org.sonarqube' version "${sonarVersion}"
-	id 'jacoco'
+    id 'co.com.bancolombia.cleanArchitecture' version "${cleanArchitectureVersion}"
+    id 'org.springframework.boot' version "${springBootVersion}" apply false
+    id 'org.sonarqube' version "${sonarVersion}"
+    id 'jacoco'
 }
 
 sonar {
@@ -22,7 +22,7 @@ sonar {
         property "sonar.sourceEncoding", "UTF-8"
         property "sonar.modules", "${modules.join(',')}"
         property "sonar.sources", "src,deployment,settings.gradle,main.gradle,build.gradle,${modules.collect { "${it}/build.gradle" }.join(',')}"
-        property "sonar.exclusions","**/MainApplication.java, **/freemarker/**"
+        property "sonar.exclusions", "**/MainApplication.java, **/freemarker/**"
         property "sonar.test", "src/test"
         property "sonar.java.binaries", ""
         property "sonar.junit.reportsPath", ""

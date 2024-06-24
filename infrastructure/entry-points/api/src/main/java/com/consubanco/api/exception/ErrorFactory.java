@@ -8,6 +8,7 @@ import lombok.experimental.UtilityClass;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
+import java.util.Objects;
 import java.util.function.Function;
 
 import static com.consubanco.model.commons.exception.message.TechnicalMessage.INVALID_REQUEST;
@@ -25,7 +26,8 @@ public class ErrorFactory {
     }
 
     public static Mono<ErrorDTO> buildFromTechnicalException(TechnicalException exception, String domain) {
-        ErrorDTO error = buildError(exception.getExceptionMessage(), exception.getMessage(), domain);
+        String reason = Objects.nonNull(exception.getCause()) ? exception.getCause().getMessage() : exception.getMessage();
+        ErrorDTO error = buildError(exception.getExceptionMessage(), reason, domain);
         return just(error);
     }
 

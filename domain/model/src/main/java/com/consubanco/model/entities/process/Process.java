@@ -51,8 +51,9 @@ public class Process {
         return this.getOffer().getPreviousApplicationId();
     }
 
-    public Mono<Process> checkRequiredData(){
-        if (Objects.isNull(id) || Objects.isNull(customer) || Objects.isNull(offer)) return buildBusiness(INCOMPLETE_DATA);
+    public Mono<Process> checkRequiredData() {
+        if (Objects.isNull(id) || Objects.isNull(customer) || Objects.isNull(offer))
+            return buildBusiness(INCOMPLETE_DATA);
         return Mono.just(this);
     }
 
