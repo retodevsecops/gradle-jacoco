@@ -81,7 +81,7 @@ public class DocumentAdapter implements DocumentGateway {
                 .bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {
                 })
                 .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_PROMOTER_ERROR))
-                .onErrorMap(throwTechnicalError(API_PROMOTER_ERROR));
+                .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(API_PROMOTER_ERROR));
     }
 
     @Override
@@ -103,7 +103,7 @@ public class DocumentAdapter implements DocumentGateway {
                     return monoTechnicalError(cause, API_DOCS_PREVIOUS_ERROR);
                 })
                 .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_DOCS_PREVIOUS_ERROR))
-                .onErrorMap(error -> {
+                .onErrorMap(error -> !(error instanceof TechnicalException), error -> {
                     if (error.getCause() instanceof TimeoutException)
                         return buildTechnical(error.getCause(), API_DOCS_PREVIOUS_TIMEOUT);
                     return buildTechnical(error.getCause(), API_DOCS_PREVIOUS_ERROR);
@@ -119,7 +119,7 @@ public class DocumentAdapter implements DocumentGateway {
                 .bodyToMono(GenerateDocumentResponseDTO.class)
                 .map(GenerateDocumentResponseDTO::getPublicUrl)
                 .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_PROMOTER_ERROR))
-                .onErrorMap(throwTechnicalError(API_PROMOTER_ERROR));
+                .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(API_PROMOTER_ERROR));
     }
 
 }

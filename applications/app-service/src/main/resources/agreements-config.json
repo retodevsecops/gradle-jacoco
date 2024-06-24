@@ -29,7 +29,7 @@
         "name": "Comprobante de domicilio",
         "technicalName": "comprobante-domicilio",
         "maxFiles": 1,
-        "isOcr": true,
+        "isOcr": false,
         "isRecoverable": true,
         "namePreviousDocument": "COMPROBANTE-DOMICILIO",
         "isRequired": true,

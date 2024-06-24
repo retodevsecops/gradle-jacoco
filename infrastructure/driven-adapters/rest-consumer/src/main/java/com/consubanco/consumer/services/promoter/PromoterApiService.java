@@ -5,6 +5,7 @@ import com.consubanco.consumer.services.promoter.dto.SearchInterlocutorReqDTO;
 import com.consubanco.consumer.services.promoter.util.BranchesByPromoterResUtil;
 import com.consubanco.consumer.services.promoter.util.SearchInterlocutorResUtil;
 import com.consubanco.logger.CustomLogger;
+import com.consubanco.model.commons.exception.TechnicalException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
@@ -55,7 +56,7 @@ public class PromoterApiService {
                 .filter(SearchInterlocutorResUtil::checkIfSuccessResponse)
                 .flatMap(SearchInterlocutorResUtil::getDataInterlocutor)
                 .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_SEARCH_INTERLOCUTOR_ERROR))
-                .onErrorMap(throwTechnicalError(API_SEARCH_INTERLOCUTOR_ERROR));
+                .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(API_SEARCH_INTERLOCUTOR_ERROR));
     }
 
     private Mono<List<Map<String, Object>>> getBranchesByPromoter(String promoterBpId) {
@@ -68,7 +69,7 @@ public class PromoterApiService {
                 .filter(BranchesByPromoterResUtil::checkIfSuccessResponse)
                 .flatMap(BranchesByPromoterResUtil::getBranches)
                 .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_BRANCHES_BY_PROMOTER_ERROR))
-                .onErrorMap(throwTechnicalError(API_BRANCHES_BY_PROMOTER_ERROR));
+                .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(API_BRANCHES_BY_PROMOTER_ERROR));
     }
 
     private Map<String, Object> branchesToPromoter(Map<String, Object> promoter, List<Map<String, Object>> branches) {
