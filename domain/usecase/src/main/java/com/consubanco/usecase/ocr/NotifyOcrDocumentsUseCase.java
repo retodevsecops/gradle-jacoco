@@ -94,7 +94,8 @@ public class NotifyOcrDocumentsUseCase {
     private Mono<OcrDocumentUpdateVO> getOcrDocumentStatus(OcrDocument ocrDocument) {
         return ocrDocumentGateway.getAnalysisData(ocrDocument.getAnalysisId())
                 .map(data -> buildUpdateSuccess(ocrDocument, data))
-                .onErrorResume(error -> Mono.just(buildUpdateFailed(ocrDocument)));
+                .defaultIfEmpty(buildUpdateFailed(ocrDocument, "Analysis does not return metadata"))
+                .onErrorResume(error -> Mono.just(buildUpdateFailed(ocrDocument, error.getMessage())));
     }
 
     private OcrDocumentUpdateVO buildUpdateSuccess(OcrDocument ocrDocument, List<OcrDataVO> data) {
@@ -106,11 +107,11 @@ public class NotifyOcrDocumentsUseCase {
                 .build();
     }
 
-    private static OcrDocumentUpdateVO buildUpdateFailed(OcrDocument ocrDocument) {
+    private static OcrDocumentUpdateVO buildUpdateFailed(OcrDocument ocrDocument, String detail) {
         return OcrDocumentUpdateVO.builder()
                 .id(ocrDocument.getId())
                 .status(OcrStatus.FAILED)
-                .detail("No data was obtained from the ocr document.")
+                .detail(detail)
                 .build();
     }
 

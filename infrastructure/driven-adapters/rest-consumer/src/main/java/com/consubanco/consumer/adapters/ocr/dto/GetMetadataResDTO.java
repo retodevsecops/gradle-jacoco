@@ -19,33 +19,33 @@ public class GetMetadataResDTO {
 
     @Data
     @NoArgsConstructor
-    static class DataDTO {
+    public static class DataDTO {
         private InnerDataDTO data;
     }
 
     @Data
     @NoArgsConstructor
-    static class InnerDataDTO {
+    public static class InnerDataDTO {
         private DataExtractionDTO dataExtraction;
     }
 
     @Data
     @NoArgsConstructor
-    static class DataExtractionDTO {
+    public static class DataExtractionDTO {
         private MetadataDTO metadata;
         private String id;
     }
 
     @Data
     @NoArgsConstructor
-    static class MetadataDTO {
+    public static class MetadataDTO {
         private MetadataDataDTO data;
         private boolean status;
     }
 
     @Data
     @NoArgsConstructor
-    static class MetadataDataDTO {
+    public static class MetadataDataDTO {
 
         @JsonProperty("id_status")
         private int idStatus;
@@ -57,19 +57,19 @@ public class GetMetadataResDTO {
 
     @Data
     @NoArgsConstructor
-    static class JsonAnalyticsDTO {
+    public static class JsonAnalyticsDTO {
         private ExtractDTO extract;
     }
 
     @Data
     @NoArgsConstructor
-    static class ExtractDTO {
+    public static class ExtractDTO {
         private List<ExtractionFieldDTO> extractionFields;
     }
 
     @Data
     @NoArgsConstructor
-    static class ExtractionFieldDTO {
+    public static class ExtractionFieldDTO {
         private String variableName;
 
         @JsonProperty("Confidence")
@@ -79,7 +79,7 @@ public class GetMetadataResDTO {
         private String value;
     }
 
-    public List<OcrDataVO> extractionFieldsToModel() {
+    public List<ExtractionFieldDTO> getListOfExtractionFields() {
         return Optional.ofNullable(this.data)
                 .map(dataDTO -> dataDTO.data)
                 .map(innerDataDTO -> innerDataDTO.dataExtraction)
@@ -88,7 +88,11 @@ public class GetMetadataResDTO {
                 .map(metadataDataDTO -> metadataDataDTO.jsonAnalytics)
                 .map(jsonAnalytics -> jsonAnalytics.extract)
                 .map(extract -> extract.extractionFields)
-                .orElse(Collections.emptyList())
+                .orElse(Collections.emptyList());
+    }
+
+    public List<OcrDataVO> extractionFieldsToModel() {
+        return getListOfExtractionFields()
                 .stream()
                 .map(extractionFieldDTO -> OcrDataVO.builder()
                         .name(extractionFieldDTO.getVariableName())
