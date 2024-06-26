@@ -61,7 +61,7 @@ public class OfferApiService {
                 .uri(apis.getRenex().getApiAcceptOffer(), processId)
                 .exchangeToMono(response -> Mono.just(response.statusCode()))
                 .filter(HttpStatusCode::is2xxSuccessful)
-                .map(httpStatusCode -> OfferStatus.FINALIZED.name())
+                .map(httpStatusCode -> OfferStatus.FINISHED.name())
                 .switchIfEmpty(Mono.just(OfferStatus.ERROR.name()))
                 .doOnError(WebClientResponseException.class, error -> logger.error(new RestConsumerLogDTO(error)))
                 .doOnError(error -> !(error instanceof WebClientResponseException), logger::error)
