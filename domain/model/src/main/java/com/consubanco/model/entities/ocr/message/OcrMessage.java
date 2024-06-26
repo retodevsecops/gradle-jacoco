@@ -7,8 +7,10 @@ import lombok.experimental.UtilityClass;
 public class OcrMessage {
 
     private static final String TYPE_NOT_FOUND = "For document %s no associated ocr document type was found.";
-    private static final String API_ERROR = "The api %s response %s with body: %s";
+    private static final String API_ERROR = "The api %s response %s with body: %s.";
     private static final String OCR_NOT_FOUND = "No ocr document associated with file %s with id %s was found.";
+    private static final String NOT_METADATA = "The ocr document query with id %s returned no metadata.";
+    private static final String RETRIES_FAILED = "Failed to get analysis data %s after retries. %s.";
 
     public static String typeNotFound(final String documentName) {
         return String.format(TYPE_NOT_FOUND, documentName);
@@ -20,6 +22,14 @@ public class OcrMessage {
 
     public static String ocrNotFound(File file) {
         return String.format(OCR_NOT_FOUND, file.getName(), file.getId());
+    }
+
+    public static String notMetadata(String analysisId) {
+        return String.format(NOT_METADATA, analysisId);
+    }
+
+    public static String retriesFailed(String analysisId, String message) {
+        return String.format(RETRIES_FAILED, analysisId, message);
     }
 
 }

@@ -30,7 +30,7 @@
 <#-- Template -->
 {
     "createApplicationRequestBO": {
-        "applicationId": "CSB-RENEX",  
+        "applicationId": "CSB-RENEX",
         "aplicationInfo": {
         <#list promoter_data.branches as branch>
             <#if branch.branchID == agreement_configuration_data.branchId>
@@ -55,22 +55,22 @@
             </#if>
         </#list>
             "cat": ${offer_data.offer.cat?c},
-            "amount": ${offer_data.offer.amount?c}, 
-            "isCNCA": true,  
-            "termDesc": "${termDesc}", 
+            "amount": ${offer_data.offer.amount?c},
+            "isCNCA": true,
+            "termDesc": "${termDesc}",
             "agreement": {
                 "id": "${offer_data.offer.agreement.key}",
                 "name": "${offer_data.offer.agreement.description}",
-                "group": "${customer_data.preApplicationData.agreement.group}", 
+                "group": "${customer_data.preApplicationData.agreement.group}",
                 "product": {
                     "id": "${offer_data.offer.product.key}",
                     "name": "${offer_data.offer.product.description}",
                     "category": "${customer_data.preApplicationData.agreement.product.category}",
                     "shortName": "${customer_data.preApplicationData.agreement.product.shortName}",
                     "paymentFrecuencyId": "${customer_data.preApplicationData.agreement.product.paymentFrecuencyId}",
-                    "paymentFrecuencyDesc": "${customer_data.preApplicationData.agreement.product.paymentFrecuencyDesc}" 
+                    "paymentFrecuencyDesc": "${customer_data.preApplicationData.agreement.product.paymentFrecuencyDesc}"
                 },
-                "brmsCode": "${customer_data.preApplicationData.agreement.brmsCode}",  
+                "brmsCode": "${customer_data.preApplicationData.agreement.brmsCode}",
                 "documents": [
                     <#list customer_data.preApplicationData.documents as document>
                         <#assign file_data_matched_sec = files_data?filter(file_data -> file_data.name == document.technicalName) >
@@ -84,8 +84,8 @@
                                 "clasification": "${document.clasification}",
                                 "url": <#if file_data_matched.storageRoute??> "${file_data_matched.storageRoute}" <#else> "" </#if>,
                                 <#if document.fields??>
-                                        "fields": [       
-                                            <#list document.fields as field>                
+                                        "fields": [
+                                            <#list document.fields as field>
                                             {
                                                 "id": "${field.id}",
                                                 "name": "${field.name}",
@@ -96,17 +96,17 @@
                                                 "value": "${getFieldValue(field)}"
                                             }<#if field?has_next>,</#if>
                                             </#list>
-                                        ], 
+                                        ],
                                 </#if>
                                 "required": ${document.required?c},
-                                "visible": ${document.visible?c}       
+                                "visible": ${document.visible?c}
                             }<#if document?has_next>,</#if>
                         </#if>
                     </#list>
                   ],
-                "shortName": "${customer_data.preApplicationData.agreement.shortName}", 
-                "shortGroup": "${customer_data.preApplicationData.agreement.shortGroup}", 
-                "convenioNFOFlag": true 
+                "shortName": "${customer_data.preApplicationData.agreement.shortName}",
+                "shortGroup": "${customer_data.preApplicationData.agreement.shortGroup}",
+                "convenioNFOFlag": true
             },
             "applicant": {
                 "bp": "${customer_data.customer.bpId}",
@@ -120,7 +120,7 @@
                 "credits": [
                     <#list offer_data.offer.creditList as credit>
                     {
-                        "amount": ${credit.capital?c}, 
+                        "amount": ${credit.capital?c},
                         "letter": {
                             "iva": ${credit.iva?c},
                             "monto": ${credit.totalLiquidacion?c},
@@ -136,16 +136,19 @@
                 }
             },
             "promotorBp": "${promoter_data.bpId}",
-            "priceGroupId": "${offer_data.offer.priceGroupId}",
+            "priceGroupId": "${offer_data.offer.priceGroupId}"
+        <#if biometric_task_data.biometricTaskId?has_content>
+            ,
             "biometricTask": {
                 "taskCRMId": "${biometric_task_data.biometricTaskId}",
                 "createDate": "${biometric_task_data.biometricTaskDate}",
                 "probankNumber": "${biometric_task_data.probankFolio}",
                 "taskStatusCRM": {
-                    "key": "string",
-                    "description": "string"
+                    "key": "E0002",
+                    "description": "Completada"
                 }
-            }, 
+        </#if>
+            },
             "paymentData": {
                 "bankId": "${customer_data.preApplicationData.paymentData.bankId}",
                 "bankDesc": "${customer_data.preApplicationData.paymentData.bankDesc}",

@@ -6,9 +6,9 @@ import com.consubanco.consumer.adapters.ocr.dto.NotifyDocumentReqDTO;
 import com.consubanco.consumer.adapters.ocr.dto.NotifyDocumentResDTO;
 import com.consubanco.logger.CustomLogger;
 import com.consubanco.model.commons.exception.TechnicalException;
+import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.consubanco.model.entities.ocr.constant.OcrDocumentType;
 import com.consubanco.model.entities.ocr.gateway.OcrDocumentGateway;
-import com.consubanco.model.entities.ocr.message.OcrMessage;
 import com.consubanco.model.entities.ocr.message.OcrTechnicalMessage;
 import com.consubanco.model.entities.ocr.vo.OcrDataVO;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
+import reactor.util.retry.RetryBackoffSpec;
 
 import java.time.Duration;
 import java.util.List;
@@ -23,6 +25,7 @@ import java.util.Objects;
 
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.buildTechnical;
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
+import static com.consubanco.model.entities.ocr.message.OcrMessage.*;
 import static com.consubanco.model.entities.ocr.message.OcrTechnicalMessage.*;
 
 @Service
@@ -42,7 +45,7 @@ public class OcrDocumentConsumerAdapter implements OcrDocumentGateway {
 
     @Override
     public Mono<Duration> getDelayTime() {
-        return Mono.just(Duration.ofSeconds(apiProperties.getDelayTime()));
+        return Mono.just(apiProperties.initialDelayInSeconds());
     }
 
     @Override
@@ -62,11 +65,20 @@ public class OcrDocumentConsumerAdapter implements OcrDocumentGateway {
     @Override
     public Mono<List<OcrDataVO>> getAnalysisData(String analysisId) {
         return getMetadata(analysisId)
-                .filter(metadata -> Objects.nonNull(metadata.getData()))
+                .filter(metadata -> !metadata.getListOfExtractionFields().isEmpty())
                 .map(GetMetadataResDTO::extractionFieldsToModel);
     }
 
-    public Mono<GetMetadataResDTO> getMetadata(String transactionId) {
+    private Mono<GetMetadataResDTO> getMetadata(String analysisId) {
+        return callApiToGetMetadata(analysisId)
+                .filter(metadata -> Objects.nonNull(metadata.getData()))
+                .switchIfEmpty(ExceptionFactory.monoTechnicalError(notMetadata(analysisId), NOT_METADATA))
+                .retryWhen(defineRetryStrategy())
+                .doOnError(error -> logger.error(retriesFailed(analysisId, error.getMessage()), error))
+                .onErrorMap(error -> buildTechnical(retriesFailed(analysisId, error.getMessage()), METADATA_RETRIES));
+    }
+
+    public Mono<GetMetadataResDTO> callApiToGetMetadata(String transactionId) {
         GetMetadataReqDTO request = new GetMetadataReqDTO(apiProperties.getApplicationId(), transactionId);
         logger.info(apiProperties.getApiGetDataDocument() + ": body request to get ocr document data", request);
         return ocrClient.post()
@@ -83,8 +95,14 @@ public class OcrDocumentConsumerAdapter implements OcrDocumentGateway {
         String api = apiProperties.getApiNotifyDocument();
         String status = error.getStatusText();
         String body = error.getResponseBodyAsString();
-        String detail = OcrMessage.apiError(api, status, body);
+        String detail = apiError(api, status, body);
         return buildTechnical(detail, message);
+    }
+
+    private RetryBackoffSpec defineRetryStrategy() {
+        return Retry.backoff(apiProperties.getMaxRetries(), apiProperties.retryDelayInSeconds())
+                .maxBackoff(apiProperties.maxRetryDelayInMinutes())
+                .doBeforeRetry(signal -> logger.info("Retry attempt #" + signal.totalRetriesInARow() + " by error: " + signal.failure().getMessage()));
     }
 
 }

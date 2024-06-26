@@ -17,8 +17,12 @@ import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
+import reactor.util.function.Tuple2;
 
 import java.util.List;
+
+import static com.consubanco.model.entities.ocr.constant.FailureReason.FAILED_GET_METADATA;
+import static com.consubanco.model.entities.ocr.constant.FailureReason.NOT_DATA_EXTRACTED;
 
 @RequiredArgsConstructor
 public class NotifyOcrDocumentsUseCase {
@@ -28,10 +32,14 @@ public class NotifyOcrDocumentsUseCase {
     private final BuildAllAgreementDocumentsUseCase buildAllAgreementDocumentsUseCase;
 
     public Mono<List<OcrDocument>> execute(Process process, AgreementConfigVO agreementConfig, List<File> attachments) {
-        buildAllAgreementDocumentsUseCase.execute(process)
-                .subscribeOn(Schedulers.parallel())
-                .subscribe();
-        return filteredFiles(agreementConfig, attachments)
+        Mono<Void>  agreementDocuments = buildAllAgreementDocumentsUseCase.execute(process);
+        Mono<List<OcrDocument>> ocrDocuments = processOcrDocuments(process, agreementConfig, attachments);
+        return Mono.zip(agreementDocuments, ocrDocuments)
+                .map(Tuple2::getT2);
+    }
+
+    private Mono<List<OcrDocument>> processOcrDocuments(Process process, AgreementConfigVO config, List<File> attachments) {
+        return filteredFiles(config, attachments)
                 .parallel()
                 .runOn(Schedulers.parallel())
                 .flatMap(file -> notifyDocument(process, file))
@@ -94,7 +102,8 @@ public class NotifyOcrDocumentsUseCase {
     private Mono<OcrDocumentUpdateVO> getOcrDocumentStatus(OcrDocument ocrDocument) {
         return ocrDocumentGateway.getAnalysisData(ocrDocument.getAnalysisId())
                 .map(data -> buildUpdateSuccess(ocrDocument, data))
-                .onErrorResume(error -> Mono.just(buildUpdateFailed(ocrDocument)));
+                .defaultIfEmpty(buildUpdateFailed(ocrDocument, NOT_DATA_EXTRACTED.name(), NOT_DATA_EXTRACTED.getMessage()))
+                .onErrorResume(error -> Mono.just(buildUpdateFailed(ocrDocument, FAILED_GET_METADATA.name(), error.getMessage())));
     }
 
     private OcrDocumentUpdateVO buildUpdateSuccess(OcrDocument ocrDocument, List<OcrDataVO> data) {
@@ -102,15 +111,15 @@ public class NotifyOcrDocumentsUseCase {
                 .id(ocrDocument.getId())
                 .status(OcrStatus.SUCCESS)
                 .data(data)
-                .detail("NO SE HA VALIDADO AUN")
                 .build();
     }
 
-    private static OcrDocumentUpdateVO buildUpdateFailed(OcrDocument ocrDocument) {
+    private static OcrDocumentUpdateVO buildUpdateFailed(OcrDocument ocrDocument, String code, String reason) {
         return OcrDocumentUpdateVO.builder()
                 .id(ocrDocument.getId())
                 .status(OcrStatus.FAILED)
-                .detail("No data was obtained from the ocr document.")
+                .failureCode(code)
+                .failureReason(reason)
                 .build();
     }
 

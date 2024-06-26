@@ -52,17 +52,22 @@ public class AttachmentStatusResDTO {
         this.invalidAttachments = attachmentStatus.getInvalidAttachments() != null ? toListDTO(attachmentStatus) : null;
     }
 
-    private static List<InvalidAttachment> toListDTO(AttachmentStatus attachmentStatus) {
+    private List<InvalidAttachment> toListDTO(AttachmentStatus attachmentStatus) {
         return attachmentStatus.getInvalidAttachments()
                 .stream()
                 .map(entity -> InvalidAttachment.builder()
-                        .name(entity.getName())
+                        .name(nameWithIndex(entity.getName()))
                         .code(entity.getCode())
                         .reason(entity.getReason())
                         .storageId(entity.getStorageId())
                         .analysisId(entity.getAnalysisId())
                         .build())
                 .toList();
+    }
+
+    private String nameWithIndex(String documentName) {
+        if (!documentName.matches(".*-\\d+$")) return documentName + "-0";
+        return documentName;
     }
 
 }
