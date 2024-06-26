@@ -99,6 +99,7 @@
             "description": "México",
             "key": "MX"
         },
+        "curp": "${customer_data.customer.curp}",
         "dateBirth": "${customer_data.customer.dateBirth}",
         "email": "${customer_data.customer.email}",
         "gender": "${customer_data.customer.gender}",

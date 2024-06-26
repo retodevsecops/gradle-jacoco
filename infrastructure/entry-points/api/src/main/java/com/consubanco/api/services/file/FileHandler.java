@@ -80,7 +80,7 @@ public class FileHandler {
         return processUploadCase(request, fileUseCase::uploadCreateApplicationTemplate);
     }
 
-    public Mono<ServerResponse> getManagementFiles(ServerRequest request){
+    public Mono<ServerResponse> getManagementFiles(ServerRequest request) {
         return fileUseCase.getManagementFiles()
                 .map(FileResDTO::new)
                 .collectList()

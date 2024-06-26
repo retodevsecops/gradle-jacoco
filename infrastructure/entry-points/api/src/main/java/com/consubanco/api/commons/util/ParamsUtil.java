@@ -40,7 +40,8 @@ public class ParamsUtil {
         return just(entrySet.stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, v -> String.join(",", v.getValue()))));
     }
-    public static Mono<String> getDomain(ServerRequest serverRequest){
+
+    public static Mono<String> getDomain(ServerRequest serverRequest) {
         return Mono.just(serverRequest.method().name())
                 .map(method -> String.join(DELIMITER, method, serverRequest.uri().toString()))
                 .map(String::toLowerCase);

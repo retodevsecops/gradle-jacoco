@@ -8,7 +8,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.buildBusiness;
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.monoBusiness;
@@ -31,10 +31,8 @@ public class AttachmentValidatorUtil {
     public Mono<List<AttachmentFileVO>> checkAttachments(List<AttachmentConfigVO> attachmentsByAgreement,
                                                          List<AttachmentFileVO> attachmentsProvided,
                                                          List<String> attachmentsInStorage) {
-        List<String> attachmentNamesByAgreement = attachmentNames(attachmentsByAgreement);
-        List<AttachmentFileVO> filteredAttachments = filteredAttachments(attachmentNamesByAgreement, attachmentsProvided);
-        List<String> providedAttachmentNames = providedAttachmentNames(filteredAttachments);
-        return checkRequiredAttachments(attachmentsByAgreement, providedAttachmentNames, attachmentsInStorage)
+        List<AttachmentFileVO> filteredAttachments = filterRequiredAttachments(attachmentsByAgreement, attachmentsProvided);
+        return checkRequiredAttachments(attachmentsByAgreement, filteredAttachments, attachmentsInStorage)
                 .then(checkValidTypes(filteredAttachments, attachmentsByAgreement))
                 .then(checkNumberFilesByAttachment(filteredAttachments, attachmentsByAgreement))
                 .thenReturn(filteredAttachments);
@@ -53,36 +51,44 @@ public class AttachmentValidatorUtil {
         return Flux.fromIterable(list);
     }
 
-    private List<String> attachmentNames(List<AttachmentConfigVO> attachmentsByAgreement) {
-        return attachmentsByAgreement.stream()
-                .map(AttachmentConfigVO::getTechnicalName)
-                .collect(Collectors.toList());
-    }
-
-    private List<AttachmentFileVO> filteredAttachments(List<String> requiredAttachmentNames,
+    private List<AttachmentFileVO> filterRequiredAttachments(List<AttachmentConfigVO> attachmentsByAgreement,
                                                        List<AttachmentFileVO> attachmentsProvided) {
+        List<String> requiredAttachmentNames = attachmentNames(attachmentsByAgreement);
         return attachmentsProvided.stream()
                 .filter(attachmentFileVO -> requiredAttachmentNames.contains(attachmentFileVO.getName()))
                 .toList();
     }
 
-    private List<String> providedAttachmentNames(List<AttachmentFileVO> attachmentsProvided) {
-        return attachmentsProvided.stream()
-                .map(AttachmentFileVO::getName)
-                .collect(Collectors.toList());
+    private List<String> attachmentNames(List<AttachmentConfigVO> attachmentsByAgreement) {
+        return attachmentsByAgreement.stream()
+                .map(AttachmentConfigVO::getTechnicalName)
+                .toList();
     }
 
     private Mono<Void> checkRequiredAttachments(List<AttachmentConfigVO> attachmentsByAgreement,
-                                                List<String> attachmentsProvided,
+                                                List<AttachmentFileVO> attachmentsProvided,
                                                 List<String> attachmentsInStorage) {
+        List<String> attachmentsNames = providedAttachmentNames(attachmentsProvided);
+        List<String> allAttachments = joinLists(attachmentsNames, attachmentsInStorage);
         return Flux.fromIterable(attachmentsByAgreement)
-                .filter(AttachmentConfigVO::shouldBeValidated)
+                .filter(AttachmentConfigVO::getIsRequired)
                 .map(AttachmentConfigVO::getTechnicalName)
-                .filter(attachment -> !attachmentsProvided.contains(attachment) && !attachmentsInStorage.contains(attachment))
+                .filter(technicalName -> !allAttachments.contains(technicalName))
                 .collectList()
                 .filter(list -> !list.isEmpty())
                 .handle((list, sink) -> sink.error(buildBusiness(attachmentRequired(list), MISSING_ATTACHMENT)))
                 .then();
+    }
+
+    private List<String> providedAttachmentNames(List<AttachmentFileVO> attachmentsProvided) {
+        return attachmentsProvided.stream()
+                .map(AttachmentFileVO::getName)
+                .toList();
+    }
+
+    private List<String> joinLists(List<String> listOne, List<String> listTwo) {
+        return Stream.concat(listOne.stream(), listTwo.stream())
+                .toList();
     }
 
     private Mono<Void> checkValidTypes(List<AttachmentFileVO> attachmentsProvided,

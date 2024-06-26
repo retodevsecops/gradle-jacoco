@@ -27,10 +27,11 @@ public class GoogleStorageProperties {
 
     }
 
-    public String agreementsConfigPath(){
+    public String agreementsConfigPath() {
         return this.getFilesPath().getAgreementsConfig();
     }
-    public String payloadTemplatePath(){
+
+    public String payloadTemplatePath() {
         return this.getFilesPath().getPayloadTemplate();
     }
 

@@ -43,7 +43,7 @@ public class ExceptionFactory {
         return error -> buildTechnical(error, message);
     }
 
-    public static <T> Mono<T> monoTechnicalError(String cause, IExceptionMessage message){
+    public static <T> Mono<T> monoTechnicalError(String cause, IExceptionMessage message) {
         return Mono.error(new TechnicalException(cause, message));
     }
 

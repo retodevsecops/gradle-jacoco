@@ -10,7 +10,9 @@ import com.consubanco.model.entities.document.constant.DocumentNames;
 import com.consubanco.model.entities.file.constant.FileConstants;
 import com.consubanco.model.entities.file.gateway.FileRepository;
 import com.consubanco.model.entities.file.vo.FileWithStorageRouteVO;
+import com.consubanco.model.entities.otp.Otp;
 import com.consubanco.model.entities.process.Process;
+import com.consubanco.usecase.otp.CheckOtpUseCase;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -21,21 +23,34 @@ import java.util.List;
 import static com.consubanco.model.entities.loan.message.LoanBusinessMessage.MISSING_DOCUMENTS;
 
 @RequiredArgsConstructor
-public class ValidateLoanFilesHelper {
+public class LoanApplicationValidationHelper {
 
     private final AgreementGateway agreementGateway;
     private final AgreementConfigRepository agreementConfigRepository;
     private final FileRepository fileRepository;
+    private final CheckOtpUseCase checkOtpUseCase;
 
-    public Mono<Process> execute(Process process) {
-        Mono<List<String>> documentsRequiredForAgreement = documentsRequiredForAgreement(process.getAgreementNumber());
-        Mono<List<String>> documentsInStorageByOffer = documentsInStorageByOffer(process.getOfferId());
-        return Mono.zip(documentsRequiredForAgreement, documentsInStorageByOffer)
-                .flatMap(TupleUtils.function(this::checkDocuments))
+    public Mono<Process> execute(Process process, Otp otp) {
+        return Mono.zip(verifyOtp(process, otp), verifyDocuments(process))
                 .thenReturn(process);
     }
 
-    private Mono<Void> checkDocuments(List<String> documentsRequired, List<String> documentsInStorage) {
+    private Mono<Process> verifyOtp(Process process, Otp otp) {
+        return Mono.just(process.getCustomer().getBpId())
+                .map(otp::addCustomerBp)
+                .flatMap(checkOtpUseCase::execute)
+                .thenReturn(process);
+    }
+
+    private Mono<Process> verifyDocuments(Process process) {
+        Mono<List<String>> documentsRequiredForAgreement = documentsRequiredForAgreement(process.getAgreementNumber());
+        Mono<List<String>> documentsInStorageByOffer = documentsInStorageByOffer(process.getOfferId());
+        return Mono.zip(documentsRequiredForAgreement, documentsInStorageByOffer)
+                .flatMap(TupleUtils.function(this::checkExistenceDocuments))
+                .thenReturn(process);
+    }
+
+    private Mono<Void> checkExistenceDocuments(List<String> documentsRequired, List<String> documentsInStorage) {
         return Flux.fromIterable(documentsRequired)
                 .filter(documentName -> !documentsInStorage.contains(documentName))
                 .collectList()

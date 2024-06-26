@@ -3,6 +3,7 @@ package com.consubanco.consumer.adapters.agreement;
 import com.consubanco.consumer.adapters.agreement.dto.GetAgreementRequestDTO;
 import com.consubanco.consumer.adapters.agreement.dto.GetAgreementResponseDTO;
 import com.consubanco.consumer.adapters.agreement.properties.AgreementApisProperties;
+import com.consubanco.model.commons.exception.TechnicalException;
 import com.consubanco.model.entities.agreement.Agreement;
 import com.consubanco.model.entities.agreement.gateway.AgreementGateway;
 import org.modelmapper.ModelMapper;
@@ -42,7 +43,7 @@ public class AgreementConsumerAdapter implements AgreementGateway {
                 .bodyToMono(GetAgreementResponseDTO.class)
                 .map(response -> modelMapper.map(response.getDetail().getAgreement(), Agreement.class))
                 .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_ERROR))
-                .onErrorMap(throwTechnicalError(API_ERROR));
+                .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(API_ERROR));
     }
 
 }

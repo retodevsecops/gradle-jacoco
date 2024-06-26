@@ -37,18 +37,25 @@ public class AgreementConfigVO {
     }
 
     public boolean checkCompoundDocuments() {
-        return  !(Objects.isNull(compoundDocuments) || compoundDocuments.isEmpty());
+        return !(Objects.isNull(compoundDocuments) || compoundDocuments.isEmpty());
     }
 
     public AgreementConfigVO checkCustomerVisibleDocuments() {
-        if (Objects.isNull(customerVisibleDocuments) || customerVisibleDocuments.isEmpty()){
+        if (Objects.isNull(customerVisibleDocuments) || customerVisibleDocuments.isEmpty()) {
             throw ExceptionFactory.business(DOCUMENTS_VISIBLE_NOT_CONFIG);
         }
         return this;
     }
 
-    public List<AttachmentConfigVO> attachments(){
+    public List<AttachmentConfigVO> attachments() {
         return attachmentsDocuments;
+    }
+
+    public List<String> getOcrAttachmentsTechnicalNames() {
+        return this.getAttachmentsDocuments().stream()
+                .filter(AttachmentConfigVO::getIsOcr)
+                .map(AttachmentConfigVO::getTechnicalName)
+                .toList();
     }
 
 }

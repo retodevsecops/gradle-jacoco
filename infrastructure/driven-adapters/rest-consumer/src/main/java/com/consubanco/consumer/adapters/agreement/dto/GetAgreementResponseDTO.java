@@ -102,7 +102,7 @@ public class GetAgreementResponseDTO {
         private List<DocumentDTO> documents;
 
         @JsonProperty("anexos")
-        private List<DocumentDTO>  attachments;
+        private List<DocumentDTO> attachments;
 
     }
 

@@ -3,6 +3,7 @@ package com.consubanco.consumer.services;
 import com.consubanco.consumer.adapters.document.properties.ApisProperties;
 import com.consubanco.consumer.config.dto.RestConsumerLogDTO;
 import com.consubanco.logger.CustomLogger;
+import com.consubanco.model.commons.exception.TechnicalException;
 import com.consubanco.model.entities.loan.constant.OfferStatus;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
@@ -44,7 +45,7 @@ public class OfferApiService {
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
                 .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_ACTIVE_OFFER_ERROR))
-                .onErrorMap(throwTechnicalError(API_ACTIVE_OFFER_ERROR));
+                .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(API_ACTIVE_OFFER_ERROR));
     }
 
     public Mono<String> getOfferHealth() {

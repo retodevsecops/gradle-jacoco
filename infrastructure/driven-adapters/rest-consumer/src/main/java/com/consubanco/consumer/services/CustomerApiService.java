@@ -1,6 +1,7 @@
 package com.consubanco.consumer.services;
 
 import com.consubanco.consumer.adapters.document.properties.ApisProperties;
+import com.consubanco.model.commons.exception.TechnicalException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
@@ -36,8 +37,9 @@ public class CustomerApiService {
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
                 .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_CUSTOMER_ERROR))
-                .onErrorMap(throwTechnicalError(API_CUSTOMER_ERROR));
+                .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(API_CUSTOMER_ERROR));
     }
+
     public Mono<Map<String, Object>> customerBiometricValidation(String processId) {
         return this.renexClient.get()
                 .uri(apis.getRenex().getApiCustomerBiometricValidation(), processId)
@@ -45,7 +47,7 @@ public class CustomerApiService {
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
                 .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_BIOMETRIC_TASK))
-                .onErrorMap(throwTechnicalError(API_BIOMETRIC_TASK));
+                .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(API_BIOMETRIC_TASK));
     }
 
     public Mono<String> getCustomerHealth() {

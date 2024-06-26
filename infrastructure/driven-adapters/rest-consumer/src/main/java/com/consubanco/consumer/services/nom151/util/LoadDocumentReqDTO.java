@@ -58,16 +58,20 @@ public class LoadDocumentReqDTO {
 
     private void validateCredentials(String user, String password) {
         if (user == null || user.isEmpty()) throw new IllegalArgumentException("User cannot be null or empty");
-        if (password == null || password.isEmpty()) throw new IllegalArgumentException("Password cannot be null or empty");
+        if (password == null || password.isEmpty())
+            throw new IllegalArgumentException("Password cannot be null or empty");
     }
 
     private void validateFields() {
-        if (documentId == null || documentId.isEmpty()) throw new IllegalArgumentException("Document ID cannot be null or empty");
+        if (documentId == null || documentId.isEmpty())
+            throw new IllegalArgumentException("Document ID cannot be null or empty");
         if (names == null || names.isEmpty()) throw new IllegalArgumentException("Names cannot be null or empty");
-        if (paternalLastname == null || paternalLastname.isEmpty()) throw new IllegalArgumentException("Paternal Lastname cannot be null or empty");
+        if (paternalLastname == null || paternalLastname.isEmpty())
+            throw new IllegalArgumentException("Paternal Lastname cannot be null or empty");
         if (rfc == null || rfc.isEmpty()) throw new IllegalArgumentException("RFC cannot be null or empty");
         if (email == null || email.isEmpty()) throw new IllegalArgumentException("Email cannot be null or empty");
-        if (documentInBase64 == null || documentInBase64.isEmpty()) throw new IllegalArgumentException("Document Base64 cannot be null or empty");
+        if (documentInBase64 == null || documentInBase64.isEmpty())
+            throw new IllegalArgumentException("Document Base64 cannot be null or empty");
     }
 
 }

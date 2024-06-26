@@ -39,14 +39,14 @@ public class ConnectionConfig extends AbstractR2dbcConfiguration {
 
     private PostgresqlConnectionConfiguration connectionConfiguration() {
         return PostgresqlConnectionConfiguration.builder()
-                        .host(connectionProperties.getHost())
-                        .port(connectionProperties.getPort())
-                        .database(connectionProperties.getDatabase())
-                        .username(connectionProperties.getUsername())
-                        .password(connectionProperties.getPassword())
-                        .connectTimeout(Duration.ofSeconds(connectionProperties.getConnectionTimeout()))
-                        .statementTimeout(Duration.ofSeconds(connectionProperties.getStatementTimeout()))
-                        .build();
+                .host(connectionProperties.getHost())
+                .port(connectionProperties.getPort())
+                .database(connectionProperties.getDatabase())
+                .username(connectionProperties.getUsername())
+                .password(connectionProperties.getPassword())
+                .connectTimeout(Duration.ofSeconds(connectionProperties.getConnectionTimeout()))
+                .statementTimeout(Duration.ofSeconds(connectionProperties.getStatementTimeout()))
+                .build();
     }
 
     @Bean

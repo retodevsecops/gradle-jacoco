@@ -8,6 +8,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "adapter.rest-consumer.apis.promoter")
 public class AgreementApisProperties {
-        private String channel;
-        private String apiGetAgreement;
+    private String channel;
+    private String apiGetAgreement;
 }

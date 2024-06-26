@@ -13,6 +13,7 @@ public class FileFactoryUtil {
 
     public static File buildFromBlob(Blob blob) {
         return File.builder()
+                .id(blob.getGeneratedId())
                 .name(FileUtil.getFileName(blob.getName()))
                 .content(Base64.encodeBase64String(blob.getContent()))
                 .directoryPath(FileUtil.getDirectory(blob.getName()))
@@ -24,6 +25,7 @@ public class FileFactoryUtil {
 
     public static File buildFromBlobWithUrl(Blob blob, String url) {
         return File.builder()
+                .id(blob.getGeneratedId())
                 .url(url)
                 .name(FileUtil.getFileName(blob.getName()))
                 .content(Base64.encodeBase64String(blob.getContent()))
@@ -44,6 +46,7 @@ public class FileFactoryUtil {
 
     public static File completeFileFromBlob(File file, Blob blob) {
         return file.toBuilder()
+                .id(blob.getGeneratedId())
                 .url(blob.getSelfLink())
                 .size(FileUtil.getSize(blob))
                 .storageRoute(String.format(URI_GS, blob.getBucket(), blob.getName()))
