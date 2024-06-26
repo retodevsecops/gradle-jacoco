@@ -13,8 +13,6 @@ CREATE TABLE IF NOT EXISTS public.loan_application (
     );
 CREATE INDEX IF NOT EXISTS idx_loan_application_process_id ON loan_application (process_id);
 
-
-DROP TABLE IF EXISTS public.ocr_document;
 -- This table is in charge of storing the information of ocr document.
 CREATE TABLE IF NOT EXISTS public.ocr_document (
     id SERIAL PRIMARY KEY,
