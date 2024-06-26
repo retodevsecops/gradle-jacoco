@@ -136,17 +136,18 @@
                 }
             },
             "promotorBp": "${promoter_data.bpId}",
-            "priceGroupId": "${offer_data.offer.priceGroupId}",
+            "priceGroupId": "${offer_data.offer.priceGroupId}"
+        <#if biometric_task_data.biometricTaskId?has_content>
+            ,
             "biometricTask": {
-                "taskCRMId": "${biometric_task_data.biometricTaskId!""}",
-                "createDate": "${biometric_task_data.biometricTaskDate!""}",
-                "probankNumber": "${biometric_task_data.probankFolio!""}",
-            <#if biometric_task_data.biometricTaskId?has_content>
+                "taskCRMId": "${biometric_task_data.biometricTaskId}",
+                "createDate": "${biometric_task_data.biometricTaskDate}",
+                "probankNumber": "${biometric_task_data.probankFolio}",
                 "taskStatusCRM": {
                     "key": "E0002",
                     "description": "Completada"
                 }
-            </#if>
+        </#if>
             },
             "paymentData": {
                 "bankId": "${customer_data.preApplicationData.paymentData.bankId}",

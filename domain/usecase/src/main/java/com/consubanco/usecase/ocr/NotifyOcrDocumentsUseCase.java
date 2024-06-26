@@ -21,6 +21,9 @@ import reactor.util.function.Tuple2;
 
 import java.util.List;
 
+import static com.consubanco.model.entities.ocr.constant.FailureReason.FAILED_GET_METADATA;
+import static com.consubanco.model.entities.ocr.constant.FailureReason.NOT_DATA_EXTRACTED;
+
 @RequiredArgsConstructor
 public class NotifyOcrDocumentsUseCase {
 
@@ -99,8 +102,8 @@ public class NotifyOcrDocumentsUseCase {
     private Mono<OcrDocumentUpdateVO> getOcrDocumentStatus(OcrDocument ocrDocument) {
         return ocrDocumentGateway.getAnalysisData(ocrDocument.getAnalysisId())
                 .map(data -> buildUpdateSuccess(ocrDocument, data))
-                .defaultIfEmpty(buildUpdateFailed(ocrDocument, "Analysis does not return metadata"))
-                .onErrorResume(error -> Mono.just(buildUpdateFailed(ocrDocument, error.getMessage())));
+                .defaultIfEmpty(buildUpdateFailed(ocrDocument, NOT_DATA_EXTRACTED.name(), NOT_DATA_EXTRACTED.getMessage()))
+                .onErrorResume(error -> Mono.just(buildUpdateFailed(ocrDocument, FAILED_GET_METADATA.name(), error.getMessage())));
     }
 
     private OcrDocumentUpdateVO buildUpdateSuccess(OcrDocument ocrDocument, List<OcrDataVO> data) {
@@ -108,15 +111,15 @@ public class NotifyOcrDocumentsUseCase {
                 .id(ocrDocument.getId())
                 .status(OcrStatus.SUCCESS)
                 .data(data)
-                .detail("NO SE HA VALIDADO AUN")
                 .build();
     }
 
-    private static OcrDocumentUpdateVO buildUpdateFailed(OcrDocument ocrDocument, String detail) {
+    private static OcrDocumentUpdateVO buildUpdateFailed(OcrDocument ocrDocument, String code, String reason) {
         return OcrDocumentUpdateVO.builder()
                 .id(ocrDocument.getId())
                 .status(OcrStatus.FAILED)
-                .detail(detail)
+                .failureCode(code)
+                .failureReason(reason)
                 .build();
     }
 

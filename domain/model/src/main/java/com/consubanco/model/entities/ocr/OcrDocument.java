@@ -22,7 +22,8 @@ public class OcrDocument {
     private String analysisId;
     private OcrStatus status;
     private List<OcrDataVO> data;
-    private String detail;
+    private String failureCode;
+    private String failureReason;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

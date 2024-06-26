@@ -25,8 +25,7 @@ import java.util.Objects;
 
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.buildTechnical;
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
-import static com.consubanco.model.entities.ocr.message.OcrMessage.apiError;
-import static com.consubanco.model.entities.ocr.message.OcrMessage.notMetadata;
+import static com.consubanco.model.entities.ocr.message.OcrMessage.*;
 import static com.consubanco.model.entities.ocr.message.OcrTechnicalMessage.*;
 
 @Service
@@ -65,17 +64,18 @@ public class OcrDocumentConsumerAdapter implements OcrDocumentGateway {
 
     @Override
     public Mono<List<OcrDataVO>> getAnalysisData(String analysisId) {
-        return Mono.defer(() -> getMetadata(analysisId))
+        return getMetadata(analysisId)
                 .filter(metadata -> !metadata.getListOfExtractionFields().isEmpty())
                 .map(GetMetadataResDTO::extractionFieldsToModel);
     }
 
     private Mono<GetMetadataResDTO> getMetadata(String analysisId) {
-        return Mono.defer(() -> callApiToGetMetadata(analysisId))
+        return callApiToGetMetadata(analysisId)
                 .filter(metadata -> Objects.nonNull(metadata.getData()))
                 .switchIfEmpty(ExceptionFactory.monoTechnicalError(notMetadata(analysisId), NOT_METADATA))
                 .retryWhen(defineRetryStrategy())
-                .doOnError(throwable -> logger.error("Failed to get analysis data "+analysisId+" after retries", throwable));
+                .doOnError(error -> logger.error(retriesFailed(analysisId, error.getMessage()), error))
+                .onErrorMap(error -> buildTechnical(retriesFailed(analysisId, error.getMessage()), METADATA_RETRIES));
     }
 
     public Mono<GetMetadataResDTO> callApiToGetMetadata(String transactionId) {

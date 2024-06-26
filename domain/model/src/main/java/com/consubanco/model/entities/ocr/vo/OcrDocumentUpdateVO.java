@@ -15,5 +15,6 @@ public class OcrDocumentUpdateVO {
     private Integer id;
     private OcrStatus status;
     private List<OcrDataVO> data;
-    private String detail;
+    private String failureCode;
+    private String failureReason;
 }

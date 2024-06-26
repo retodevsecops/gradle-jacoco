@@ -29,7 +29,12 @@ public class OcrDocumentData {
     private String name;
     private OcrStatus status;
     private Json data;
-    private String detail;
+
+    @Column("failure_code")
+    private String failureCode;
+
+    @Column("failure_reason")
+    private String failureReason;
 
     @Column("storage_id")
     private String storageId;
@@ -67,7 +72,8 @@ public class OcrDocumentData {
                 .processId(this.processId)
                 .analysisId(this.analysisId)
                 .status(this.status)
-                .detail(this.detail)
+                .failureCode(this.failureCode)
+                .failureReason(this.failureReason)
                 .createdAt(this.createdAt)
                 .updatedAt(this.updatedAt)
                 .data(data)
@@ -84,8 +90,10 @@ public class OcrDocumentData {
     }
 
     public OcrDocumentData update(OcrDocumentUpdateVO ocrDocumentUpdateVO) {
-        this.detail = ocrDocumentUpdateVO.getDetail();
         this.status = ocrDocumentUpdateVO.getStatus();
+        this.failureCode = ocrDocumentUpdateVO.getFailureCode();
+        this.failureReason = ocrDocumentUpdateVO.getFailureReason();
+        this.updatedAt = LocalDateTime.now();
         return this;
     }
 
