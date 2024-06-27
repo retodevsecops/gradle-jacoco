@@ -65,7 +65,7 @@ public class BuildAgreementDocumentsUseCase {
     }
 
     private List<String> getListDocumentsToGenerate(List<Agreement.Document> documents) {
-        return documents.stream()
+        return documents.parallelStream()
                 .flatMap(document -> document.getFields().stream())
                 .map(Agreement.Document.Field::getTechnicalName)
                 .distinct()

@@ -12,7 +12,7 @@ import com.consubanco.usecase.file.GetCustomerVisibleFilesUseCase;
 import com.consubanco.usecase.file.GetFilesByOfferUseCase;
 import com.consubanco.usecase.file.UploadAgreementAttachmentsUseCase;
 import com.consubanco.usecase.file.UploadOfficialIDUseCase;
-import com.consubanco.usecase.ocr.GetStatusAttachmentUseCase;
+import com.consubanco.usecase.ocr.usecase.GetStatusAttachmentUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;

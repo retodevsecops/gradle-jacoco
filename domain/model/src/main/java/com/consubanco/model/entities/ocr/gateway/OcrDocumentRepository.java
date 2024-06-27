@@ -10,6 +10,6 @@ import java.util.List;
 
 public interface OcrDocumentRepository {
     Flux<OcrDocument> saveAll(List<OcrDocumentSaveVO> ocrDocumentSaveVOList);
-    Mono<Void> update(OcrDocumentUpdateVO ocrDocumentUpdateVO);
+    Mono<OcrDocument> update(OcrDocumentUpdateVO ocrDocumentUpdateVO);
     Flux<OcrDocument> findByProcessId(String processId);
 }

@@ -23,7 +23,7 @@ import static com.consubanco.model.entities.ocr.message.OcrTechnicalMessage.*;
 
 @Service
 @RequiredArgsConstructor
-public class OcrDocumentDocumentRepositoryAdapter implements OcrDocumentRepository {
+public class OcrDocumentRepositoryAdapter implements OcrDocumentRepository {
 
     private final CustomLogger logger;
     private final OcrDocumentDataRepository dataRepository;
@@ -41,11 +41,11 @@ public class OcrDocumentDocumentRepositoryAdapter implements OcrDocumentReposito
     }
 
     @Override
-    public Mono<Void> update(OcrDocumentUpdateVO ocrDocumentUpdateVO) {
+    public Mono<OcrDocument> update(OcrDocumentUpdateVO ocrDocumentUpdateVO) {
         return dataRepository.findById(ocrDocumentUpdateVO.getId())
                 .flatMap(ocrData -> updateDataDB(ocrDocumentUpdateVO, ocrData))
                 .flatMap(dataRepository::save)
-                .then()
+                .map(OcrDocumentData::toEntity)
                 .doOnError(error -> logger.error(UPDATE_ERROR.getMessage(), error))
                 .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(UPDATE_ERROR));
     }
