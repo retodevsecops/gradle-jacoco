@@ -71,6 +71,7 @@ public class LoanAdapter implements LoanGateway {
     @Override
     public Mono<EmailStatus> sendMail(Process process, String signedRecordAsBase64) {
         return customerApiService.customerDataByProcess(process.getId())
+                .map(response -> (Map<String, Object>) response.getOrDefault("customer", Map.of()))
                 .flatMap(customerInfo -> emailGateway.sendEmail(getAttribute(customerInfo,"email"),
                                                                 getAttribute(customerInfo,"bpId"),
                                                                 getAttribute(customerInfo,"firstName"),
@@ -85,9 +86,10 @@ public class LoanAdapter implements LoanGateway {
         return  (status == HttpStatus.SC_OK) ? ApplicationStatus.SUCCESSFUL.name() : ApplicationStatus.ERROR.name();
     }
     private String getAttribute(Map<String, Object> attributes, String attribute) {
-        return Optional.ofNullable(attributes.getOrDefault(attribute, null))
+
+        return Optional.ofNullable(attributes.getOrDefault(attribute, ""))
                 .map(Object::toString)
-                .orElseThrow(() -> ExceptionFactory.buildBusiness(String.format("Customer attribute: %s not found in customer response:%s",
+                .orElseThrow(() -> ExceptionFactory.buildBusiness(String.format("Customer attribute: %s not found in customer response: %s",
                                 attribute,
                                 attributes),
                         CUSTOMER_ATTRIBUTE_NOT_FOUND));
