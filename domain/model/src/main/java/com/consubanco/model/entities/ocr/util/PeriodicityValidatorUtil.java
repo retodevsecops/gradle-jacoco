@@ -60,8 +60,8 @@ public class PeriodicityValidatorUtil {
     }
 
     private static boolean isDateWithinPeriod(LocalDate[] validDates, LocalDate initialDate, LocalDate finalDate) {
-        return (validDates[0].isEqual(initialDate) || validDates[0].isAfter(initialDate)) &&
-                (validDates[0].isEqual(finalDate) || validDates[0].isBefore(finalDate));
+        return (initialDate.isEqual(validDates[0]) || initialDate.isAfter(validDates[0])) &&
+                (finalDate.isEqual(validDates[1]) || finalDate.isBefore(validDates[1]));
     }
 
 }
