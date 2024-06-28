@@ -113,8 +113,13 @@ public class ValidateOcrDocumentsHelper {
     public static LocalDate[] getFortnightDates(int index) {
         LocalDate currentDate = LocalDate.now();
         if (index == 0) {
+            if(currentDate.getDayOfMonth() <= 15) {
+                LocalDate startDate = currentDate.withDayOfMonth(1);
+                LocalDate endDate = currentDate.withDayOfMonth(15);
+                return new LocalDate[]{startDate, endDate};
+            }
             LocalDate startDate = currentDate.withDayOfMonth(1);
-            LocalDate endDate = currentDate.withDayOfMonth(15);
+            LocalDate endDate = currentDate.withDayOfMonth(currentDate.lengthOfMonth());
             return new LocalDate[]{startDate, endDate};
         }
         if (index % 2 == 0) {
@@ -122,7 +127,12 @@ public class ValidateOcrDocumentsHelper {
             LocalDate endDate = startDate.plusDays(14);
             return new LocalDate[]{startDate, endDate};
         }
-        LocalDate startDate = currentDate.minusMonths((index + 1) / 2).withDayOfMonth(16);
+        if(currentDate.getDayOfMonth() <= 15) {
+            LocalDate startDate = currentDate.minusMonths((index + 1) / 2).withDayOfMonth(16);
+            LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+            return new LocalDate[]{startDate, endDate};
+        }
+        LocalDate startDate = currentDate.minusMonths((index + 2) / 2).withDayOfMonth(16);
         LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
         return new LocalDate[]{startDate, endDate};
     }
