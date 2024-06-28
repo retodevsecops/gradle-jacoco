@@ -29,7 +29,7 @@ public class ProcessOcrAttachmentsUseCase {
     }
 
     private void validateOcrDocuments(List<OcrDocument> unvalidatedOcrDocuments, Process process) {
-        validateOcrDocuments.execute(unvalidatedOcrDocuments, process)
+        validateOcrDocuments.execute(unvalidatedOcrDocuments)
                 .filter(this::ocrDocumentsAreValid)
                 .flatMap(validatedOcrDocuments -> buildAllAgreementDocuments.execute(process))
                 .subscribeOn(Schedulers.parallel())

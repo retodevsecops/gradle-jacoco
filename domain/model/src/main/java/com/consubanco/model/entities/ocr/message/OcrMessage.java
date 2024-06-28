@@ -17,7 +17,7 @@ public class OcrMessage {
     private static final String OCR_INVALID = "The document ocr %s with analysis id %s is in status %s.";
     private static final String UNKNOWN_PERIODICITY = "Unknown of periodicity from initial pay period %s to final pay period %s. The days of difference are %s";
     private static final String INVALID_FORTNIGHT_PAY_STUB = "The fortnight pay stub must be date: %s to %s. The current receipt is from %s to %s.";
-    private static final String INVALID_MONTHLY_PAY_STUB = "The monthly pay stub must be date: %s. The current receipt is from %s to %s.";
+    private static final String INVALID_MONTHLY_PAY_STUB = "The monthly pay stub must be date: %s to %s. The current receipt is from %s to %s.";
 
     public static String typeNotFound(final String documentName) {
         return String.format(TYPE_NOT_FOUND, documentName);
@@ -47,8 +47,8 @@ public class OcrMessage {
         return String.format(UNKNOWN_PERIODICITY, initialPayPeriod, finalPayPeriod, daysBetween);
     }
 
-    public static String invalidMonthlyPayStub(LocalDate expectedDate, LocalDate initialPay, LocalDate finalPay) {
-        return String.format(INVALID_MONTHLY_PAY_STUB, expectedDate, initialPay, finalPay);
+    public static String invalidMonthlyPayStub(LocalDate startDate, LocalDate endDate, LocalDate initialPay, LocalDate finalPay) {
+        return String.format(INVALID_MONTHLY_PAY_STUB, startDate, endDate, initialPay, finalPay);
     }
 
     public static String invalidFortnightPayStub(LocalDate startDate, LocalDate endDate, LocalDate initialPay, LocalDate finalPay) {
