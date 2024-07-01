@@ -7,7 +7,7 @@ import com.consubanco.api.services.file.dto.FileResDTO;
 import com.consubanco.api.services.file.dto.UploadAttachmentsResDTO;
 import com.consubanco.api.services.file.dto.UploadOfficialIdentificationReqDTO;
 import com.consubanco.model.entities.file.File;
-import com.consubanco.usecase.document.GetPayloadDataUseCase;
+import com.consubanco.usecase.document.usecase.GetPayloadDataUseCase;
 import com.consubanco.usecase.file.GetCustomerVisibleFilesUseCase;
 import com.consubanco.usecase.file.GetFilesByOfferUseCase;
 import com.consubanco.usecase.file.UploadAgreementAttachmentsUseCase;

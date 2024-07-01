@@ -5,7 +5,7 @@ import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.ocr.OcrDocument;
 import com.consubanco.model.entities.ocr.constant.OcrStatus;
 import com.consubanco.model.entities.process.Process;
-import com.consubanco.usecase.document.BuildAllAgreementDocumentsUseCase;
+import com.consubanco.usecase.document.usecase.BuildAllAgreementDocumentsUseCase;
 import com.consubanco.usecase.ocr.helpers.NotifyOcrDocumentsHelper;
 import com.consubanco.usecase.ocr.helpers.ValidateOcrDocumentsHelper;
 import lombok.RequiredArgsConstructor;

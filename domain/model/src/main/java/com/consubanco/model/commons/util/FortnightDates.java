@@ -49,7 +49,7 @@ public class FortnightDates {
         LocalDate currentDate = LocalDate.now();
         int minusMonths = (index + ONE) / TWO;
         if (currentDate.getDayOfMonth() <= DAY_15) {
-            LocalDate startDate = currentDate.minusMonths(minusMonths).withDayOfMonth(DAY_16);
+            LocalDate startDate = currentDate.minusMonths(minusMonths).withDayOfMonth(DAY_1);
             LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
             return new LocalDate[]{startDate, endDate};
         }

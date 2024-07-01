@@ -1,4 +1,4 @@
-package com.consubanco.usecase.document;
+package com.consubanco.usecase.document.usecase;
 
 import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.consubanco.model.entities.agreement.Agreement;

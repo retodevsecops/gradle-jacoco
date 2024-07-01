@@ -29,7 +29,7 @@ public class GetOcrAttachmentsHelper {
         Flux<File> attachments = getAttachmentsByOfferHelper.execute(process.getOfferId());
         Flux<OcrDocument> ocrDocuments = ocrDocumentRepository.findByProcessId(process.getId());
         return Mono.zip(attachments.collectList(), ocrDocuments.collectList(), Mono.just(agreementConfigVO))
-                            .map(TupleUtils.function(this::filter));
+                .map(TupleUtils.function(this::filter));
     }
 
     private List<OcrDocument> filter(List<File> attachments, List<OcrDocument> ocrDocuments, AgreementConfigVO agreementConfig) {

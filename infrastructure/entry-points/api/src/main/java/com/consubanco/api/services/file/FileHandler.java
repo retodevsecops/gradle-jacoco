@@ -9,7 +9,7 @@ import com.consubanco.api.services.file.dto.GetAndUploadDocumentReqDTO;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.vo.FileUploadVO;
 import com.consubanco.usecase.agreement.GetAttachmentsByAgreementUseCase;
-import com.consubanco.usecase.document.BuildCNCALettersUseCase;
+import com.consubanco.usecase.document.usecase.BuildCNCALettersUseCase;
 import com.consubanco.usecase.file.FileUseCase;
 import com.consubanco.usecase.file.GenerateDocumentUseCase;
 import lombok.RequiredArgsConstructor;

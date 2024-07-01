@@ -123,7 +123,7 @@ public class FileStorageAdapter implements FileRepository {
 
     public Mono<File> uploadLocalPayloadTemplate() {
         return Mono.just(properties.payloadTemplatePath())
-                .map(FileUtil::getFileName)
+                .map(FileUtil::getFileNameWithExtension)
                 .map(ClassPathResource::new)
                 .flatMap(FileUtil::buildFileUploadVOFromResource)
                 .onErrorMap(throwTechnicalError(LOCAL_TEMPLATE_ERROR))
@@ -181,7 +181,7 @@ public class FileStorageAdapter implements FileRepository {
 
     private Mono<File> uploadLocalCreateApplicationTemplate() {
         return Mono.just(properties.getFilesPath().getCreateApplicationTemplate())
-                .map(FileUtil::getFileName)
+                .map(FileUtil::getFileNameWithExtension)
                 .map(ClassPathResource::new)
                 .flatMap(FileUtil::buildFileUploadVOFromResource)
                 .flatMap(this::uploadCreateApplicationTemplate)

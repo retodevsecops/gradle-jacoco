@@ -8,7 +8,7 @@ import com.consubanco.model.entities.document.vo.PreviousDocumentVO;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.gateway.FileRepository;
 import com.consubanco.model.entities.process.Process;
-import com.consubanco.usecase.document.BuildAllAgreementDocumentsUseCase;
+import com.consubanco.usecase.document.usecase.BuildAllAgreementDocumentsUseCase;
 import com.consubanco.usecase.process.GetProcessByIdUseCase;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
