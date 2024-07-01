@@ -22,13 +22,13 @@ public class FortnightDates {
 
     private static LocalDate[] getCurrentFortnight() {
         LocalDate currentDate = LocalDate.now();
-        if (currentDate.getDayOfMonth() <= DAY_15) {
+        if (currentDate.getDayOfMonth() >= DAY_15) {
             LocalDate startDate = currentDate.withDayOfMonth(DAY_1);
-            LocalDate endDate = currentDate.withDayOfMonth(DAY_15);
+            LocalDate endDate = currentDate.withDayOfMonth(currentDate.lengthOfMonth());
             return new LocalDate[]{startDate, endDate};
         }
-        LocalDate startDate = currentDate.withDayOfMonth(DAY_1);
-        LocalDate endDate = currentDate.withDayOfMonth(currentDate.lengthOfMonth());
+        LocalDate startDate = currentDate.minusMonths(ONE).withDayOfMonth(DAY_15);
+        LocalDate endDate = currentDate.withDayOfMonth(DAY_15);
         return new LocalDate[]{startDate, endDate};
     }
 
