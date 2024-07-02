@@ -91,6 +91,7 @@
         }
     },
     "person": {
+        "lastFolioFiscal": "${FunctionsUtil.getFolioFiscal(ocr_documents_data)}",
         "address": [
             <#list customer_data.customer.address as residence>
             {
