@@ -14,7 +14,7 @@ import com.consubanco.model.entities.file.vo.FileUploadVO;
 import com.consubanco.model.entities.file.vo.FileWithStorageRouteVO;
 import com.consubanco.model.entities.ocr.OcrDocument;
 import com.consubanco.model.entities.process.Process;
-import com.consubanco.usecase.ocr.NotifyOcrDocumentsUseCase;
+import com.consubanco.usecase.ocr.usecase.ProcessOcrAttachmentsUseCase;
 import com.consubanco.usecase.process.GetProcessByIdUseCase;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
@@ -35,7 +35,7 @@ public class UploadAgreementAttachmentsUseCase {
     private final FileRepository fileRepository;
     private final PDFDocumentGateway pdfDocumentGateway;
     private final GetProcessByIdUseCase getProcessByIdUseCase;
-    private final NotifyOcrDocumentsUseCase notifyOcrDocumentsUseCase;
+    private final ProcessOcrAttachmentsUseCase processOcrAttachments;
 
     public Mono<List<OcrDocument>> execute(String processId, List<AttachmentFileVO> attachments) {
         return checkAttachmentsSize(attachments, fileRepository.getMaxSizeOfFileInMBAllowed())
@@ -50,7 +50,7 @@ public class UploadAgreementAttachmentsUseCase {
         return Mono.zip(agreement, agreementConfig, attachmentsInStorage)
                 .flatMap(tuple -> checkAttachments(tuple.getT2().getAttachmentsDocuments(), attachments, tuple.getT3())
                         .flatMap(validAttachments -> uploadAttachments(validAttachments, process.getOfferId()))
-                        .flatMap(list -> notifyOcrDocumentsUseCase.execute(process, tuple.getT2(), list)));
+                        .flatMap(list -> processOcrAttachments.execute(process, tuple.getT2(), list)));
     }
 
     private Mono<List<String>> getAttachmentsInStorageByOffer(String offerId) {

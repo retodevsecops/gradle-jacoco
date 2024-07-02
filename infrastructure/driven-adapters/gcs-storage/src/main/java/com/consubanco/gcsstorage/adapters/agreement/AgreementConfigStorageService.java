@@ -49,7 +49,7 @@ public class AgreementConfigStorageService {
 
     private Mono<byte[]> getAgreementsConfigFromLocal() {
         return Mono.just(properties.getFilesPath().getAgreementsConfig())
-                .map(FileUtil::getFileName)
+                .map(FileUtil::getFileNameWithExtension)
                 .map(ClassPathResource::new)
                 .map(FileUtil::getContentFromResource)
                 .doOnNext(e -> logger.info("The Agreements configuration was get from local source."))

@@ -1,20 +1,56 @@
-<#--
-    This is a freemarker template that is used to dynamically build the payload object
-    to consume the developer api for document generation.
--->
-<#assign
+<#-- This is a freemarker template that is used to dynamically build the payload object to consume the developer api for document generation. -->
+<#-- Variables -->
+<#assign 
     current_date_timestamp = .now?long
-    amount = offer_data.offer.amount?replace(",", "")?number?c
+    amountTotalToPay = offer_data.offer.discount?replace(",", "")?number * offer_data.offer.term
     discount = offer_data.offer.discount?replace(",", "")?number?c
+    documentTypeValues = {
+        "PHA004": "Número IMSS",
+        "ZBDBK": "Número de Cliente Banca Digital",
+        "ZBDCB": "Número de Cuenta Banca Digital",
+        "ZBDPL": "Número de Plástico Banca Digital",
+        "ZCEF": "Credencial de Empleo Federal",
+        "ZCIMS": "Credencial del IMSS",
+        "ZCPJ": "Credencial de Pensionado y/o jubilado",
+        "ZCPRO": "Cédula Profesional",
+        "ZCREF": "Clave de Referido",
+        "ZCTO": "Clave Centro de trabajo",
+        "ZCURP": "Clave Unica de Registro Poblacional",
+        "ZFIEL": "Firma Electrónica Avanzada",
+        "ZFM1": "FM1",
+        "ZFM2": "FM2",
+        "ZIDBK": "Número de Cliente",
+        "ZIDSFC": "Identificador Salesforce para BP",
+        "ZIFE": "Credencial IFE / INE",
+        "ZLIC": "Licencia de conducir",
+        "ZMATC": "Matrícula Consular",
+        "ZNDSS": "Número de Seguridad Social",
+        "ZRFC": "Registro Federal de Contribuyentes",
+        "ZSIU": "Credencial SIU",
+        "ZUAD": "Usuario Active Directory",
+        "ZVCB": "Identificador Vector"
+    }
+    defaultAddress = customer_data.customer.address?filter(dataAddres -> dataAddres.addressType.key == "XXDEFAULT")?first?if_exists
 >
+<#-- Functions -->
+<#function getDocumentTypeValue field>
+    <#if field?has_content>
+        <#return documentTypeValues[field]>
+    <#else>
+        <#return "">
+    </#if>
+</#function>
+<#-- Template -->
 {
     "id": "${offer_data.offer.id}",
     "created_at": "${current_date_timestamp?c}",
     "contactInformation": {
         "email": "${customer_data.customer.email?lower_case!''}",
-        "phone": "${customer_data.customer.phone!''}",
-        "phoneAddress": "2222222222",
-        "phoneWork": "3333333333"
+        "phoneAddress": "${defaultAddress?exists?then(defaultAddress.phones?filter(phone -> phone.phoneType == "PRINCIPAL")?first?if_exists.number, '')}",
+        "phone": "${defaultAddress?exists?then(defaultAddress.phones?filter(phone -> phone.phoneType == "MOVIL")?first?if_exists.number, '')}"
+    },
+    "generalData": {
+        "interviewResult": "Satisfactoria"
     },
     "dataSeller": {
         "apellidoPaterno": "${promoter_data.lastname1}",
@@ -28,8 +64,8 @@
         "numeroEmpleado": "${offer_data.offer.employeeNumber?string}"
     },
     "idDocumentData": {
-        "ocr": "${customer_data.preApplicationData.applicant.identificationNumber}",
-        "type": "${customer_data.preApplicationData.applicant.identificationType}"
+        "ocr": "${customer_data.customer.identificationNumber}",
+        "type": "${getDocumentTypeValue(customer_data.customer.identificationType)}"
     },
     "offer": {
         "quoter": {
@@ -37,12 +73,12 @@
             "agreemen": {
                 "branch": {
                     "empresa": {
-                        "businessName": "La Tenda Mexico S.A. de C.V."
+                        "businessName": "Consupago S.A. de C.V. SOFOM E.R."
                     }
                 },
                 "convenioId": "${offer_data.offer.agreement.key}"
             },
-            "amount": ${amount},
+            "amount": ${amountTotalToPay?c},
             "annualTI": ${offer_data.offer.annualTI?replace(",", ".")},
             "currentDiscount": ${discount},
             "discountAmount": ${discount},
@@ -50,49 +86,30 @@
             "monthlyTI": ${offer_data.offer.monthlyTI?replace(",", ".")},
             "openingCommissionPercentage": ${offer_data.offer.commissions?replace(",", ".")},
             "plazo": ${offer_data.offer.term},
-            "requestedAmount": ${amount},
-            "totalAmount": ${amount}
+            "requestedAmount": ${offer_data.offer.amount?c},
+            "totalAmount": ${amountTotalToPay?c}
         }
     },
     "person": {
+        "lastFolioFiscal": "${FunctionsUtil.getFolioFiscal(ocr_documents_data)}",
         "address": [
+            <#list customer_data.customer.address as residence>
             {
-                "addressId": "0025286049",
                 "addressType": {
-                    "description": "DIRECCIÓN DOMICILIO (PRINCIPAL)",
-                    "key": "XXDEFAULT"
+                    "key": "${residence.addressType.key! ''}",
+                    "description": "${residence.addressType.description! ''}"
                 },
-                "addressTypeVia": {
-                    "description": "",
-                    "key": "NOT_FOUND"
-                },
-                "andStreet": "",
-                "betweenStreet": "",
-                "city": "XALAPA",
-                "country": "MX",
-                "externalNumber": "81",
-                "internalNumber": "",
-                "phones": [
-                    {
-                        "number": "2284767230",
-                        "phoneType": "MOVIL"
-                    },
-                    {
-                        "number": ""
-                    }
-                ],
-                "settlementType": {
-                    "description": "",
-                    "key": "NOT_FOUND"
-                },
-                "state": "VER",
-                "stateDesc": "VERACRUZ",
-                "street": "CHIHUAHUA",
-                "suburb": "PROGRESO",
-                "town": "",
-                "township": "XALAPA",
-                "zipCode": "91130"
-            }
+                "city": "${residence.city! ''}",
+                "country": "${residence.country! ''}",
+                "externalNumber": "${residence.externalNumber! ''}",
+                "internalNumber": "${residence.internalNumber! ''}",
+                "stateDesc": "${residence.stateDesc! ''}",
+                "street": "${residence.street! ''}",
+                "suburb": "${residence.suburb! ''}",
+                "township": "${residence.township! ''}",
+                "zipCode": "${residence.zipCode! ''}"
+            }<#if residence_has_next>,</#if>
+            </#list>
         ],
         "residenceCountry": "MX",
         "countryBirth": {
@@ -123,36 +140,48 @@
             "description": "${customer_data.preApplicationData.applicant.occupation.description}",
             "key": "${customer_data.preApplicationData.applicant.occupation.key}"
         },
-        "placeBirth": "${customer_data.customer.placeBirth}",
+        "regimenFiscal": {
+            "key": "${customer_data.customer.regimenFiscal.key}",
+            "description": "${customer_data.customer.regimenFiscal.description}"
+        },
+        <#if customer_data.customer.placeBirth?upper_case == "VERACRUZ DE IGNACIO DE LA LLAVE">
+            "placeBirth": "VERACRUZ"
+        <#else>
+            "placeBirth": "${customer_data.customer.placeBirth}"
+        </#if>,
         "rfc": "${customer_data.customer.rfc}",
-        "spouseLastName1": "${customer_data.preApplicationData.applicant.spouseLastName1}",
-        "spouseLastName2": "${customer_data.preApplicationData.applicant.spouseLastName2}",
-        "spouseName1": "${customer_data.preApplicationData.applicant.spouseName1}",
-        "spouseName2": "${customer_data.preApplicationData.applicant.spouseName2}"
+        "spouseLastName1": "${customer_data.preApplicationData.applicant.spouseLastName1! ''}",
+        "spouseLastName2": "${customer_data.preApplicationData.applicant.spouseLastName2! ''}",
+        "spouseName1": "${customer_data.preApplicationData.applicant.spouseName1! ''}",
+        "spouseName2": "${customer_data.preApplicationData.applicant.spouseName2! ''}"
     },
     "privateDeposit": {
-        "banco": "${customer_data.preApplicationData.paymentData.bankId}",
-        "bancoText": "${customer_data.preApplicationData.paymentData.bankDesc}",
-        "cbanc": "${customer_data.preApplicationData.paymentData.clabe}",
-        "descriptionPaymentMethod": "${customer_data.preApplicationData.paymentData.paymentMethodDesc}",
-        "metodoPago": "${customer_data.preApplicationData.paymentData.paymentMethodId}"
+        "banco": "${customer_data.preApplicationData.paymentData.bankId! ''}",
+        "bancoText": "${customer_data.preApplicationData.paymentData.bankDesc! ''}",
+        "cbanc": "${customer_data.preApplicationData.paymentData.clabe! ''}",
+        "descriptionPaymentMethod": "${customer_data.preApplicationData.paymentData.paymentMethodDesc! ''}",
+        "metodoPago": "${customer_data.preApplicationData.paymentData.paymentMethodId! ''}"
     },
+    <#if customer_data.preApplicationData.references??>
     "references": [
-        {
-            "apellidoMaterno": "Pardo",
-            "apellidoPaterno": "Rey",
-            "bp": "0004470746",
-            "clientId": "0009181768",
-            "nombre": "Diana",
-            "segundoNombre": "Pilar",
-            "telefono": "2281888881",
-            "telefonoFijo": "",
-            "parentesco": {
-                "description": "ABUELO(A)",
-                "key": "ZC01"
-            }
-        }
+        <#list customer_data.preApplicationData.references as reference>
+            {
+                "apellidoMaterno": "${reference.lastName2! ''}",
+                "apellidoPaterno": "${reference.lastName1! ''}",
+                "bp": "${reference.bp! ''}",
+                "clientId": "${reference.clientId! ''}",
+                "nombre": "${reference.name1! ''}",
+                "segundoNombre": "${reference.name2! ''}",
+                "telefono": "${reference.cellPhone! ''}",
+                "telefonoFijo": "${reference.phone! ''}",
+                "parentesco": {
+                    "description": "${reference.relationship?has_content?then(reference.relationship.description, '')}",
+                    "key": "${reference.relationship?has_content?then(reference.relationship.key, '')}"
+                }
+            }<#if reference_has_next>,</#if>
+        </#list>
     ],
+    </#if>
     "signatureColor": "#000000",
     "origin": "RENEX"
 }
