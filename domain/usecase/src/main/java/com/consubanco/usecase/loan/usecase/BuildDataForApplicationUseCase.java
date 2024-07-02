@@ -8,7 +8,7 @@ import com.consubanco.model.entities.file.gateway.FileRepository;
 import com.consubanco.model.entities.file.vo.FileWithStorageRouteVO;
 import com.consubanco.model.entities.process.Process;
 import com.consubanco.usecase.agreement.GetAgreementConfigUseCase;
-import com.consubanco.usecase.document.GenerateNom151UseCase;
+import com.consubanco.usecase.document.usecase.GenerateNom151UseCase;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 

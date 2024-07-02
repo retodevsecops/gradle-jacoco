@@ -33,6 +33,11 @@ public class FileUtil {
         return filename.substring(0, lastIndexOfDot);
     }
 
+    public String getFileNameWithExtension(String documentPath) {
+        String[] parts = documentPath.split("/");
+        return parts[parts.length - 1];
+    }
+
     public byte[] getContentFromResource(ClassPathResource resource) {
         try {
             return FileCopyUtils.copyToByteArray(resource.getInputStream());

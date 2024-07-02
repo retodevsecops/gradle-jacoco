@@ -80,9 +80,9 @@ adapter:
     bucket-name: ${GCS_BUCKET_NAME:csb-venta-digital}
     sign-url-days: ${GCS_SIGN_URL_DAYS:1}
     files-path:
-      payload-template: ${GCS_PAYLOAD_TEMPLATE_PATH:management/puc-loans-documents-msa/payload-template.ftl}
-      agreements-config: ${GCS_AGREEMENT_CONFIG:management/puc-loans-documents-msa/agreements-config.json}
-      create-application-template: ${GCS_CREATE_APPLICATION_TEMPLATE_PATH:management/puc-loans-documents-msa/create-application-template.ftl}
+      payload-template: ${GCS_PAYLOAD_TEMPLATE_PATH:management/vd-loans-documents-msa/payload-template.ftl}
+      agreements-config: ${GCS_AGREEMENT_CONFIG:management/vd-loans-documents-msa/agreements-config.json}
+      create-application-template: ${GCS_CREATE_APPLICATION_TEMPLATE_PATH:management/vd-loans-documents-msa/create-application-template.ftl}
   postgresql-repository:
     connection:
       host: ${DB_HOST}

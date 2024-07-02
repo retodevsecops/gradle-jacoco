@@ -6,7 +6,7 @@ import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.constant.FileExtensions;
 import com.consubanco.model.entities.file.gateway.FileConvertGateway;
 import com.consubanco.model.entities.file.gateway.FileRepository;
-import com.consubanco.usecase.document.BuildPayloadDocumentUseCase;
+import com.consubanco.usecase.document.usecase.BuildPayloadDocumentUseCase;
 import com.consubanco.usecase.process.GetProcessByIdUseCase;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
