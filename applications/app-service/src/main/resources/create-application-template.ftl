@@ -16,6 +16,7 @@
     current_date_timestamp = .now?long
     promotorCompleteName = promoter_data.name1 + " " + promoter_data.lastname1
     termDesc = offer_data.offer.term + " " + offer_data.offer.frequency
+    amountTotalToPay = offer_data.offer.discount?replace(",", "")?number * offer_data.offer.term
 >
 <#-- Functions -->
 <#function getFieldValue(field)>
@@ -79,7 +80,7 @@
                             {
                                 "id": "${document.id}",
                                 "technicalName": "${document.technicalName}",
-                                "fileName": "${document.technicalName}",
+                                "fileName": "${document.technicalName + ".pdf"}",
                                 "name": "${document.name}",
                                 "clasification": "${document.clasification}",
                                 "url": <#if file_data_matched.storageRoute??> "${file_data_matched.storageRoute}" <#else> "" </#if>,
@@ -136,9 +137,8 @@
                 }
             },
             "promotorBp": "${promoter_data.bpId}",
-            "priceGroupId": "${offer_data.offer.priceGroupId}"
+            "priceGroupId": "${offer_data.offer.priceGroupId}",
         <#if biometric_task_data.biometricTaskId?has_content>
-            ,
             "biometricTask": {
                 "taskCRMId": "${biometric_task_data.biometricTaskId}",
                 "createDate": "${biometric_task_data.biometricTaskDate}",
@@ -147,8 +147,8 @@
                     "key": "E0002",
                     "description": "Completada"
                 }
-        </#if>
             },
+        </#if>
             "paymentData": {
                 "bankId": "${customer_data.preApplicationData.paymentData.bankId}",
                 "bankDesc": "${customer_data.preApplicationData.paymentData.bankDesc}",
@@ -157,10 +157,11 @@
                 "paymentMethodDesc": "${customer_data.preApplicationData.paymentData.paymentMethodDesc}"
             },
             "probankNumber": "${offer_data.offer.id}",
-            "discountamount": 0,
+            "rate": ${offer_data.offer.monthlyTI?c},
+            "discountamount": ${offer_data.offer.discount?c},
             "promotorNFOFlag": true,
             "reprocessNumber": 0,
-            "amountTotalToPay": 0,
+            "amountTotalToPay": ${amountTotalToPay?c},
             "folioApplication": "${offer_data.offer.id}",
             "sourceChannelApp": "RENEX",
             "promotorCompleteName": "${promotorCompleteName}"

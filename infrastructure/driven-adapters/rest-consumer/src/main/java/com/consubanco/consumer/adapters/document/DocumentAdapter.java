@@ -14,6 +14,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -23,11 +24,11 @@ import java.util.Map;
 
 import static com.consubanco.consumer.adapters.document.dto.GetDocsPreviousApplicationResDTO.getResponseCode;
 import static com.consubanco.consumer.adapters.document.dto.GetDocsPreviousApplicationResDTO.getResponseMessage;
+import static com.consubanco.consumer.commons.ClientExceptionFactory.requestError;
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.*;
 import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.API_DOCS_PREVIOUS_ERROR;
 import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.API_DOCS_PREVIOUS_TIMEOUT;
-import static com.consubanco.model.entities.file.message.FileTechnicalMessage.API_ERROR;
-import static com.consubanco.model.entities.file.message.FileTechnicalMessage.API_PROMOTER_ERROR;
+import static com.consubanco.model.entities.file.message.FileTechnicalMessage.*;
 
 @Service
 public class DocumentAdapter implements DocumentGateway {
@@ -58,6 +59,7 @@ public class DocumentAdapter implements DocumentGateway {
                 .filter(GenerateCNCALetterResDTO::checkCNCAIfExists)
                 .map(GenerateCNCALetterResDTO::getData)
                 .map(GenerateCNCALetterResDTO.Data::getBase64)
+                .onErrorMap(WebClientRequestException.class, error -> requestError(error, API_REQUEST_ERROR))
                 .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_ERROR))
                 .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(API_ERROR));
     }
@@ -79,6 +81,7 @@ public class DocumentAdapter implements DocumentGateway {
                 .bodyValue(new GenerateDocumentRequestDTO(documents, payload))
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {})
+                .onErrorMap(WebClientRequestException.class, error -> requestError(error, API_REQUEST_ERROR))
                 .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_PROMOTER_ERROR))
                 .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(API_PROMOTER_ERROR));
     }
@@ -101,6 +104,7 @@ public class DocumentAdapter implements DocumentGateway {
                     String cause = String.format(detail, responseCode, responseMessage);
                     return monoTechnicalError(cause, API_DOCS_PREVIOUS_ERROR);
                 })
+                .onErrorMap(WebClientRequestException.class, error -> requestError(error, API_REQUEST_ERROR))
                 .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_DOCS_PREVIOUS_ERROR))
                 .onErrorMap(error -> !(error instanceof TechnicalException), error -> {
                     if (error.getCause() instanceof TimeoutException)
@@ -117,6 +121,7 @@ public class DocumentAdapter implements DocumentGateway {
                 .retrieve()
                 .bodyToMono(GenerateDocumentResponseDTO.class)
                 .map(GenerateDocumentResponseDTO::getPublicUrl)
+                .onErrorMap(WebClientRequestException.class, error -> requestError(error, API_REQUEST_ERROR))
                 .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_PROMOTER_ERROR))
                 .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(API_PROMOTER_ERROR));
     }

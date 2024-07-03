@@ -18,7 +18,8 @@ public enum OcrTechnicalMessage implements IExceptionMessage {
     UPDATE_ERROR("TE_OCR_0008", "Error when update  ocr documents in database."),
     FIND_ERROR("TE_OCR_0009", "Error when find ocr documents in database."),
     NOT_METADATA("TE_OCR_0010", "No metadata returned."),
-    METADATA_RETRIES("TE_OCR_0011", "Failed to get analysis data after retries.");
+    METADATA_RETRIES("TE_OCR_0011", "Failed to get analysis data after retries."),
+    API_REQUEST_ERROR("TE_OCR_0012", "An error occurred with the api request.");
 
     private final String code;
     private final String message;
