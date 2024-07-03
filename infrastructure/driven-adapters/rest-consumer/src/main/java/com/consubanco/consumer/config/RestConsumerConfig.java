@@ -5,6 +5,7 @@ import com.consubanco.consumer.config.filters.WebClientLoggingFilter;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ import static com.consubanco.consumer.commons.Constants.AUTH_BEARER_VALUE;
 import static com.consubanco.consumer.commons.Constants.CLIENT_ID_HEADER;
 import static io.netty.channel.ChannelOption.CONNECT_TIMEOUT_MILLIS;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.MINUTES;
 
 @Configuration
 @RequiredArgsConstructor
@@ -125,6 +127,7 @@ public class RestConsumerConfig {
                 .doOnConnected(connection -> {
                     connection.addHandlerLast(new ReadTimeoutHandler(timeout, MILLISECONDS));
                     connection.addHandlerLast(new WriteTimeoutHandler(timeout, MILLISECONDS));
+                    connection.addHandlerLast(new IdleStateHandler(5, 5, 0, MINUTES));
                 }));
     }
 
