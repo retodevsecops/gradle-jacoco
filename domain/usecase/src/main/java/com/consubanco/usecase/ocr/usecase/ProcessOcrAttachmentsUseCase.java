@@ -1,5 +1,6 @@
 package com.consubanco.usecase.ocr.usecase;
 
+import com.consubanco.logger.CustomLogger;
 import com.consubanco.model.entities.agreement.vo.AgreementConfigVO;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.ocr.OcrDocument;
@@ -17,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProcessOcrAttachmentsUseCase {
 
+    private final CustomLogger logger;
     private final NotifyOcrDocumentsHelper notifyOcrDocuments;
     private final ValidateOcrDocumentsHelper validateOcrDocuments;
     private final BuildAllAgreementDocumentsUseCase buildAllAgreementDocuments;
@@ -32,6 +34,8 @@ public class ProcessOcrAttachmentsUseCase {
         validateOcrDocuments.execute(unvalidatedOcrDocuments)
                 .filter(this::ocrDocumentsAreValid)
                 .flatMap(validatedOcrDocuments -> buildAllAgreementDocuments.execute(process))
+                .doOnError(error -> logger.error("Failed validation and generation of documents for the id process: " + process.getId(), error))
+                .doFinally(e -> logger.info("All the documents were generated for process: ", process))
                 .subscribeOn(Schedulers.parallel())
                 .subscribe();
     }

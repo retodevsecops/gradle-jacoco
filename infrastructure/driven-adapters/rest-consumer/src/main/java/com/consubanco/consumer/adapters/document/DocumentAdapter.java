@@ -78,8 +78,7 @@ public class DocumentAdapter implements DocumentGateway {
                 .uri(apis.generateDocumentApiEndpoint())
                 .bodyValue(new GenerateDocumentRequestDTO(documents, payload))
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {
-                })
+                .bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {})
                 .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_PROMOTER_ERROR))
                 .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(API_PROMOTER_ERROR));
     }
