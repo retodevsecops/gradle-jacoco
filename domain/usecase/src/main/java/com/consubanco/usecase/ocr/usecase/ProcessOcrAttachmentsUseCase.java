@@ -34,7 +34,6 @@ public class ProcessOcrAttachmentsUseCase {
         validateOcrDocuments.execute(unvalidatedOcrDocuments)
                 .filter(this::ocrDocumentsAreValid)
                 .flatMap(validatedOcrDocuments -> buildAllAgreementDocuments.execute(process))
-                .doOnError(error -> logger.error("Sucedio un error " +  error.getMessage()))
                 .doOnError(error -> logger.error("Failed validation and generation of documents for the id process: " + process.getId(), error))
                 .doOnSuccess(e -> logger.info("All the documents were generated for process: "+process.getId(), process))
                 .subscribeOn(Schedulers.parallel())
