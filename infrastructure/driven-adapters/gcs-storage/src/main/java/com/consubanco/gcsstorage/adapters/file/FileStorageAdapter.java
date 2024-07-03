@@ -212,6 +212,7 @@ public class FileStorageAdapter implements FileRepository {
                 .map(Storage.BlobListOption::prefix)
                 .map(option -> storage.list(properties.getBucketName(), option))
                 .flatMapIterable(Page::iterateAll)
+                .doOnError(error -> logger.error("Error when consulting the files in folder " +  folderPath, error))
                 .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(GET_FILE_ERROR));
     }
 

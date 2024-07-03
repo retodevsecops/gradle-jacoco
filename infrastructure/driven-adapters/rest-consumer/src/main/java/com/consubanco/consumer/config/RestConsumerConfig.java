@@ -121,7 +121,7 @@ public class RestConsumerConfig {
                 .keepAlive(true)
                 .option(CONNECT_TIMEOUT_MILLIS, timeout)
                 .responseTimeout(Duration.ofMillis(timeout))
-                .secure(sslContextSpec -> sslContextSpec.sslContext(getBuildSslContext()))
+                .secure(sslContextSpec -> sslContextSpec.sslContext(getBuildSslContext()).handshakeTimeoutMillis(timeout))
                 .doOnConnected(connection -> {
                     connection.addHandlerLast(new ReadTimeoutHandler(timeout, MILLISECONDS));
                     connection.addHandlerLast(new WriteTimeoutHandler(timeout, MILLISECONDS));
