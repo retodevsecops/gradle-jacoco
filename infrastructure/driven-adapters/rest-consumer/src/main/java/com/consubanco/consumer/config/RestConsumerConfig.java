@@ -88,8 +88,8 @@ public class RestConsumerConfig {
     public WebClient buildClientRenex() {
         return WebClient.builder()
                 .clientConnector(getClientHttpConnector())
-                .filter(webClientLoggingFilter)
                 .filter(authTokenRenexFilter)
+                .filter(webClientLoggingFilter)
                 .build();
     }
 

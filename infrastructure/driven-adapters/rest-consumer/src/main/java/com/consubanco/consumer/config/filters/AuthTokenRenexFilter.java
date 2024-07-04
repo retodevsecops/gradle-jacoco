@@ -28,6 +28,13 @@ import static com.consubanco.consumer.commons.Constants.AUTH_BEARER_VALUE;
 @Configuration
 public class AuthTokenRenexFilter implements ExchangeFilterFunction {
 
+    private static final String NOT_TOKEN_PROVIDER = "Credentials are not an instance of IdTokenProvider.";
+    private static final String UNABLE_ACCESS_TOKEN = "Unable to obtain new access token";
+    private static final String ERROR_MESSAGE = "Error generating the renex authentication token.";
+    private static final String SUCCESS_MESSAGE = "Token was generated for Renex and expire in %s";
+    private static final String DURATION_TOKEN_MESSAGE = "The cache for renex authorization token has a %s minutes expiration time.";
+    private static final String ERROR_CACHE = "Error loading renex token into cache";
+
     private final CustomLogger logger;
     private Cache<String, String> cache;
     private final String audience;
@@ -44,7 +51,7 @@ public class AuthTokenRenexFilter implements ExchangeFilterFunction {
         return getAuthToken()
                 .map(token -> injectTokenToRequest(request, token))
                 .flatMap(next::exchange)
-                .doOnError(error -> logger.error("Error generating the renex authentication token.", error));
+                .doOnError(error -> logger.error(ERROR_MESSAGE, error));
     }
 
     private Mono<String> getAuthToken() {
@@ -54,7 +61,7 @@ public class AuthTokenRenexFilter implements ExchangeFilterFunction {
 
     private Mono<String> generateToken() {
         return getAccessToken()
-                .doOnNext(token -> logger.info("Token was generated for Renex and expire in " + token.getExpirationTime()))
+                .doOnNext(token -> logger.info(String.format(SUCCESS_MESSAGE, token.getExpirationTime())))
                 .doOnNext(this::addTokenInCache)
                 .map(AccessToken::getTokenValue);
     }
@@ -63,7 +70,7 @@ public class AuthTokenRenexFilter implements ExchangeFilterFunction {
         Instant expirationInstant = expirationTime.toInstant();
         Duration duration = Duration.between(Instant.now(), expirationInstant);
         this.cache = Caffeine.newBuilder().expireAfterWrite(duration).build();
-        logger.info("The cache for renex authorization token has a " + duration.toMinutes() + " minutes expiration time.");
+        logger.info(String.format(DURATION_TOKEN_MESSAGE, duration.toMinutes()));
     }
 
     private Mono<AccessToken> getAccessToken() {
@@ -72,11 +79,8 @@ public class AuthTokenRenexFilter implements ExchangeFilterFunction {
                 IdTokenProvider tokenProvider = getTokenProvider();
                 IdTokenCredentials idTokenCredentials = buildTokenCredentials(tokenProvider);
                 AccessToken accessToken = idTokenCredentials.refreshAccessToken();
-                if (Objects.isNull(accessToken)) {
-                    sink.error(new RuntimeException("No se pudo obtener un nuevo token de acceso"));
-                } else {
-                    sink.success(accessToken);
-                }
+                if (Objects.isNull(accessToken)) sink.error(new RuntimeException(UNABLE_ACCESS_TOKEN));
+                sink.success(accessToken);
             } catch (Exception e) {
                 sink.error(e);
             }
@@ -92,9 +96,8 @@ public class AuthTokenRenexFilter implements ExchangeFilterFunction {
 
     private IdTokenProvider getTokenProvider() throws IOException {
         GoogleCredentials googleCredentials = GoogleCredentials.getApplicationDefault();
-        if (googleCredentials instanceof IdTokenProvider)
-            return (IdTokenProvider) googleCredentials;
-        throw new IllegalArgumentException("Credentials are not an instance of IdTokenProvider.");
+        if (googleCredentials instanceof IdTokenProvider idTokenProvider) return idTokenProvider;
+        throw new IllegalArgumentException(NOT_TOKEN_PROVIDER);
     }
 
     private ClientRequest injectTokenToRequest(ClientRequest request, String token) {
@@ -107,7 +110,7 @@ public class AuthTokenRenexFilter implements ExchangeFilterFunction {
         this.getAccessToken()
                 .doOnNext(accessToken -> defineCache(accessToken.getExpirationTime()))
                 .doOnNext(this::addTokenInCache)
-                .doOnError(error -> logger.info("Error loading renex token into cache", error))
+                .doOnError(error -> logger.error(ERROR_CACHE, error))
                 .subscribe();
     }
 
