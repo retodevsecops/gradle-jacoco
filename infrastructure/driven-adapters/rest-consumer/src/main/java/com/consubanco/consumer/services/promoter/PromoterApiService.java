@@ -11,6 +11,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 import reactor.function.TupleUtils;
@@ -18,11 +19,11 @@ import reactor.function.TupleUtils;
 import java.util.List;
 import java.util.Map;
 
+import static com.consubanco.consumer.commons.ClientExceptionFactory.requestError;
 import static com.consubanco.consumer.services.promoter.util.BranchesByPromoterResUtil.BRANCHES;
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.buildTechnical;
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
-import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.API_BRANCHES_BY_PROMOTER_ERROR;
-import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.API_SEARCH_INTERLOCUTOR_ERROR;
+import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.*;
 
 @Service
 public class PromoterApiService {
@@ -55,6 +56,7 @@ public class PromoterApiService {
                 })
                 .filter(SearchInterlocutorResUtil::checkIfSuccessResponse)
                 .flatMap(SearchInterlocutorResUtil::getDataInterlocutor)
+                .onErrorMap(WebClientRequestException.class, error -> requestError(error, API_REQUEST_ERROR))
                 .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_SEARCH_INTERLOCUTOR_ERROR))
                 .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(API_SEARCH_INTERLOCUTOR_ERROR));
     }
@@ -68,6 +70,7 @@ public class PromoterApiService {
                 })
                 .filter(BranchesByPromoterResUtil::checkIfSuccessResponse)
                 .flatMap(BranchesByPromoterResUtil::getBranches)
+                .onErrorMap(WebClientRequestException.class, error -> requestError(error, API_REQUEST_ERROR))
                 .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_BRANCHES_BY_PROMOTER_ERROR))
                 .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(API_BRANCHES_BY_PROMOTER_ERROR));
     }

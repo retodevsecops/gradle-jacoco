@@ -1,5 +1,6 @@
 package com.consubanco.usecase.document.usecase;
 
+import com.consubanco.logger.CustomLogger;
 import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.consubanco.model.entities.agreement.gateway.AgreementConfigRepository;
 import com.consubanco.model.entities.agreement.vo.AgreementConfigVO;
@@ -28,6 +29,7 @@ import static com.consubanco.model.entities.document.message.DocumentMessage.doc
 public class BuildCompoundDocumentsUseCase {
 
     private static final String PATTERN_NAME_ATTACHMENT = ".*-\\d+$";
+    private final CustomLogger logger;
     private final AgreementConfigRepository agreementConfigRepository;
     private final PDFDocumentGateway pdfDocumentGateway;
     private final FileRepository fileRepository;
@@ -121,6 +123,7 @@ public class BuildCompoundDocumentsUseCase {
 
     private void generateSignedApplicantRecord(Process process) {
         generateNom151UseCase.execute(process)
+                .doFinally(e -> logger.info("The file signed with nom151 was generated from the creation of compound documents for process.", process))
                 .subscribeOn(Schedulers.parallel())
                 .subscribe();
     }
