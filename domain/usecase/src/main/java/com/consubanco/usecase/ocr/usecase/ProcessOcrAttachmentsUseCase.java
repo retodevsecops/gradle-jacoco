@@ -33,7 +33,7 @@ public class ProcessOcrAttachmentsUseCase {
         return validateOcrDocuments.execute(unvalidatedOcrDocuments)
                 .filter(this::ocrDocumentsAreValid)
                 .flatMap(validatedOcrDocuments -> buildAllAgreementDocuments.execute(process))
-                .doOnError(error -> logger.error("Failed validation and generation of documents for the id process: " + process.getId(), error))
+                .doOnError(error -> logger.error("Failed validation and generation of documents for the id process: " + process.getId(), error.getMessage()))
                 .doOnSuccess(e -> logger.info("All the documents were generated for process: "+process.getId(), process))
                 .thenReturn(unvalidatedOcrDocuments);
     }
