@@ -67,9 +67,9 @@ adapter:
           get-document-signed: ${ACTION_GET_DOCUMENT_SIGNED_NOM151:http://tempuri.org/IDoc2SignLite/GETDocFirmado}
           get-nom151: ${ACTION_GET_NOM151:http://tempuri.org/IDoc2SignLite/GETNOM}
       ocr:
-        initial-delay-time: ${INITIAL_DELAY_TIME_IN_SECONDS_OCR:50}
+        initial-delay-time: ${INITIAL_DELAY_TIME_IN_SECONDS_OCR:5}
         max-retries: ${MAX_RETRIES_OCR:20}
-        retry-delay: ${RETRY_DELAY_IN_SECONDS_OCR:5}
+        retry-delay: ${RETRY_DELAY_IN_SECONDS_OCR:2}
         max-retry-delay: ${MAX_RETRY_DELAY_IN_MINUTES_OCR:1}
         application-id: ${API_CONNECT_APPLICATION_ID:CSB-RENEX}
         api-notify-document: ${API_NOTIFY_DOCUMENT_OCR:https://docia-integration-msa-24yvwrh62q-uw.a.run.app/doc-ia/notify-files}

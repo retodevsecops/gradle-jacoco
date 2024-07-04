@@ -11,7 +11,6 @@ import com.consubanco.usecase.ocr.helpers.NotifyOcrDocumentsHelper;
 import com.consubanco.usecase.ocr.helpers.ValidateOcrDocumentsHelper;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
 
@@ -26,18 +25,17 @@ public class ProcessOcrAttachmentsUseCase {
     public Mono<List<OcrDocument>> execute(Process process, AgreementConfigVO config, List<File> attachments) {
         return notifyOcrDocuments.execute(process, config, attachments)
                 .filter(list -> !list.isEmpty())
-                .doOnNext(unvalidatedOcrDocuments -> validateOcrDocuments(unvalidatedOcrDocuments, process))
+                .flatMap(unvalidatedOcrDocuments -> validateOcrDocuments(unvalidatedOcrDocuments, process))
                 .switchIfEmpty(generateAgreementDocuments(process));
     }
 
-    private void validateOcrDocuments(List<OcrDocument> unvalidatedOcrDocuments, Process process) {
-        validateOcrDocuments.execute(unvalidatedOcrDocuments)
+    private Mono<List<OcrDocument>> validateOcrDocuments(List<OcrDocument> unvalidatedOcrDocuments, Process process) {
+        return validateOcrDocuments.execute(unvalidatedOcrDocuments)
                 .filter(this::ocrDocumentsAreValid)
                 .flatMap(validatedOcrDocuments -> buildAllAgreementDocuments.execute(process))
                 .doOnError(error -> logger.error("Failed validation and generation of documents for the id process: " + process.getId(), error))
                 .doOnSuccess(e -> logger.info("All the documents were generated for process: "+process.getId(), process))
-                .subscribeOn(Schedulers.parallel())
-                .subscribe();
+                .thenReturn(unvalidatedOcrDocuments);
     }
 
     private boolean ocrDocumentsAreValid(List<OcrDocument> ocrDocuments) {
