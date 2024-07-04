@@ -28,7 +28,6 @@ import static com.consubanco.consumer.commons.Constants.AUTH_BEARER_VALUE;
 import static com.consubanco.consumer.commons.Constants.CLIENT_ID_HEADER;
 import static io.netty.channel.ChannelOption.CONNECT_TIMEOUT_MILLIS;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static java.util.concurrent.TimeUnit.MINUTES;
 
 @Configuration
 @RequiredArgsConstructor
@@ -118,6 +117,7 @@ public class RestConsumerConfig {
 
     private ClientHttpConnector getClientHttpConnector() {
         int timeout = clientProperties.getTimeout();
+        int idleTimeout = (int) (timeout * 0.8);
         return new ReactorClientHttpConnector(HttpClient.create()
                 .compress(true)
                 .keepAlive(true)
@@ -127,7 +127,7 @@ public class RestConsumerConfig {
                 .doOnConnected(connection -> {
                     connection.addHandlerLast(new ReadTimeoutHandler(timeout, MILLISECONDS));
                     connection.addHandlerLast(new WriteTimeoutHandler(timeout, MILLISECONDS));
-                    connection.addHandlerLast(new IdleStateHandler(5, 5, 0, MINUTES));
+                    connection.addHandlerLast(new IdleStateHandler(idleTimeout, idleTimeout, 0, MILLISECONDS));
                 }));
     }
 
