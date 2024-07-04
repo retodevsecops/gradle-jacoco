@@ -1,4 +1,4 @@
-name: Build, Push and Deploy 
+name: Release Approval Process
 on:
   workflow_dispatch:
     inputs:
@@ -13,7 +13,7 @@ on:
           - 'prod'
 jobs:
   workflow:
-    uses: InnovacionTecnologicaCSP/devsecops-actions/.github/workflows/main.yml@main
+    uses: InnovacionTecnologicaCSP/devsecops-actions/.github/workflows/release.yml@main
     with:
       env: ${{ inputs.env }}
     secrets: inherit
