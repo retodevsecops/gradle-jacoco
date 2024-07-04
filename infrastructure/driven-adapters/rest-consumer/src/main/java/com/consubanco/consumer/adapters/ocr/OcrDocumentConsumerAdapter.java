@@ -14,6 +14,7 @@ import com.consubanco.model.entities.ocr.vo.OcrDataVO;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
@@ -23,6 +24,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 
+import static com.consubanco.consumer.commons.ClientExceptionFactory.requestError;
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.buildTechnical;
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
 import static com.consubanco.model.entities.ocr.message.OcrMessage.*;
@@ -58,6 +60,7 @@ public class OcrDocumentConsumerAdapter implements OcrDocumentGateway {
                 .retrieve()
                 .bodyToMono(NotifyDocumentResDTO.class)
                 .map(NotifyDocumentResDTO::getTransactionId)
+                .onErrorMap(WebClientRequestException.class, error -> requestError(error, API_REQUEST_ERROR))
                 .onErrorMap(WebClientResponseException.class, error -> customError(error, API_NOTIFY_RESPONSE_ERROR))
                 .onErrorMap(e -> !(e instanceof  TechnicalException), throwTechnicalError(API_NOTIFY_ERROR));
     }
@@ -86,6 +89,7 @@ public class OcrDocumentConsumerAdapter implements OcrDocumentGateway {
                 .bodyValue(request)
                 .retrieve()
                 .bodyToMono(GetMetadataResDTO.class)
+                .onErrorMap(WebClientRequestException.class, error -> requestError(error, API_REQUEST_ERROR))
                 .onErrorMap(WebClientResponseException.class, error -> customError(error, API_GET_METADATA_RESPONSE_ERROR))
                 .onErrorMap(e -> !(e instanceof  TechnicalException), throwTechnicalError(API_GET_METADATA_ERROR))
                 .doOnError(error -> logger.error("Error when get ocr document data by transactionId " + transactionId, error));

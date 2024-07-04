@@ -10,14 +10,17 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 import reactor.core.publisher.Mono;
 
 import java.util.function.Function;
 
+import static com.consubanco.consumer.commons.ClientExceptionFactory.requestError;
 import static com.consubanco.consumer.services.nom151.util.GetSignedDocumentUtil.buildRequest;
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.buildTechnical;
 import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.API_NOM151_ERROR;
 import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.API_NOM151_RESPONSE_ERROR;
+import static com.consubanco.model.entities.otp.message.OtpTechnicalMessage.API_REQUEST_ERROR;
 
 @Service
 public class Nom151ApiService {
@@ -63,17 +66,10 @@ public class Nom151ApiService {
                 .bodyValue(loadDocumentReqDTO.buildRequest(user, password))
                 .exchangeToMono(response -> getResponse(response, LoadDocumentReqDTO::getSuccessfulResponse))
                 .map(LoadDocumentReqDTO::resultIsSuccess)
+                .onErrorMap(WebClientRequestException.class, error -> requestError(error, API_REQUEST_ERROR))
                 .onErrorMap(e -> !(e instanceof TechnicalException), error -> buildTechnical(error, API_NOM151_ERROR));
     }
 
-    /**
-     * TODO: agregar logs
-     *
-     * @param user
-     * @param password
-     * @param documentId
-     * @return
-     */
     private Mono<String> getSignedDocument(String user, String password, String documentId) {
         String bodyValue = buildRequest(user, password, documentId);
         return nom151Client.post()
@@ -81,6 +77,7 @@ public class Nom151ApiService {
                 .header(SOAP_ACTION, properties.getActions().getGetDocumentSigned())
                 .bodyValue(bodyValue)
                 .exchangeToMono(response -> getResponse(response, GetSignedDocumentUtil::getSuccessfulResponse))
+                .onErrorMap(WebClientRequestException.class, error -> requestError(error, API_REQUEST_ERROR))
                 .onErrorMap(e -> !(e instanceof TechnicalException), error -> buildTechnical(error, API_NOM151_ERROR));
     }
 
@@ -90,6 +87,7 @@ public class Nom151ApiService {
                 .header(SOAP_ACTION, properties.getActions().getGetNom151())
                 .bodyValue(GetNom151Util.buildRequest(user, password, documentId))
                 .exchangeToMono(response -> getResponse(response, GetNom151Util::getSuccessfulResponse))
+                .onErrorMap(WebClientRequestException.class, error -> requestError(error, API_REQUEST_ERROR))
                 .onErrorMap(e -> !(e instanceof TechnicalException), error -> buildTechnical(error, API_NOM151_ERROR));
     }
 

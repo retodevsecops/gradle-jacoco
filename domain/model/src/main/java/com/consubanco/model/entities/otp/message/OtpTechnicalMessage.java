@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum OtpTechnicalMessage implements IExceptionMessage {
 
-    API_VALIDATE_OTP_ERROR("TE_LOAN_0001", "Error when consuming the validate otp api.");
+    API_VALIDATE_OTP_ERROR("TE_OTP_0001", "Error when consuming the validate otp api."),
+    API_REQUEST_ERROR("TE_OTP_0002", "Error when requesting otp api.");
 
     private final String code;
     private final String message;
