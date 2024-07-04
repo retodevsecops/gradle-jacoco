@@ -39,7 +39,7 @@ public class AuthTokenRenexFilter implements ExchangeFilterFunction {
     private Cache<String, String> cache;
     private final String audience;
 
-    public AuthTokenRenexFilter(@Value("adapter.rest-consumer.apis.renex.audience") String audience,
+    public AuthTokenRenexFilter(@Value("${adapter.rest-consumer.apis.renex.audience:renovacion-dev}") String audience,
                                 CustomLogger logger) {
         this.logger = logger;
         this.audience = audience;
