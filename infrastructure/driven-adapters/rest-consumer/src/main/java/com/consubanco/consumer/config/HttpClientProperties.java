@@ -12,4 +12,9 @@ import org.springframework.context.annotation.Configuration;
 public class HttpClientProperties {
     private int timeout;
     private int memory;
+
+    public int idleTimeout() {
+        return (int) (timeout * 0.8);
+    }
+
 }

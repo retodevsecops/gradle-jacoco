@@ -21,8 +21,10 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
+import reactor.netty.resources.ConnectionProvider;
 
 import java.time.Duration;
+import java.util.UUID;
 
 import static com.consubanco.consumer.commons.Constants.AUTH_BEARER_VALUE;
 import static com.consubanco.consumer.commons.Constants.CLIENT_ID_HEADER;
@@ -117,8 +119,8 @@ public class RestConsumerConfig {
 
     private ClientHttpConnector getClientHttpConnector() {
         int timeout = clientProperties.getTimeout();
-        int idleTimeout = (int) (timeout * 0.8);
-        return new ReactorClientHttpConnector(HttpClient.create()
+        int idleTimeout = clientProperties.idleTimeout();
+        return new ReactorClientHttpConnector(HttpClient.create(poolConnection())
                 .compress(true)
                 .keepAlive(true)
                 .option(CONNECT_TIMEOUT_MILLIS, timeout)
@@ -129,6 +131,17 @@ public class RestConsumerConfig {
                     connection.addHandlerLast(new WriteTimeoutHandler(timeout, MILLISECONDS));
                     connection.addHandlerLast(new IdleStateHandler(idleTimeout, idleTimeout, 0, MILLISECONDS));
                 }));
+    }
+
+    private ConnectionProvider poolConnection() {
+        return ConnectionProvider.builder(UUID.randomUUID().toString())
+                .maxConnections(50)
+                .pendingAcquireMaxCount(100)
+                .pendingAcquireTimeout(Duration.ofMillis(clientProperties.getTimeout()))
+                .maxIdleTime(Duration.ofMillis(clientProperties.idleTimeout()))
+                .maxLifeTime(Duration.ofMinutes(5))
+                .evictInBackground(Duration.ofSeconds(30))
+                .build();
     }
 
 }
