@@ -111,7 +111,7 @@
             },
             "applicant": {
                 "bp": "${customer_data.customer.bpId}",
-                "clientId": "${customer_data.customer.bpId}",
+                "clientId": "${customer_data.customer.clientId}",
                 "curp": "${customer_data.customer.curp}",
                 "rfc": "${customer_data.customer.rfc}",
                 "name1": "${customer_data.customer.firstName}",
@@ -132,8 +132,8 @@
                     </#list>
                 ],
                 "regimenFiscal": {
-                    "key": "string",
-                    "description": "string"
+                    "key": "${customer_data.customer.regimenFiscal.key}",
+                    "description": "${customer_data.customer.regimenFiscal.description}"
                 }
             },
             "promotorBp": "${promoter_data.bpId}",
