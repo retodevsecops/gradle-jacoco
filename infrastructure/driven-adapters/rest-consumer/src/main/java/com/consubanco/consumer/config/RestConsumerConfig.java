@@ -26,8 +26,7 @@ import reactor.netty.resources.ConnectionProvider;
 import java.time.Duration;
 import java.util.UUID;
 
-import static com.consubanco.consumer.commons.Constants.AUTH_BEARER_VALUE;
-import static com.consubanco.consumer.commons.Constants.CLIENT_ID_HEADER;
+import static com.consubanco.consumer.commons.Constants.*;
 import static io.netty.channel.ChannelOption.CONNECT_TIMEOUT_MILLIS;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
@@ -94,9 +93,10 @@ public class RestConsumerConfig {
     }
 
     @Bean("ocrClient")
-    public WebClient buildOcrClient() {
+    public WebClient buildOcrClient(@Value("${adapter.rest-consumer.apis.ocr.api-key}") String apiKey) {
         return WebClient.builder()
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .defaultHeader(API_KEY_OCR_HEADER, apiKey)
                 .clientConnector(getClientHttpConnector())
                 .filter(webClientLoggingFilter)
                 .build();
