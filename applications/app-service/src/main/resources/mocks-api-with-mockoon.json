@@ -510,6 +510,35 @@
       ],
       "enabled": true,
       "responseMode": null
+    },
+    {
+      "uuid": "3e182c5e-b0a3-456e-9184-62f5327504c7",
+      "type": "http",
+      "documentation": "",
+      "method": "post",
+      "endpoint": "ebanking-notification-service/sendGenericMail",
+      "responses": [
+        {
+          "uuid": "fcf01116-79f5-4b29-be4e-248f9720d5f3",
+          "body": "{\r\n    \"sendGenericMailResponseBO\": {\r\n        \"status\": \"C\",\r\n        \"code\": \"200\",\r\n        \"response\": \"Notificación enviada con éxito\"\r\n    }\r\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id"
+        }
+      ],
+      "enabled": true,
+      "responseMode": null
     }
   ],
   "rootChildren": [
@@ -580,6 +609,10 @@
     {
       "type": "route",
       "uuid": "83939e08-c781-480a-9670-6403feb793d2"
+    },
+    {
+      "type": "route",
+      "uuid": "3e182c5e-b0a3-456e-9184-62f5327504c7"
     }
   ],
   "proxyMode": false,

@@ -185,11 +185,11 @@
     "signature": [
         {
             "name": "cliente",
-            "file_url": "https://minisitiosclaro.claro.com.co/AdminCobertura/mapImages/cob220722lte/Z12/2040/1198.png"
+            "file_url": "https://storage.googleapis.com/csb_puc_statics_prod/unsigned.png"
         },
         {
             "name": "promotor",
-            "file_url": "https://minisitiosclaro.claro.com.co/AdminCobertura/mapImages/cob220722lte/Z12/2040/1198.png"
+            "file_url": "https://storage.googleapis.com/csb_puc_statics_prod/unsigned.png"
         }
     ],
     "signatureColor": "#000000",
