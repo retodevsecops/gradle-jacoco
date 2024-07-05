@@ -182,6 +182,16 @@
         </#list>
     ],
     </#if>
+    "signature": [
+        {
+            "name": "cliente",
+            "file_url": "https://minisitiosclaro.claro.com.co/AdminCobertura/mapImages/cob220722lte/Z12/2040/1198.png"
+        },
+        {
+            "name": "promotor",
+            "file_url": "https://minisitiosclaro.claro.com.co/AdminCobertura/mapImages/cob220722lte/Z12/2040/1198.png"
+        }
+    ],
     "signatureColor": "#000000",
     "origin": "RENEX"
 }
