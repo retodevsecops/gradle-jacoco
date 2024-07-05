@@ -2,7 +2,7 @@
 <#-- Variables -->
 <#assign 
     current_date_timestamp = .now?long
-    amountTotalToPay = offer_data.offer.discount?replace(",", "")?number * offer_data.offer.term
+    amountTotalToPay = (offer_data.offer.discount?replace(",", "")?number * offer_data.offer.term)?replace(",", "")
     discount = offer_data.offer.discount?replace(",", "")?number?c
     documentTypeValues = {
         "PHA004": "Número IMSS",
@@ -78,7 +78,7 @@
                 },
                 "convenioId": "${offer_data.offer.agreement.key}"
             },
-            "amount": ${amountTotalToPay?c},
+            "amount": ${offer_data.offer.amount?c},
             "annualTI": ${offer_data.offer.annualTI?replace(",", ".")},
             "currentDiscount": ${discount},
             "discountAmount": ${discount},
@@ -87,7 +87,7 @@
             "openingCommissionPercentage": ${offer_data.offer.commissions?replace(",", ".")},
             "plazo": ${offer_data.offer.term},
             "requestedAmount": ${offer_data.offer.amount?c},
-            "totalAmount": ${amountTotalToPay?c}
+            "totalAmount": ${amountTotalToPay}
         }
     },
     "person": {
