@@ -36,7 +36,7 @@ adapter:
         api-health-offer: ${API_HEALTH_OFFER:http://localhost:3001/offers-api/offers/actuator/health}
         api-active-offer: ${API_ACTIVE_OFFER:http://localhost:3001/offers-api/offers/active-offering?processId={processId}}
         api-validate-otp: ${API_VALIDATE_OTP:http://localhost:3001/authorization-api/otp/validate}
-        api-accept-offer: ${API_ACCEPT_OFFER:https://vd-dev.csbservicios.com/offers-api/offers/accept/{processId}}
+        api-accept-offer: ${API_ACCEPT_OFFER:http://localhost:3001/offers-api/offers/accept/{processId}}
       promoter:
         auth-token: ${API_PROMOTER_AUTH_TOKEN}
         channel: ${API_GET_AGREEMENT_CHANNEL:RENEX}
@@ -48,7 +48,7 @@ adapter:
         application-id: ${API_CONNECT_APPLICATION_ID:CSB-RENEX}
         api-get-cnca: ${API_GET_CNCA:https://apic.consubanco.com/csb/qa/puc-letter-generate-api/getLetterCNCA}
         api-search-interlocutor: ${API_SEARCH_INTERLOCUTOR:http://localhost:3001/csb/qa/common-crm-service/searchInterlocutor}
-        api-send-generic-email: ${API_SEND_GENERIC_EMAIL:http://localhost:3001/csb/qa/common-crm-service/searchInterlocutor}
+        api-send-generic-email: ${API_SEND_GENERIC_EMAIL:http://localhost:3001/ebanking-notification-service/sendGenericMail}
         api-branches-promoter: ${API_BRANCHES_BY_PROMOTER:http://localhost:3001/csb/qa/opp-catalog-service/getBranchesByPromotor}
         api-docs-previous: ${API_DOCS_PREVIOUS:https://apic.consubanco.com/csb/qa/opp-service/findDocsPreviusApplication}
         api-create-application: ${API_CREATE_APPLICATION:http://localhost:3001/csb/qa/opp-service/createApplication}
@@ -67,9 +67,9 @@ adapter:
           get-document-signed: ${ACTION_GET_DOCUMENT_SIGNED_NOM151:http://tempuri.org/IDoc2SignLite/GETDocFirmado}
           get-nom151: ${ACTION_GET_NOM151:http://tempuri.org/IDoc2SignLite/GETNOM}
       ocr:
-        initial-delay-time: ${INITIAL_DELAY_TIME_IN_SECONDS_OCR:50}
+        initial-delay-time: ${INITIAL_DELAY_TIME_IN_SECONDS_OCR:5}
         max-retries: ${MAX_RETRIES_OCR:20}
-        retry-delay: ${RETRY_DELAY_IN_SECONDS_OCR:5}
+        retry-delay: ${RETRY_DELAY_IN_SECONDS_OCR:2}
         max-retry-delay: ${MAX_RETRY_DELAY_IN_MINUTES_OCR:1}
         application-id: ${API_CONNECT_APPLICATION_ID:CSB-RENEX}
         api-notify-document: ${API_NOTIFY_DOCUMENT_OCR:https://docia-integration-msa-24yvwrh62q-uw.a.run.app/doc-ia/notify-files}
@@ -80,9 +80,9 @@ adapter:
     bucket-name: ${GCS_BUCKET_NAME:csb-venta-digital}
     sign-url-days: ${GCS_SIGN_URL_DAYS:1}
     files-path:
-      payload-template: ${GCS_PAYLOAD_TEMPLATE_PATH:management/puc-loans-documents-msa/payload-template.ftl}
-      agreements-config: ${GCS_AGREEMENT_CONFIG:management/puc-loans-documents-msa/agreements-config.json}
-      create-application-template: ${GCS_CREATE_APPLICATION_TEMPLATE_PATH:management/puc-loans-documents-msa/create-application-template.ftl}
+      payload-template: ${GCS_PAYLOAD_TEMPLATE_PATH:management/vd-loans-documents-msa/payload-template.ftl}
+      agreements-config: ${GCS_AGREEMENT_CONFIG:management/vd-loans-documents-msa/agreements-config.json}
+      create-application-template: ${GCS_CREATE_APPLICATION_TEMPLATE_PATH:management/vd-loans-documents-msa/create-application-template.ftl}
   postgresql-repository:
     connection:
       host: ${DB_HOST}

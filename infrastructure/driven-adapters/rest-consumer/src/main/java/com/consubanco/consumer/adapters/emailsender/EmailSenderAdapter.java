@@ -3,19 +3,23 @@ package com.consubanco.consumer.adapters.emailsender;
 import com.consubanco.consumer.adapters.document.properties.ApisProperties;
 import com.consubanco.consumer.adapters.emailsender.dto.EmailSenderRequest;
 import com.consubanco.logger.CustomLogger;
+import com.consubanco.model.commons.exception.TechnicalException;
 import com.consubanco.model.entities.email.gateway.EmailGateway;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.consubanco.consumer.commons.ClientExceptionFactory.requestError;
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
 import static com.consubanco.model.entities.loan.message.LoanTechnicalMessage.API_CREATE_APPLICATION_ERROR;
+import static com.consubanco.model.entities.loan.message.LoanTechnicalMessage.REQUEST_API_ERROR;
 
 @Service
 public class EmailSenderAdapter implements EmailGateway {
@@ -35,14 +39,15 @@ public class EmailSenderAdapter implements EmailGateway {
 
     @Override
     public Mono<Boolean> sendEmail(String email, String bp, String fullName, String base64File) {
-        logger.info("Sending email contract to customer BP: " + bp);
+        logger.info("Sending email contract to customer BP: " + bp + "email: " + email + "contract : " + base64File.substring(0, 200));
         return this.sendGenericEmailClient.post()
-                .uri(apis.getApiConnect().getApiSearchInterlocutor())
+                .uri(apis.getApiConnect().getApiSendGenericEmail())
                 .bodyValue(buildBodyRequest(email, bp, fullName, base64File))
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
                 .map(response -> Objects.nonNull(response) ? Boolean.TRUE : Boolean.FALSE)
-                .onErrorMap(throwTechnicalError(API_CREATE_APPLICATION_ERROR));
+                .onErrorMap(WebClientRequestException.class, error -> requestError(error, REQUEST_API_ERROR))
+                .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(API_CREATE_APPLICATION_ERROR));
     }
 
     private EmailSenderRequest buildBodyRequest(String email, String bp, String fullName, String base64File) {

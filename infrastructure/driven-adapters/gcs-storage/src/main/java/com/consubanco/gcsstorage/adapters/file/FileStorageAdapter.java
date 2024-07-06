@@ -123,7 +123,7 @@ public class FileStorageAdapter implements FileRepository {
 
     public Mono<File> uploadLocalPayloadTemplate() {
         return Mono.just(properties.payloadTemplatePath())
-                .map(FileUtil::getFileName)
+                .map(FileUtil::getFileNameWithExtension)
                 .map(ClassPathResource::new)
                 .flatMap(FileUtil::buildFileUploadVOFromResource)
                 .onErrorMap(throwTechnicalError(LOCAL_TEMPLATE_ERROR))
@@ -181,7 +181,7 @@ public class FileStorageAdapter implements FileRepository {
 
     private Mono<File> uploadLocalCreateApplicationTemplate() {
         return Mono.just(properties.getFilesPath().getCreateApplicationTemplate())
-                .map(FileUtil::getFileName)
+                .map(FileUtil::getFileNameWithExtension)
                 .map(ClassPathResource::new)
                 .flatMap(FileUtil::buildFileUploadVOFromResource)
                 .flatMap(this::uploadCreateApplicationTemplate)
@@ -212,6 +212,7 @@ public class FileStorageAdapter implements FileRepository {
                 .map(Storage.BlobListOption::prefix)
                 .map(option -> storage.list(properties.getBucketName(), option))
                 .flatMapIterable(Page::iterateAll)
+                .doOnError(error -> logger.error("Error when consulting the files in folder " +  folderPath, error))
                 .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(GET_FILE_ERROR));
     }
 

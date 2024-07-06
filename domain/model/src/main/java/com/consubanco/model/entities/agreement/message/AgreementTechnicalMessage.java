@@ -12,7 +12,8 @@ public enum AgreementTechnicalMessage implements IExceptionMessage {
     FAIL_GET_CONFIG_STORAGE("TE_AGREEMENT_0002", "Error getting agreements configuration from storage."),
     FAIL_GET_CONFIG_LOCAL("TE_AGREEMENT_0003", "Error getting agreements configuration from local."),
     STRUCTURE_INVALID("TE_AGREEMENT_0004", "The structure of the configuration file is not valid."),
-    FAIL_UPLOAD_CONFIG("TE_AGREEMENT_0005", "Error when uploading the agreement configuration file.");
+    FAIL_UPLOAD_CONFIG("TE_AGREEMENT_0005", "Error when uploading the agreement configuration file."),
+    API_REQUEST_ERROR("TE_AGREEMENT_0006", "Error when request the promoter API to get details agreement.");
 
 
     private final String code;

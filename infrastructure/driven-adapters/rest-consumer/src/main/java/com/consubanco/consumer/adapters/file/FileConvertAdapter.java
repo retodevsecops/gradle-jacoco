@@ -9,13 +9,16 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import static com.consubanco.consumer.commons.ClientExceptionFactory.requestError;
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
+import static com.consubanco.model.entities.file.message.FileTechnicalMessage.API_REQUEST_ERROR;
 import static com.consubanco.model.entities.file.message.FileTechnicalMessage.ENCODED_ERROR;
 
 @Service
@@ -32,11 +35,13 @@ public class FileConvertAdapter implements FileConvertGateway {
 
     @Override
     public Mono<String> getFileContentAsBase64(String fileUrl) {
+        URI uri = buildUri(fileUrl);
         return clientGetFiles.get()
-                .uri(uriBuilder -> buildUri(fileUrl))
+                .uri(uriBuilder -> uri)
                 .retrieve()
                 .bodyToMono(Resource.class)
                 .flatMap(Base64Util::resourceToBase64)
+                .onErrorMap(WebClientRequestException.class, error -> requestError(error, API_REQUEST_ERROR))
                 .doOnError(WebClientResponseException.class, error -> logger.error(new RestConsumerLogDTO(error)))
                 .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(ENCODED_ERROR));
     }
