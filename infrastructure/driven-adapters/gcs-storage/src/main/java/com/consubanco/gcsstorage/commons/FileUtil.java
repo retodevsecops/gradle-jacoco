@@ -27,6 +27,14 @@ public class FileUtil {
 
     public String getFileName(String documentPath) {
         String[] parts = documentPath.split("/");
+        String filename = parts[parts.length - 1];
+        int lastIndexOfDot = filename.lastIndexOf('.');
+        if (lastIndexOfDot == -1) return filename;
+        return filename.substring(0, lastIndexOfDot);
+    }
+
+    public String getFileNameWithExtension(String documentPath) {
+        String[] parts = documentPath.split("/");
         return parts[parts.length - 1];
     }
 

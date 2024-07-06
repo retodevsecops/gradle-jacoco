@@ -7,7 +7,7 @@ dependencies {
     implementation 'io.micrometer:micrometer-registry-prometheus'
     implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.4.0'
     testImplementation 'org.springdoc:springdoc-openapi-starter-webflux-api:2.4.0'
-    implementation ('org.modelmapper:modelmapper:3.2.0') {
+    implementation('org.modelmapper:modelmapper:3.2.0') {
         exclude group: 'com.h2database', module: 'h2'
     }
     implementation 'commons-codec:commons-codec:1.16.1'

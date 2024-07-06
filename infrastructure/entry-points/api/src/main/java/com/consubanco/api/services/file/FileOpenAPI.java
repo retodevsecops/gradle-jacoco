@@ -64,6 +64,7 @@ public class FileOpenAPI {
                 .response(responseBusinessException())
                 .response(responseInternalError());
     }
+
     public static Consumer<Builder> uploadAgreementFiles() {
         return ops -> ops.tag(TAG_OFFER)
                 .operationId("uploadAgreementFiles")
@@ -71,10 +72,11 @@ public class FileOpenAPI {
                 .summary("Upload all files of an agreement.")
                 .parameter(ParamsOpenAPI.path(FileParams.PROCESS_ID, "Process identifier"))
                 .requestBody(RequestsOpenAPI.formData())
-                .response(responseAccepted(Void.class))
+                .response(responseOk(UploadAttachmentsResDTO.class))
                 .response(responseBusinessException())
                 .response(responseInternalError());
     }
+
     public static Consumer<Builder> getFilesOfferByProcess() {
         return ops -> ops.tag(TAG_OFFER)
                 .operationId("getFilesOfferByProcess")
@@ -85,6 +87,7 @@ public class FileOpenAPI {
                 .response(responseBusinessException())
                 .response(responseInternalError());
     }
+
     public static Consumer<Builder> getCustomerVisibleFiles() {
         return ops -> ops.tag(TAG_OFFER)
                 .operationId("getCustomerVisibleFiles")
@@ -153,11 +156,22 @@ public class FileOpenAPI {
     public static Consumer<Builder> uploadOfficialID() {
         return ops -> ops.tag(TAG_OFFER)
                 .operationId("uploadOfficialID")
-                .description("This operation is responsible for uploading an official identification file to storage..")
+                .description("This operation is responsible for uploading an official identification file to storage.")
                 .summary("Upload official identification.")
                 .parameter(ParamsOpenAPI.path(FileParams.PROCESS_ID, "Process identifier"))
                 .requestBody(RequestsOpenAPI.body(UploadOfficialIdentificationReqDTO.class))
                 .response(responseOk(FileResDTO.class))
+                .response(responseBusinessException())
+                .response(responseInternalError());
+    }
+
+    public static Consumer<Builder> attachmentStatus() {
+        return ops -> ops.tag(TAG_OFFER)
+                .operationId("attachmentStatus")
+                .description("View validation status of attached documents by process identifier.")
+                .summary("Check validation status of attachments.")
+                .parameter(ParamsOpenAPI.path(FileParams.PROCESS_ID, "Process identifier"))
+                .response(responseOk(AttachmentStatusResDTO.class))
                 .response(responseBusinessException())
                 .response(responseInternalError());
     }

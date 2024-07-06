@@ -16,6 +16,7 @@
     current_date_timestamp = .now?long
     promotorCompleteName = promoter_data.name1 + " " + promoter_data.lastname1
     termDesc = offer_data.offer.term + " " + offer_data.offer.frequency
+    amountTotalToPay = offer_data.offer.discount?replace(",", "")?number * offer_data.offer.term
 >
 <#-- Functions -->
 <#function getFieldValue(field)>
@@ -30,7 +31,7 @@
 <#-- Template -->
 {
     "createApplicationRequestBO": {
-        "applicationId": "CSB-RENEX",  
+        "applicationId": "CSB-RENEX",
         "aplicationInfo": {
         <#list promoter_data.branches as branch>
             <#if branch.branchID == agreement_configuration_data.branchId>
@@ -50,27 +51,27 @@
                         "name": "${branch.distribuidor.distributorName}",
                         "acronym": "${branch.distribuidor.distributorSigla}"
                     },
-                    "branchNFOFlag": ${branch.branchNFOFlag?c}
+                    "branchNFOFlag": true
                 },
             </#if>
         </#list>
             "cat": ${offer_data.offer.cat?c},
-            "amount": ${offer_data.offer.amount?c}, 
-            "isCNCA": true,  
-            "termDesc": "${termDesc}", 
+            "amount": ${offer_data.offer.amount?c},
+            "isCNCA": true,
+            "termDesc": "${termDesc}",
             "agreement": {
                 "id": "${offer_data.offer.agreement.key}",
                 "name": "${offer_data.offer.agreement.description}",
-                "group": "${customer_data.preApplicationData.agreement.group}", 
+                "group": "${customer_data.preApplicationData.agreement.group}",
                 "product": {
                     "id": "${offer_data.offer.product.key}",
                     "name": "${offer_data.offer.product.description}",
                     "category": "${customer_data.preApplicationData.agreement.product.category}",
                     "shortName": "${customer_data.preApplicationData.agreement.product.shortName}",
                     "paymentFrecuencyId": "${customer_data.preApplicationData.agreement.product.paymentFrecuencyId}",
-                    "paymentFrecuencyDesc": "${customer_data.preApplicationData.agreement.product.paymentFrecuencyDesc}" 
+                    "paymentFrecuencyDesc": "${customer_data.preApplicationData.agreement.product.paymentFrecuencyDesc}"
                 },
-                "brmsCode": "${customer_data.preApplicationData.agreement.brmsCode}",  
+                "brmsCode": "${customer_data.preApplicationData.agreement.brmsCode}",
                 "documents": [
                     <#list customer_data.preApplicationData.documents as document>
                         <#assign file_data_matched_sec = files_data?filter(file_data -> file_data.name == document.technicalName) >
@@ -79,13 +80,13 @@
                             {
                                 "id": "${document.id}",
                                 "technicalName": "${document.technicalName}",
-                                "fileName": "${document.technicalName}",
+                                "fileName": "${document.technicalName + ".pdf"}",
                                 "name": "${document.name}",
                                 "clasification": "${document.clasification}",
                                 "url": <#if file_data_matched.storageRoute??> "${file_data_matched.storageRoute}" <#else> "" </#if>,
                                 <#if document.fields??>
-                                        "fields": [       
-                                            <#list document.fields as field>                
+                                        "fields": [
+                                            <#list document.fields as field>
                                             {
                                                 "id": "${field.id}",
                                                 "name": "${field.name}",
@@ -96,21 +97,21 @@
                                                 "value": "${getFieldValue(field)}"
                                             }<#if field?has_next>,</#if>
                                             </#list>
-                                        ], 
+                                        ],
                                 </#if>
                                 "required": ${document.required?c},
-                                "visible": ${document.visible?c}       
+                                "visible": ${document.visible?c}
                             }<#if document?has_next>,</#if>
                         </#if>
                     </#list>
                   ],
-                "shortName": "${customer_data.preApplicationData.agreement.shortName}", 
-                "shortGroup": "${customer_data.preApplicationData.agreement.shortGroup}", 
-                "convenioNFOFlag": true 
+                "shortName": "${customer_data.preApplicationData.agreement.shortName}",
+                "shortGroup": "${customer_data.preApplicationData.agreement.shortGroup}",
+                "convenioNFOFlag": true
             },
             "applicant": {
                 "bp": "${customer_data.customer.bpId}",
-                "clientId": "${customer_data.customer.bpId}",
+                "clientId": "${customer_data.customer.clientId}",
                 "curp": "${customer_data.customer.curp}",
                 "rfc": "${customer_data.customer.rfc}",
                 "name1": "${customer_data.customer.firstName}",
@@ -120,7 +121,7 @@
                 "credits": [
                     <#list offer_data.offer.creditList as credit>
                     {
-                        "amount": ${credit.capital?c}, 
+                        "amount": ${credit.capital?c},
                         "letter": {
                             "iva": ${credit.iva?c},
                             "monto": ${credit.totalLiquidacion?c},
@@ -131,21 +132,23 @@
                     </#list>
                 ],
                 "regimenFiscal": {
-                    "key": "string",
-                    "description": "string"
+                    "key": "${customer_data.customer.regimenFiscal.key}",
+                    "description": "${customer_data.customer.regimenFiscal.description}"
                 }
             },
             "promotorBp": "${promoter_data.bpId}",
             "priceGroupId": "${offer_data.offer.priceGroupId}",
+        <#if biometric_task_data.biometricTaskId?has_content>
             "biometricTask": {
                 "taskCRMId": "${biometric_task_data.biometricTaskId}",
                 "createDate": "${biometric_task_data.biometricTaskDate}",
                 "probankNumber": "${biometric_task_data.probankFolio}",
                 "taskStatusCRM": {
-                    "key": "string",
-                    "description": "string"
+                    "key": "E0002",
+                    "description": "Completada"
                 }
-            }, 
+            },
+        </#if>
             "paymentData": {
                 "bankId": "${customer_data.preApplicationData.paymentData.bankId}",
                 "bankDesc": "${customer_data.preApplicationData.paymentData.bankDesc}",
@@ -154,10 +157,11 @@
                 "paymentMethodDesc": "${customer_data.preApplicationData.paymentData.paymentMethodDesc}"
             },
             "probankNumber": "${offer_data.offer.id}",
-            "discountamount": 0,
+            "rate": ${offer_data.offer.monthlyTI?c},
+            "discountamount": ${offer_data.offer.discount?c},
             "promotorNFOFlag": true,
             "reprocessNumber": 0,
-            "amountTotalToPay": 0,
+            "amountTotalToPay": ${amountTotalToPay?c},
             "folioApplication": "${offer_data.offer.id}",
             "sourceChannelApp": "RENEX",
             "promotorCompleteName": "${promotorCompleteName}"

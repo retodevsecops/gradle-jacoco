@@ -14,7 +14,7 @@ public class BranchesByPromoterResUtil {
     private static final String RESPONSE_OBJECT_KEY = "branchesByPromotorResponseBO";
     private static final String PROMOTER_DATA_KEY = "promotorData";
     private static final String BRANCHES_KEY = "sucursales";
-    private static final String CODE_RESPONSE_KEY ="code";
+    private static final String CODE_RESPONSE_KEY = "code";
 
     @SuppressWarnings("unchecked")
     public Boolean checkIfSuccessResponse(Map<String, Object> response) {

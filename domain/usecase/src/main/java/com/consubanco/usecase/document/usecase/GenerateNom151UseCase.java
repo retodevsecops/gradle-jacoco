@@ -1,4 +1,4 @@
-package com.consubanco.usecase.document;
+package com.consubanco.usecase.document.usecase;
 
 import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.consubanco.model.entities.agreement.Agreement;
@@ -41,7 +41,7 @@ public class GenerateNom151UseCase {
                 .map(FileConstants::signedApplicantRecordRoute)
                 .flatMap(fileRepository::getByNameWithoutSignedUrl);
     }
-    
+
     private Mono<File> signDocumentWithNom151(Process process) {
         return getData(process)
                 .flatMap(TupleUtils.function(this::processNom151));

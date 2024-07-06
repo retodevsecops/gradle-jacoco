@@ -3,6 +3,7 @@ package com.consubanco.consumer.adapters.agreement;
 import com.consubanco.consumer.adapters.agreement.dto.GetAgreementRequestDTO;
 import com.consubanco.consumer.adapters.agreement.dto.GetAgreementResponseDTO;
 import com.consubanco.consumer.adapters.agreement.properties.AgreementApisProperties;
+import com.consubanco.model.commons.exception.TechnicalException;
 import com.consubanco.model.entities.agreement.Agreement;
 import com.consubanco.model.entities.agreement.gateway.AgreementGateway;
 import org.modelmapper.ModelMapper;
@@ -10,12 +11,15 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
+import static com.consubanco.consumer.commons.ClientExceptionFactory.requestError;
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.buildTechnical;
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
 import static com.consubanco.model.entities.agreement.message.AgreementTechnicalMessage.API_ERROR;
+import static com.consubanco.model.entities.agreement.message.AgreementTechnicalMessage.API_REQUEST_ERROR;
 
 @Service
 public class AgreementConsumerAdapter implements AgreementGateway {
@@ -41,8 +45,9 @@ public class AgreementConsumerAdapter implements AgreementGateway {
                 .retrieve()
                 .bodyToMono(GetAgreementResponseDTO.class)
                 .map(response -> modelMapper.map(response.getDetail().getAgreement(), Agreement.class))
+                .onErrorMap(WebClientRequestException.class, error -> requestError(error, API_REQUEST_ERROR))
                 .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_ERROR))
-                .onErrorMap(throwTechnicalError(API_ERROR));
+                .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(API_ERROR));
     }
 
 }

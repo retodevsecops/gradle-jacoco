@@ -25,9 +25,9 @@ public class AgreementRouter {
         return RouterFunctions.nest(
                 path(agreementServicesPath).and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                 route()
-                    .GET(AGREEMENT_NUMBER_PATH_PARAM, handler::findByNumber, AgreementOpenAPI.findByNumber())
-                    .GET(ATTACHMENTS_PATH, handler::getAttachments, AgreementOpenAPI.getAttachments())
-                    .build()
+                        .GET(AGREEMENT_NUMBER_PATH_PARAM, handler::findByNumber, AgreementOpenAPI.findByNumber())
+                        .GET(ATTACHMENTS_PATH, handler::getAttachments, AgreementOpenAPI.getAttachments())
+                        .build()
         );
     }
 

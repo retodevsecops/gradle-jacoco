@@ -5,6 +5,7 @@ import com.consubanco.consumer.config.filters.WebClientLoggingFilter;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +21,10 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
+import reactor.netty.resources.ConnectionProvider;
 
 import java.time.Duration;
+import java.util.UUID;
 
 import static com.consubanco.consumer.commons.Constants.AUTH_BEARER_VALUE;
 import static com.consubanco.consumer.commons.Constants.CLIENT_ID_HEADER;
@@ -81,19 +84,28 @@ public class RestConsumerConfig {
                 .build();
     }
 
-    private ExchangeStrategies defineStrategy() {
-        int maxBytes = clientProperties.getMemory() * 1024 * 1024;
-        return ExchangeStrategies.builder()
-                .codecs(config -> config.defaultCodecs().maxInMemorySize(maxBytes))
-                .build();
-    }
-
     @Bean("ApiRenexClient")
     public WebClient buildClientRenex() {
         return WebClient.builder()
                 .clientConnector(getClientHttpConnector())
-                .filter(webClientLoggingFilter)
                 .filter(authTokenRenexFilter)
+                .filter(webClientLoggingFilter)
+                .build();
+    }
+
+    @Bean("ocrClient")
+    public WebClient buildOcrClient() {
+        return WebClient.builder()
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .clientConnector(getClientHttpConnector())
+                .filter(webClientLoggingFilter)
+                .build();
+    }
+
+    private ExchangeStrategies defineStrategy() {
+        int maxBytes = clientProperties.getMemory() * 1024 * 1024;
+        return ExchangeStrategies.builder()
+                .codecs(config -> config.defaultCodecs().maxInMemorySize(maxBytes))
                 .build();
     }
 
@@ -107,16 +119,29 @@ public class RestConsumerConfig {
 
     private ClientHttpConnector getClientHttpConnector() {
         int timeout = clientProperties.getTimeout();
-        return new ReactorClientHttpConnector(HttpClient.create()
+        int idleTimeout = clientProperties.idleTimeout();
+        return new ReactorClientHttpConnector(HttpClient.create(poolConnection())
                 .compress(true)
                 .keepAlive(true)
                 .option(CONNECT_TIMEOUT_MILLIS, timeout)
                 .responseTimeout(Duration.ofMillis(timeout))
-                .secure(sslContextSpec -> sslContextSpec.sslContext(getBuildSslContext()))
+                .secure(sslContextSpec -> sslContextSpec.sslContext(getBuildSslContext()).handshakeTimeoutMillis(timeout))
                 .doOnConnected(connection -> {
                     connection.addHandlerLast(new ReadTimeoutHandler(timeout, MILLISECONDS));
                     connection.addHandlerLast(new WriteTimeoutHandler(timeout, MILLISECONDS));
+                    connection.addHandlerLast(new IdleStateHandler(idleTimeout, idleTimeout, 0, MILLISECONDS));
                 }));
+    }
+
+    private ConnectionProvider poolConnection() {
+        return ConnectionProvider.builder(UUID.randomUUID().toString())
+                .maxConnections(50)
+                .pendingAcquireMaxCount(100)
+                .pendingAcquireTimeout(Duration.ofMillis(clientProperties.getTimeout()))
+                .maxIdleTime(Duration.ofMillis(clientProperties.idleTimeout()))
+                .maxLifeTime(Duration.ofMinutes(5))
+                .evictInBackground(Duration.ofSeconds(30))
+                .build();
     }
 
 }

@@ -24,7 +24,8 @@ public class GetSignedDocumentUtil {
 
     private void validateCredentials(String user, String password) {
         if (user == null || user.isEmpty()) throw new IllegalArgumentException("User cannot be null or empty");
-        if (password == null || password.isEmpty()) throw new IllegalArgumentException("Password cannot be null or empty");
+        if (password == null || password.isEmpty())
+            throw new IllegalArgumentException("Password cannot be null or empty");
     }
 
     public static String getSuccessfulResponse(String response) {

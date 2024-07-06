@@ -1,15 +1,11 @@
 package com.consubanco.model.entities.file;
 
 import lombok.*;
-import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Base64;
-import java.util.Objects;
-
-import static com.consubanco.model.commons.exception.factory.ExceptionFactory.buildBusiness;
-import static com.consubanco.model.entities.file.message.FileBusinessMessage.INCOMPLETE_DATA;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Getter
 @Setter
@@ -19,6 +15,9 @@ import static com.consubanco.model.entities.file.message.FileBusinessMessage.INC
 @Builder(toBuilder = true)
 public class File {
 
+    private static final Pattern BASE_NAME_PATTERN = Pattern.compile("^(.*?)(-\\d+)?$");
+
+    private String id;
     private String name;
     private String content;
     private String url;
@@ -36,16 +35,9 @@ public class File {
     public String fullPath() {
         String directory = this.directoryPath;
         if (!directory.endsWith("/")) directory += "/";
-        return directory.concat(this.name);
-    }
-
-    public byte[] contentDecode() {
-        return Base64.getDecoder().decode(this.content);
-    }
-
-    public Mono<File> checkRequiredData(){
-        if (Objects.isNull(name) || Objects.isNull(content)) return buildBusiness(INCOMPLETE_DATA);
-        return Mono.just(this);
+        return directory.concat(this.name)
+                .concat(".")
+                .concat(this.extension.toLowerCase());
     }
 
     public boolean checkCreationDays(Integer days) {
@@ -56,6 +48,11 @@ public class File {
     public boolean checkCreationMinutes(Integer minutes) {
         long minutesBetween = ChronoUnit.MINUTES.between(creationDate, LocalDateTime.now());
         return minutesBetween <= minutes;
+    }
+
+    public String baseFileName() {
+        Matcher matcher = BASE_NAME_PATTERN.matcher(name);
+        return matcher.matches() ? matcher.group(1) : name;
     }
 
 }

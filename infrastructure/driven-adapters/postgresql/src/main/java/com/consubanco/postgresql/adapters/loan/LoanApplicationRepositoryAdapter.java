@@ -69,7 +69,8 @@ public class LoanApplicationRepositoryAdapter implements LoanApplicationReposito
     }
 
     private Mono<Map<String, Object>> jsonToMap(Json json) {
-        return Mono.fromCallable(() -> mapper.readValue(json.asString(), new TypeReference<Map<String, Object>>() {}))
+        return Mono.fromCallable(() -> mapper.readValue(json.asString(), new TypeReference<Map<String, Object>>() {
+                }))
                 .onErrorMap(throwTechnicalError(CONVERT_MAP_ERROR));
     }
 

@@ -34,7 +34,6 @@ public class RestConsumerLogDTO implements Serializable {
     public static class RequestDTO implements Serializable {
         private String endpoint;
         private String method;
-        private Map<String, Object> attributes;
         private Map<String, Object> headers;
         private Object body;
     }
@@ -43,7 +42,7 @@ public class RestConsumerLogDTO implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder(toBuilder = true)
-    public static class ResponseDTO implements Serializable{
+    public static class ResponseDTO implements Serializable {
         private String status;
         private Map<String, Object> headers;
         private Object body;

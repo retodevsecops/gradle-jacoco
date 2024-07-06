@@ -3,6 +3,7 @@ package com.consubanco.consumer.services;
 import com.consubanco.consumer.adapters.document.properties.ApisProperties;
 import com.consubanco.consumer.config.dto.RestConsumerLogDTO;
 import com.consubanco.logger.CustomLogger;
+import com.consubanco.model.commons.exception.TechnicalException;
 import com.consubanco.model.entities.loan.constant.OfferStatus;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
@@ -11,15 +12,16 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
+import static com.consubanco.consumer.commons.ClientExceptionFactory.requestError;
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.buildTechnical;
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
-import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.API_ACTIVE_OFFER_ERROR;
-import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.OFFER_HEALTH_ERROR;
+import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.*;
 
 @Service
 public class OfferApiService {
@@ -43,8 +45,9 @@ public class OfferApiService {
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                .onErrorMap(WebClientRequestException.class, error -> requestError(error, API_REQUEST_ERROR))
                 .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_ACTIVE_OFFER_ERROR))
-                .onErrorMap(throwTechnicalError(API_ACTIVE_OFFER_ERROR));
+                .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(API_ACTIVE_OFFER_ERROR));
     }
 
     public Mono<String> getOfferHealth() {
@@ -52,6 +55,7 @@ public class OfferApiService {
                 .uri(apis.getRenex().getApiHealthOffer())
                 .retrieve()
                 .bodyToMono(String.class)
+                .onErrorMap(WebClientRequestException.class, error -> requestError(error, API_REQUEST_ERROR))
                 .onErrorMap(throwTechnicalError(OFFER_HEALTH_ERROR));
     }
 
@@ -60,8 +64,9 @@ public class OfferApiService {
                 .uri(apis.getRenex().getApiAcceptOffer(), processId)
                 .exchangeToMono(response -> Mono.just(response.statusCode()))
                 .filter(HttpStatusCode::is2xxSuccessful)
-                .map(httpStatusCode -> OfferStatus.FINALIZED.name())
+                .map(httpStatusCode -> OfferStatus.FINISHED.name())
                 .switchIfEmpty(Mono.just(OfferStatus.ERROR.name()))
+                .onErrorMap(WebClientRequestException.class, error -> requestError(error, API_REQUEST_ERROR))
                 .doOnError(WebClientResponseException.class, error -> logger.error(new RestConsumerLogDTO(error)))
                 .doOnError(error -> !(error instanceof WebClientResponseException), logger::error)
                 .onErrorResume(e -> Mono.just(OfferStatus.ERROR.name()));

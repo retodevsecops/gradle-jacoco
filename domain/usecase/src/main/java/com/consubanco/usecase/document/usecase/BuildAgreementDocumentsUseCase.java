@@ -1,4 +1,4 @@
-package com.consubanco.usecase.document;
+package com.consubanco.usecase.document.usecase;
 
 import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.consubanco.model.entities.agreement.Agreement;
@@ -65,7 +65,7 @@ public class BuildAgreementDocumentsUseCase {
     }
 
     private List<String> getListDocumentsToGenerate(List<Agreement.Document> documents) {
-        return documents.stream()
+        return documents.parallelStream()
                 .flatMap(document -> document.getFields().stream())
                 .map(Agreement.Document.Field::getTechnicalName)
                 .distinct()

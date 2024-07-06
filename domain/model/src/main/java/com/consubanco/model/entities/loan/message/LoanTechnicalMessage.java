@@ -14,7 +14,8 @@ public enum LoanTechnicalMessage implements IExceptionMessage {
     CONVERT_MAP_ERROR("TE_LOAN_0004", "Error converting json to map."),
     QUERY_ERROR_DB("TE_LOAN_0005", "Error when querying the data base."),
     UPDATE_OFFER_STATUS_ERROR("TE_LOAN_0006", "Error when update offer status in the database."),
-    UPDATE_EMAIL_STATUS_ERROR("TE_LOAN_0007", "Error when update email status in the database.");
+    UPDATE_EMAIL_STATUS_ERROR("TE_LOAN_0007", "Error when update email status in the database."),
+    REQUEST_API_ERROR("TE_LOAN_0008", "Error when requesting the API.");
 
     private final String code;
     private final String message;
