@@ -67,6 +67,7 @@ adapter:
           get-document-signed: ${ACTION_GET_DOCUMENT_SIGNED_NOM151:http://tempuri.org/IDoc2SignLite/GETDocFirmado}
           get-nom151: ${ACTION_GET_NOM151:http://tempuri.org/IDoc2SignLite/GETNOM}
       ocr:
+        api-key: ${API_KEY_OCR:pending}
         initial-delay-time: ${INITIAL_DELAY_TIME_IN_SECONDS_OCR:5}
         max-retries: ${MAX_RETRIES_OCR:20}
         retry-delay: ${RETRY_DELAY_IN_SECONDS_OCR:2}
