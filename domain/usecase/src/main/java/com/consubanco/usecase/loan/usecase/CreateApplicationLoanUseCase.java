@@ -79,11 +79,9 @@ public class CreateApplicationLoanUseCase {
     }
 
     private Mono<Void> finishProcess(Process process, LoanApplication loanApplication) {
-        Mono.zip(finishOffer(process.getId()), sendMail(process))
-                .flatMap(tuple -> loanRepository.updateOfferAndEmailStatus(loanApplication.getId(), tuple.getT1(), tuple.getT2()))
-                .subscribeOn(Schedulers.parallel())
-                .subscribe();
-        return Mono.empty();
+        return finishOffer(process.getId())
+                .flatMap(finishOffer -> sendMail(process)
+                                        .flatMap(sendMail -> loanRepository.updateOfferAndEmailStatus(loanApplication.getId(), finishOffer, sendMail)));
     }
 
     private Mono<String> finishOffer(String processId) {
