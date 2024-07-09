@@ -15,7 +15,6 @@ import com.consubanco.usecase.loan.helpers.LoanApplicationValidationHelper;
 import com.consubanco.usecase.process.GetProcessByIdUseCase;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 import reactor.function.TupleUtils;
 
 import java.util.Map;
@@ -78,10 +77,9 @@ public class CreateApplicationLoanUseCase {
                 .map(File::getContent);
     }
 
-    private Mono<Void> finishProcess(Process process, LoanApplication loanApplication) {
-        return finishOffer(process.getId())
-                .flatMap(finishOffer -> sendMail(process)
-                                        .flatMap(sendMail -> loanRepository.updateOfferAndEmailStatus(loanApplication.getId(), finishOffer, sendMail)));
+    private Mono<Void> finishProcess(Process process, LoanApplication req) {
+        return Mono.zip(finishOffer(process.getId()), sendMail(process))
+                .flatMap(tuple -> loanRepository.updateOfferAndEmailStatus(req.getId(), tuple.getT1(), tuple.getT2()));
     }
 
     private Mono<String> finishOffer(String processId) {

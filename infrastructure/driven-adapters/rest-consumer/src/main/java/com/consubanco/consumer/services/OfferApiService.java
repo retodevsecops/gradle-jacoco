@@ -19,9 +19,11 @@ import reactor.core.publisher.Mono;
 import java.util.Map;
 
 import static com.consubanco.consumer.commons.ClientExceptionFactory.requestError;
-import static com.consubanco.model.commons.exception.factory.ExceptionFactory.buildTechnical;
+import static com.consubanco.consumer.commons.ClientExceptionFactory.responseError;
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
 import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.*;
+import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @Service
 public class OfferApiService {
@@ -43,10 +45,17 @@ public class OfferApiService {
         return this.renexClient.get()
                 .uri(apis.getRenex().getApiActiveOffer(), processId)
                 .accept(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                .exchangeToMono(response -> {
+                    HttpStatusCode status = response.statusCode();
+                    if (status == NO_CONTENT || status == CONFLICT)
+                        return Mono.empty();
+                    if (status.is2xxSuccessful())
+                        return response.bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {});
+                    return response.createException()
+                            .flatMap(Mono::error);
+                })
                 .onErrorMap(WebClientRequestException.class, error -> requestError(error, API_REQUEST_ERROR))
-                .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_ACTIVE_OFFER_ERROR))
+                .onErrorMap(WebClientResponseException.class, error -> responseError(error, API_ACTIVE_OFFER_ERROR))
                 .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(API_ACTIVE_OFFER_ERROR));
     }
 
