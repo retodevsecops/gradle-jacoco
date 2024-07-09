@@ -6,13 +6,13 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class FileConstants {
 
-    private final static String OFFER_DIRECTORY_PATH = "renewal/offer/%s/";
-    private final static String PDF_FORMAT = "%s.pdf";
-    private final static String ATTACHMENTS_DIRECTORY_PATH = OFFER_DIRECTORY_PATH.concat("attachments/");
-    private final static String DOCUMENTS_DIRECTORY_PATH = OFFER_DIRECTORY_PATH.concat("documents/");
+    private static final String OFFER_DIRECTORY_PATH = "renewal/offer/%s/";
+    private static final String PDF_FORMAT = "%s.pdf";
+    private static final String ATTACHMENTS_DIRECTORY_PATH = OFFER_DIRECTORY_PATH.concat("attachments/");
+    private static final String DOCUMENTS_DIRECTORY_PATH = OFFER_DIRECTORY_PATH.concat("documents/");
 
-    private final static String CNCA_LETTERS_DIRECTORY_PATH = OFFER_DIRECTORY_PATH.concat("cnca/");
-    public final static String MANAGEMENT_DIRECTORY_PATH = "management/puc-loans-documents-msa";
+    private static final String CNCA_LETTERS_DIRECTORY_PATH = OFFER_DIRECTORY_PATH.concat("cnca/");
+    public static final String MANAGEMENT_DIRECTORY_PATH = "management/vd-loans-documents-ms";
 
     public static String pdfFormat(String fileName) {
         return String.format(PDF_FORMAT, fileName);
