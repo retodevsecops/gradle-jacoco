@@ -64,7 +64,7 @@
         "numeroEmpleado": "${offer_data.offer.employeeNumber?string}"
     },
     "idDocumentData": {
-        "ocr": "${customer_data.customer.identificationNumber}",
+        "ocr": "${customer_data.customer.credentialData.ocr}",
         "type": "${getDocumentTypeValue(customer_data.customer.identificationType)}"
     },
     "offer": {
@@ -108,6 +108,17 @@
                 "suburb": "${residence.suburb! ''}",
                 "township": "${residence.township! ''}",
                 "zipCode": "${residence.zipCode! ''}"
+                <#if residence.phones??>
+                ,
+                "phones": [
+                    <#list residence.phones as phone>
+                    {
+                        "phoneType": "${phone.phoneType! ''}",
+                        "number": "${phone.number! ''}"
+                    }<#if phone_has_next>,</#if>
+                    </#list>
+                ]
+                </#if>
             }<#if residence_has_next>,</#if>
             </#list>
         ],
