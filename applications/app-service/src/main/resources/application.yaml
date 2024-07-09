@@ -34,7 +34,7 @@ adapter:
         api-customer-process: ${API_CUSTOMER_PROCESS:http://localhost:3001/customers-api/customer/all-info/{processId}}
         api-customer-biometric-validation: ${API_CUSTOMER_BIOMETRIC_VALIDATION:http://localhost:3001/customers-api/biometric-validation/biometric-task/{processId}}
         api-health-offer: ${API_HEALTH_OFFER:http://localhost:3001/offers-api/offers/actuator/health}
-        api-active-offer: ${API_ACTIVE_OFFER:http://localhost:3001/offers-api/offers/active-offering?processId={processId}}
+        api-active-offer: ${API_ACTIVE_OFFER:https://apis-qa.consubanco.com/vd-qa/offers-api/offers/active-offering?processId={processId}}
         api-validate-otp: ${API_VALIDATE_OTP:http://localhost:3001/authorization-api/otp/validate}
         api-accept-offer: ${API_ACCEPT_OFFER:http://localhost:3001/offers-api/offers/accept/{processId}}
       promoter:
@@ -67,6 +67,7 @@ adapter:
           get-document-signed: ${ACTION_GET_DOCUMENT_SIGNED_NOM151:http://tempuri.org/IDoc2SignLite/GETDocFirmado}
           get-nom151: ${ACTION_GET_NOM151:http://tempuri.org/IDoc2SignLite/GETNOM}
       ocr:
+        api-key: ${API_KEY_OCR:pending}
         initial-delay-time: ${INITIAL_DELAY_TIME_IN_SECONDS_OCR:5}
         max-retries: ${MAX_RETRIES_OCR:20}
         retry-delay: ${RETRY_DELAY_IN_SECONDS_OCR:2}

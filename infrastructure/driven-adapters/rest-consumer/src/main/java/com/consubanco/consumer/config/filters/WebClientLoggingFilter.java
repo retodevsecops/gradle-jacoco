@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -33,7 +34,7 @@ public class WebClientLoggingFilter implements ExchangeFilterFunction {
     }
 
     private Mono<ClientResponse> printLog(ClientRequest request, ClientResponse response) {
-        if (contentLengthIsEmpty(response)) {
+        if (contentLengthIsEmpty(response) || response.statusCode().value() == HttpStatus.NO_CONTENT.value()) {
             orchestrateLog(request, response, null);
             return Mono.just(response);
         }
