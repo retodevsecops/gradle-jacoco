@@ -40,9 +40,11 @@ public class EmailSenderAdapter implements EmailGateway {
     @Override
     public Mono<Boolean> sendEmail(String email, String bp, String fullName, String base64File) {
         logger.info("Sending email contract to customer BP: " + bp + "email: " + email + "contract : " + base64File.substring(0, 200));
+        var bodyRequest = buildBodyRequest(email, bp, fullName, base64File);
+        logger.info("body request sendGenericEmail: " + bodyRequest.toString());
         return this.sendGenericEmailClient.post()
                 .uri(apis.getApiConnect().getApiSendGenericEmail())
-                .bodyValue(buildBodyRequest(email, bp, fullName, base64File))
+                .bodyValue(bodyRequest)
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
                 .map(response -> Objects.nonNull(response) ? Boolean.TRUE : Boolean.FALSE)
@@ -63,6 +65,8 @@ public class EmailSenderAdapter implements EmailGateway {
                                 .fileB64(base64File)
                                 .isProtected(false)
                         .build()))
+                .body(" ")
+                .sign(" ")
                 .build();
         var request = EmailSenderRequest.SendGenericMailRequestBO.builder()
                 .applicationId(apis.getApiConnect().getApplicationId())
