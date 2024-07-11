@@ -87,6 +87,11 @@ public class DocumentAdapter implements DocumentGateway {
     }
 
     @Override
+    public Mono<Map<String, String>> generateMultipleMN(List<String> documents, Map<String, Object> payload) {
+        return null;
+    }
+
+    @Override
     public Flux<PreviousDocumentVO> getDocsFromPreviousApplication(String previousApplicationId, List<AttachmentConfigVO> docs) {
         return this.apiConnectClient.post()
                 .uri(apis.getApiConnect().getApiDocsPrevious())
