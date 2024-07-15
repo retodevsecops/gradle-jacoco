@@ -88,7 +88,14 @@ public class DocumentAdapter implements DocumentGateway {
 
     @Override
     public Mono<Map<String, String>> generateMultipleMN(List<String> documents, Map<String, Object> payload) {
-        return null;
+        return this.apiPromoterClient.post()
+                .uri(apis.generateDocumentMnEndpoint())
+                .bodyValue(new GenerateDocumentRequestDTO(documents, payload))
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {})
+                .onErrorMap(WebClientRequestException.class, error -> requestError(error, API_REQUEST_ERROR))
+                .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_PROMOTER_ERROR))
+                .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(API_PROMOTER_ERROR));
     }
 
     @Override

@@ -32,7 +32,13 @@ public class BuildAgreementDocumentsUseCase {
         List<String> documentsToGenerate = getListDocumentsToGenerate(agreement.getDocuments());
         String directory = FileConstants.documentsDirectory(process.getOffer().getId());
         return buildPayloadUseCase.execute(process)
-                .flatMap(payload -> documentGateway.generateMultiple(documentsToGenerate, payload))//va y genera todos los documentos del convenio llamando a promotor
+                .flatMap(payload -> {
+                    if(agreement.getCompany().equalsIgnoreCase("CSB")) {
+                        return documentGateway.generateMultiple(documentsToGenerate, payload);
+                    }else{
+                        return documentGateway.generateMultipleMN(documentsToGenerate, payload);
+                    }
+                })//va y genera todos los documentos del convenio llamando a promotor
                 .flatMapMany(documentUrlsMap -> generateFilesFromUrls(documentUrlsMap, documentsToGenerate, directory))
                 .parallel()
                 .runOn(Schedulers.parallel())
