@@ -46,8 +46,8 @@
     "created_at": "${current_date_timestamp?c}",
     "contactInformation": {
         "email": "${customer_data.customer.email?lower_case!''}",
-        "phoneAddress": "${defaultAddress?exists?then(defaultAddress.phones?filter(phone -> phone.phoneType == "PRINCIPAL")?first?if_exists.number, '')}",
-        "phone": "${defaultAddress?exists?then(defaultAddress.phones?filter(phone -> phone.phoneType == "MOVIL")?first?if_exists.number, '')}"
+        "phoneAddress": "${(defaultAddress?exists && defaultAddress.phones?exists)?then((defaultAddress.phones?filter(phone -> phone.phoneType == "PRINCIPAL" || phone.phoneType == "MOVIL"))?first?if_exists.number, '')}",
+        "phone": "${(defaultAddress?exists && defaultAddress.phones?exists)?then((defaultAddress.phones?filter(phone -> phone.phoneType == "MOVIL" || phone.phoneType == "PRINCIPAL"))?first?if_exists.number, '')}"
     },
     "generalData": {
         "interviewResult": "Satisfactoria"
@@ -64,7 +64,7 @@
         "numeroEmpleado": "${offer_data.offer.employeeNumber?string}"
     },
    "idDocumentData": {
-       "ocr": "${customer_data.customer.identificationNumber!''}",
+       "ocr": "${customer_data.customer.credentialData.ocr!''}",
        "type": "${getDocumentTypeValue(customer_data.customer.identificationType)!''}"
     },
     "offer": {
