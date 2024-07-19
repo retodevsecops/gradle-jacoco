@@ -64,7 +64,7 @@
         "numeroEmpleado": "${offer_data.offer.employeeNumber?string}"
     },
    "idDocumentData": {
-       "ocr": "${customer_data.customer.credentialData.ocr!''}",
+       "ocr": "${(customer_data.customer.credentialData.ocr)!''}",
        "type": "${getDocumentTypeValue(customer_data.customer.identificationType)!''}"
     },
     "offer": {
