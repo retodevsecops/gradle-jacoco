@@ -97,7 +97,7 @@ public class Agreement {
 
     }
 
-    public Boolean isMN() {
+    public boolean isMN() {
         return CompanyNames.MN.equalsIgnoreCase(this.company);
     }
 

@@ -4,42 +4,10 @@
     current_date_timestamp = .now?long
     amountTotalToPay = (offer_data.offer.discount?replace(",", "")?number * offer_data.offer.term)?replace(",", "")
     discount = offer_data.offer.discount?replace(",", "")?number?c
-    documentTypeValues = {
-        "PHA004": "Número IMSS",
-        "ZBDBK": "Número de Cliente Banca Digital",
-        "ZBDCB": "Número de Cuenta Banca Digital",
-        "ZBDPL": "Número de Plástico Banca Digital",
-        "ZCEF": "Credencial de Empleo Federal",
-        "ZCIMS": "Credencial del IMSS",
-        "ZCPJ": "Credencial de Pensionado y/o jubilado",
-        "ZCPRO": "Cédula Profesional",
-        "ZCREF": "Clave de Referido",
-        "ZCTO": "Clave Centro de trabajo",
-        "ZCURP": "Clave Unica de Registro Poblacional",
-        "ZFIEL": "Firma Electrónica Avanzada",
-        "ZFM1": "FM1",
-        "ZFM2": "FM2",
-        "ZIDBK": "Número de Cliente",
-        "ZIDSFC": "Identificador Salesforce para BP",
-        "ZIFE": "Credencial IFE / INE",
-        "ZLIC": "Licencia de conducir",
-        "ZMATC": "Matrícula Consular",
-        "ZNDSS": "Número de Seguridad Social",
-        "ZRFC": "Registro Federal de Contribuyentes",
-        "ZSIU": "Credencial SIU",
-        "ZUAD": "Usuario Active Directory",
-        "ZVCB": "Identificador Vector"
-    }
     defaultAddress = customer_data.customer.address?filter(dataAddres -> dataAddres.addressType.key == "XXDEFAULT")?first?if_exists
+    maritalStatusDescription = (customer_data.customer.maritalStatus.description)!""
 >
 <#-- Functions -->
-<#function getDocumentTypeValue field>
-    <#if field?has_content>
-        <#return documentTypeValues[field]>
-    <#else>
-        <#return "">
-    </#if>
-</#function>
 <#-- Template -->
 {
     "id": "${offer_data.offer.id}",
@@ -65,7 +33,7 @@
     },
    "idDocumentData": {
        "ocr": "${(customer_data.customer.credentialData.ocr)!''}",
-       "type": "${getDocumentTypeValue(customer_data.customer.identificationType)!''}"
+       "type": "Credencial IFE / INE"
     },
     "offer": {
         "quoter": {
@@ -140,8 +108,8 @@
             "key": "${customer_data.customer.levelStudies.key}"
         },
         "maritalStatus": {
-            "description": "${customer_data.customer.maritalStatus.description}",
-            "key": "${customer_data.customer.maritalStatus.key}"
+            "description": "${maritalStatusDescription?has_content?then(maritalStatusDescription, 'SOLTERO/A')}",
+            "key": "${(customer_data.customer.maritalStatus.key)!'1'}"
         },
         "nationality": {
             "description": "${customer_data.customer.nationality.description}",
