@@ -38,7 +38,7 @@ public class BuildAgreementDocumentsUseCase {
                     }else{
                         return documentGateway.generateMultipleMN(documentsToGenerate, payload);
                     }
-                })//va y genera todos los documentos del convenio llamando a promotor
+                })
                 .flatMapMany(documentUrlsMap -> generateFilesFromUrls(documentUrlsMap, documentsToGenerate, directory))
                 .parallel()
                 .runOn(Schedulers.parallel())
