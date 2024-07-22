@@ -77,7 +77,7 @@ public class GenerateNom151UseCase {
     }
 
     private Mono<String> generateNom151(Agreement agreement, DocumentSignatureRequestVO signatureRequest) {
-        if (agreement.isMN()) return generateNom151ForMN(signatureRequest);
+        if (Boolean.TRUE.equals(agreement.isMN())) return generateNom151ForMN(signatureRequest);
         return generateNom151ForCSB(signatureRequest);
     }
 

@@ -1,5 +1,7 @@
 package com.consubanco.usecase.document.helper;
 
+import com.consubanco.model.entities.agreement.Agreement;
+import com.consubanco.model.entities.agreement.gateway.AgreementGateway;
 import com.consubanco.model.entities.agreement.vo.AgreementConfigVO;
 import com.consubanco.model.entities.document.gateway.PayloadDocumentGateway;
 import com.consubanco.model.entities.ocr.OcrDocument;
@@ -17,18 +19,22 @@ import java.util.Map;
 public class BuildPayloadDataMapHelper {
 
     private static final String OCR_DOCUMENTS_KEY = "ocr_documents_data";
+    private static final String AGREEMENT_DATA_KEY = "agreement_data";
     private final PayloadDocumentGateway payloadGateway;
     private final GetOcrAttachmentsHelper getOcrAttachmentsHelper;
+    private final AgreementGateway agreementGateway;
 
     public Mono<Map<String, Object>> execute(Process process, AgreementConfigVO agreementConfig) {
         Mono<Map<String, Object>> allData = payloadGateway.getAllData(process.getId(), agreementConfig);
         Mono<List<OcrDocument>> ocrDocuments = getOcrAttachmentsHelper.execute(process, agreementConfig);
-        return Mono.zip(allData, ocrDocuments)
+        Mono<Agreement> agreement = agreementGateway.findByNumber(agreementConfig.getAgreementNumber());
+        return Mono.zip(allData, ocrDocuments, agreement)
                 .map(TupleUtils.function(this::joinData));
     }
 
-    private Map<String, Object> joinData(Map<String, Object> data, List<OcrDocument> ocrDocuments) {
+    private Map<String, Object> joinData(Map<String, Object> data, List<OcrDocument> ocrDocuments, Agreement agreement) {
         data.put(OCR_DOCUMENTS_KEY, ocrDocumentsToMapList(ocrDocuments));
+        data.put(AGREEMENT_DATA_KEY, agreement);
         return data;
     }
 

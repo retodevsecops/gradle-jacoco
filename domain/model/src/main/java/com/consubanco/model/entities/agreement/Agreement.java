@@ -24,13 +24,13 @@ public class Agreement {
     private String providerCapacity;
     private String csbCode;
     private String csbName;
-    private String company;
+    private String company; //convenio
     private Boolean signaturePromoterIsRequired;
     private List<Catalog> frequencySalary;
     private String signatureColor;
     private List<Catalog> employeeType;
     private List<Catalog> quotationType;
-    private List<Catalog> contract_type;
+    private List<Catalog> contractType;
     private List<Catalog> positions;
     private Boolean videoTaskIsRequired;
     private List<Document> documents;
@@ -97,7 +97,7 @@ public class Agreement {
 
     }
 
-    public Boolean isMN() {
+    public boolean isMN() {
         return CompanyNames.MN.equalsIgnoreCase(this.company);
     }
 

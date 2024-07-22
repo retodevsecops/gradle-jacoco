@@ -28,11 +28,17 @@ public class BuildAgreementDocumentsUseCase {
     private final DocumentGateway documentGateway;
     private final FileConvertGateway fileConvertGateway;
 
-    public Flux<File> execute(Process process, List<Agreement.Document> documents) {
-        List<String> documentsToGenerate = getListDocumentsToGenerate(documents);
+    public Flux<File> execute(Process process, Agreement agreement) {
+        List<String> documentsToGenerate = getListDocumentsToGenerate(agreement.getDocuments());
         String directory = FileConstants.documentsDirectory(process.getOffer().getId());
         return buildPayloadUseCase.execute(process)
-                .flatMap(payload -> documentGateway.generateMultiple(documentsToGenerate, payload))
+                .flatMap(payload -> {
+                    if(agreement.getCompany().equalsIgnoreCase("CSB")) {
+                        return documentGateway.generateMultiple(documentsToGenerate, payload);
+                    }else{
+                        return documentGateway.generateMultipleMN(documentsToGenerate, payload);
+                    }
+                })
                 .flatMapMany(documentUrlsMap -> generateFilesFromUrls(documentUrlsMap, documentsToGenerate, directory))
                 .parallel()
                 .runOn(Schedulers.parallel())
