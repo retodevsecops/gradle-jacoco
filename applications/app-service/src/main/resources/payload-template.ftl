@@ -21,12 +21,12 @@
         "interviewResult": "Satisfactoria"
     },
     "dataSeller": {
-        "apellidoPaterno": "${promoter_data.lastname1}",
-        "apellidoMaterno": "${promoter_data.lastname2}",
-        "bpId": "${promoter_data.bpId}",
-        "nombre1": "${promoter_data.name1}",
-        "nombre2": "${promoter_data.name2}",
-        "rfc": "${promoter_data.rfc}"
+        "apellidoPaterno": "",
+        "apellidoMaterno": "",
+        "bpId": "",
+        "nombre1": "Canal",
+        "nombre2": "Digital",
+        "rfc": ""
     },
     "employmentData": {
         "numeroEmpleado": "${offer_data.offer.employeeNumber?string}"
