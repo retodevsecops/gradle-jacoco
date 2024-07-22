@@ -4,7 +4,8 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class FileExtensions {
-    public final static String JSON = "json";
-    public final static String FTL = "ftl";
-    public final static String PDF = "pdf";
+    public static final  String JSON = "json";
+    public static final String FTL = "ftl";
+    public static final String PDF = "pdf";
+    public static final String CONS = "cons";
 }

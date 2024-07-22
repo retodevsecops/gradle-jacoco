@@ -33,7 +33,7 @@
     },
    "idDocumentData": {
        "ocr": "${(customer_data.customer.credentialData.ocr)!''}",
-       "type": "Credencial IFE / INE"
+       "type": "IFE / INE"
     },
     "offer": {
         "quoter": {

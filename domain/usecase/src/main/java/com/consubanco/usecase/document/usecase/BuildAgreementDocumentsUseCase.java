@@ -32,18 +32,17 @@ public class BuildAgreementDocumentsUseCase {
         List<String> documentsToGenerate = getListDocumentsToGenerate(agreement.getDocuments());
         String directory = FileConstants.documentsDirectory(process.getOffer().getId());
         return buildPayloadUseCase.execute(process)
-                .flatMap(payload -> {
-                    if(agreement.getCompany().equalsIgnoreCase("CSB")) {
-                        return documentGateway.generateMultiple(documentsToGenerate, payload);
-                    }else{
-                        return documentGateway.generateMultipleMN(documentsToGenerate, payload);
-                    }
-                })
+                .flatMap(payload -> generateDocuments(agreement, payload, documentsToGenerate))
                 .flatMapMany(documentUrlsMap -> generateFilesFromUrls(documentUrlsMap, documentsToGenerate, directory))
                 .parallel()
                 .runOn(Schedulers.parallel())
                 .flatMap(fileRepository::save)
                 .sequential();
+    }
+
+    private Mono<Map<String, String>> generateDocuments(Agreement agreement, Map<String, Object> payload, List<String> documentsToGenerate) {
+        if(agreement.isMN()) return documentGateway.generateMultipleMN(documentsToGenerate, payload);
+        return documentGateway.generateMultiple(documentsToGenerate, payload);
     }
 
     private Flux<File> generateFilesFromUrls(Map<String, String> documentUrls,
