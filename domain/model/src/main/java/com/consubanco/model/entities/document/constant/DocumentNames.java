@@ -7,7 +7,6 @@ public class DocumentNames {
     public static final String OFFICIAL_ID = "identificacion-oficial";
     public static final String APPLICANT_RECORD = "expediente-solicitante";
     public static final String UNSIGNED_APPLICANT_RECORD = "unsigned-expediente-solicitante";
-    public final static String CNCA_LETTER = "carta-de-liquidacion";
-    public final static String COLLECTION_DOCUMENTS = "documentos-cobranza";
-
+    public static final String CNCA_LETTER = "carta-de-liquidacion";
+    public static final String COLLECTION_DOCUMENTS = "documentos-cobranza";
 }

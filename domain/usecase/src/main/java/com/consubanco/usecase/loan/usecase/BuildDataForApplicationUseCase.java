@@ -38,7 +38,7 @@ public class BuildDataForApplicationUseCase {
 
     private Mono<List<FileWithStorageRouteVO>> getAllFiles(Process process) {
         return generateNom151UseCase.execute(process)
-                .flatMap(files -> getOfferFiles(process));
+                .flatMap(file -> getOfferFiles(process));
     }
 
     private Mono<List<FileWithStorageRouteVO>> getOfferFiles(Process process) {

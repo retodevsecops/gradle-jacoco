@@ -24,7 +24,7 @@ public class Agreement {
     private String providerCapacity;
     private String csbCode;
     private String csbName;
-    private String company; //convenio
+    private String company;
     private Boolean signaturePromoterIsRequired;
     private List<Catalog> frequencySalary;
     private String signatureColor;
