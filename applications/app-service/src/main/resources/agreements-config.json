@@ -97,7 +97,7 @@
         "isOcr": false,
         "isRecoverable": true,
         "namePreviousDocument": "COMPROBANTE-DOMICILIO",
-        "isRequired": true,
+        "isRequired": false,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       }
     ],

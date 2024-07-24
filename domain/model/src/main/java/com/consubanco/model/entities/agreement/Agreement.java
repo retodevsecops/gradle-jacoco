@@ -101,4 +101,13 @@ public class Agreement {
         return CompanyNames.MN.equalsIgnoreCase(this.company);
     }
 
+    public List<String> getDocumentsToGenerate() {
+        return this.getDocuments().parallelStream()
+                .flatMap(document -> document.getFields().stream())
+                .map(Agreement.Document.Field::getTechnicalName)
+                .distinct()
+                .map(docName -> isMN() ? docName: CompanyNames.CSB.toLowerCase().concat("/").concat(docName))
+                .toList();
+    }
+
 }
