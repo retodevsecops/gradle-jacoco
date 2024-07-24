@@ -11,7 +11,8 @@
         "clabe": customer_data.preApplicationData.paymentData.clabe,
         "banco": customer_data.preApplicationData.paymentData.bankDesc,
         "numero-empleado": offer_data.offer.employeeNumber,
-        "rfc": customer_data.customer.rfc
+        "rfc": customer_data.customer.rfc,
+        "folio-fiscal": FunctionsUtil.getFolioFiscal(ocr_documents_data)
     }
     current_date_timestamp = .now?long
     promotorCompleteName = promoter_data.name1 + " " + promoter_data.lastname1
@@ -20,12 +21,10 @@
 >
 <#-- Functions -->
 <#function getFieldValue(field)>
-    <#if field.value?has_content>
-        <#return field.value>
-    <#elseif fieldValues[field.technicalName]??>
+    <#if fieldValues[field.technicalName]??>
         <#return fieldValues[field.technicalName]>
     <#else>
-        <#return "">
+        <#return field.value>
     </#if>
 </#function>
 <#-- Template -->
@@ -73,16 +72,6 @@
                 },
                 "brmsCode": "${customer_data.preApplicationData.agreement.brmsCode}",
                 "documents": [
-                    {
-                        "id": "071",
-                        "url": "gs://csb-venta-digital/renewal/offer/55555/documents/formato-solicitud-gratuita.pdf",
-                        "name": "FORMATO UNICO DE SOLICITUD GRATUITA",
-                        "visible": false,
-                        "fileName": "formato-solicitud-gratuita.pdf",
-                        "required": true,
-                        "clasification": "D",
-                        "technicalName": "formato-solicitud-gratuita"
-                    },
                     <#list customer_data.preApplicationData.documents as document>
                         <#assign file_data_matched_sec = files_data?filter(file_data -> file_data.name == document.technicalName) >
                         <#assign file_data_matched = file_data_matched_sec?first?if_exists >
