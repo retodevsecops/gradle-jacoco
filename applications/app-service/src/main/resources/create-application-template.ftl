@@ -73,6 +73,16 @@
                 },
                 "brmsCode": "${customer_data.preApplicationData.agreement.brmsCode}",
                 "documents": [
+                    {
+                        "id": "071",
+                        "url": "gs://csb-venta-digital/renewal/offer/55555/documents/formato-solicitud-gratuita.pdf",
+                        "name": "FORMATO UNICO DE SOLICITUD GRATUITA",
+                        "visible": false,
+                        "fileName": "formato-solicitud-gratuita.pdf",
+                        "required": true,
+                        "clasification": "D",
+                        "technicalName": "formato-solicitud-gratuita"
+                    },
                     <#list customer_data.preApplicationData.documents as document>
                         <#assign file_data_matched_sec = files_data?filter(file_data -> file_data.name == document.technicalName) >
                         <#assign file_data_matched = file_data_matched_sec?first?if_exists >
