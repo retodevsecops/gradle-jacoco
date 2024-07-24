@@ -4,6 +4,7 @@ import com.consubanco.logger.CustomLogger;
 import com.consubanco.model.entities.document.gateway.PDFDocumentGateway;
 import com.lowagie.text.Document;
 import com.lowagie.text.Image;
+import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.PdfCopy;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfWriter;
@@ -63,6 +64,15 @@ public class PDFDocumentAdapter implements PDFDocumentGateway {
 
     @Override
     public Mono<String> merge(List<String> base64Documents) {
+        return merge(base64Documents, false);
+    }
+
+    @Override
+    public Mono<String> mergeAndAddBlankPage(List<String> base64Documents) {
+        return merge(base64Documents, true);
+    }
+
+    private Mono<String> merge(List<String> base64Documents, boolean addBlankPage) {
         return Mono.fromCallable(() -> {
             ByteArrayOutputStream mergedPdfStream = new ByteArrayOutputStream();
             Document document = new Document();
@@ -76,6 +86,10 @@ public class PDFDocumentAdapter implements PDFDocumentGateway {
                         copy.addPage(copy.getImportedPage(reader, i));
                     }
                     reader.close();
+                }
+                if (addBlankPage) {
+                    document.newPage();
+                    document.add(new Paragraph(" "));
                 }
                 document.close();
             } catch (IOException e) {
