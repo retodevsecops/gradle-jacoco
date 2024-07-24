@@ -4,7 +4,7 @@ import com.consubanco.logger.CustomLogger;
 import com.consubanco.model.entities.document.gateway.PDFDocumentGateway;
 import com.lowagie.text.Document;
 import com.lowagie.text.Image;
-import com.lowagie.text.Paragraph;
+import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfCopy;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfWriter;
@@ -87,10 +87,7 @@ public class PDFDocumentAdapter implements PDFDocumentGateway {
                     }
                     reader.close();
                 }
-                if (addBlankPage) {
-                    document.newPage();
-                    document.add(new Paragraph(" "));
-                }
+                if (addBlankPage) copy.addPage(new Rectangle(document.getPageSize()), 0);
                 document.close();
             } catch (IOException e) {
                 throw new RuntimeException("Error merging PDFs", e);
