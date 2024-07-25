@@ -1,15 +1,16 @@
 <#-- This is a freemarker template that is used to dynamically build the payload object to consume the developer api for document generation. -->
 <#-- Variables -->
-<#assign 
+<#assign
     current_date_timestamp = .now?long
     amountTotalToPay = (offer_data.offer.discount?replace(",", "")?number * offer_data.offer.term)?replace(",", "")
     discount = offer_data.offer.discount?replace(",", "")?number?c
     defaultAddress = customer_data.customer.address?filter(dataAddres -> dataAddres.addressType.key == "XXDEFAULT")?first?if_exists
     maritalStatusDescription = (customer_data.customer.maritalStatus.description)!""
+    company = agreement_data.company?lower_case
 >
 <#-- Functions -->
 <#-- Template -->
-<#if aggreement_data.company?lower_case == "csb">
+<#if company == "csb">
 {
     "id": "${offer_data.offer.id}",
     "created_at": "${current_date_timestamp?c}",
@@ -175,24 +176,24 @@
     "signatureColor": "#000000",
     "origin": "RENEX"
 }
-<#else if aggreement_data.company?lower_case == "mn">
+<#elseif company == "mn">
 <#-- This is a freemarker template for Masnomina aggrements. -->
   {
     "origen": "RENEX",
     "solicitud": "100800009599",
     "fechaSolicitud": "${current_date_timestamp?c}",
-    "banco": "${customer_data.preApplicationData.paymentData.bankId! ''}",
+    "banco": "${(customer_data.preApplicationData.paymentData.bankId)! ''}",
     "imssAgrement": true,
     "tipoCredito": "NUEVO",
     "tipoDisposicion": "T",
-    "clabe": "${customer_data.preApplicationData.paymentData.clabe! ''}",
+    "clabe": "${(customer_data.preApplicationData.paymentData.clabe)! ''}",
     "oferta": {
         "montoPago": 2309.31,
         "cat": ${offer_data.offer.cat?replace(",", ".")},
         "tasa": 2.77,
         "montoPrestamo": ${offer_data.offer.amount?c},
         "plazo": ${offer_data.offer.term},
-        "frecuencia": ${offer_data.offer.frequency},
+        "frecuencia": "${offer_data.offer.frequency}",
         "cnca": true
     },
     "convenio": {
@@ -209,18 +210,18 @@
     },
     "cliente": {
         "satisfactorio": "Satisfactoria",
-        "apellidoPaterno": "${customer_data.customer.lastName!''}",
-        "apellidoMaterno": "${customer_data.customer.secondLastName!''}",
+        "apellidoPaterno": "${(customer_data.customer.lastName)!''}",
+        "apellidoMaterno": "${(customer_data.customer.secondLastName)!''}",
         "nombre": "${customer_data.customer.firstName!''}",
         "codigoPaisNacimiento": "MX",
-        "rfc": "${customer_data.customer.rfc!''}",
-        "curp": "${customer_data.customer.curp!''}",
-        "sexo": "${customer_data.customer.gender!''}",
-        "fechaNacimiento": "${customer_data.customer.dateBirth!''}",
-        "codigoEstadoNacimiento": "${customer_data.customer.placeBirth!''}",
-        "nacionalidad": "${customer_data.customer.nationality.description!''}",
-        "correo": "${customer_data.customer.email!''}",
-        "estadoCivil": "${customer_data.customer.maritalStatus.description!''}",
+        "rfc": "${(customer_data.customer.rfc)!''}",
+        "curp": "${(customer_data.customer.curp)!''}",
+        "sexo": "${(customer_data.customer.gender)!''}",
+        "fechaNacimiento": "${(customer_data.customer.dateBirth)!''}",
+        "codigoEstadoNacimiento": "${(customer_data.customer.placeBirth)!''}",
+        "nacionalidad": "${(customer_data.customer.nationality.description)!''}",
+        "correo": "${(customer_data.customer.email)!''}",
+        "estadoCivil": "${(customer_data.customer.maritalStatus.description)!''}",
         "telefonos": {
             "movil": "${defaultPhones?filter(phone -> phone.phoneType == "MOVIL")?first?if_exists.number}",
             "trabajo": ""
@@ -233,7 +234,7 @@
             "colonia": "${defaultAddress.township!''}",
             "municipio": "${defaultAddress.suburb!''}",
             "numeroExterior": "${defaultAddress.externalNumber!''}",
-            "numeroInterior": "${defaultAddress.internalNumber!''}",
+            "numeroInterior": "${defaultAddress.internalNumber!''}"
         },
         <#if customer_data.preApplicationData.references??>
         "referencias": {
@@ -259,8 +260,13 @@
         "rfc": ""
     },
     "documentPhotos": {},
-    "firmas": {}
+    "firmas": {
+        "cliente": "https://storage.googleapis.com/csb_puc_statics_prod/unsigned.png",
+        "promotor": "https://storage.googleapis.com/csb_puc_statics_prod/unsigned.png"
+    }
 }
-</#else>
-   { "message": "There is not a valid company ${aggreement_data.company" }
+<#else>
+{
+    "message": "There is not a valid company ${company}"
+}
 </#if>
