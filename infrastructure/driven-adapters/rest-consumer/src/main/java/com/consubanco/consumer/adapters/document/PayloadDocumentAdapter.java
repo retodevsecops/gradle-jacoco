@@ -53,8 +53,7 @@ public class PayloadDocumentAdapter implements PayloadDocumentGateway {
                     data.put("offer_data", tuple.getT3());
                     data.put("biometric_task_data", tuple.getT4());
                     return data;
-                })
-                .doOnNext(data -> logger.info("Data used to process template was consulted.", data));
+                });
     }
 
     @Override
