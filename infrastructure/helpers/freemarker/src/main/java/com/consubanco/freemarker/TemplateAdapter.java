@@ -27,16 +27,18 @@ public class TemplateAdapter implements ITemplateOperations {
 
     @Override
     public <T> Mono<T> process(String templateAsString, Object data, Class<T> cls) {
+        String templateDecode = new String(Base64.getDecoder().decode(templateAsString));
         return Mono.fromCallable(() -> {
             try (StringWriter writer = new StringWriter()) {
-                Template template = buildTemplate(new String(Base64.getDecoder().decode(templateAsString)));
+                Template template = buildTemplate(templateDecode);
                 Map<String, Object> dataMap = buildDataMap(data);
                 template.process(dataMap, writer);
                 String rendered = writer.toString();
-                logger.info("This is the result of the freemarker template after processing", rendered);
-                return FunctionsUtil.readLValue(rendered, cls);
+                T result = FunctionsUtil.readLValue(rendered, cls);
+                logger.info(MESSAGE_SUCCESS, mapLogInfo(data, templateDecode, result));
+                return result;
             } catch (IOException | TemplateException exception) {
-                logger.error(MESSAGE_ERROR, mapLogError(data, templateAsString, cls, exception));
+                logger.error(MESSAGE_ERROR, mapLogError(data, templateDecode, cls, exception));
                 throw new Exception(exception);
             }
         });
@@ -67,6 +69,14 @@ public class TemplateAdapter implements ITemplateOperations {
         map.put(CLASS_KEY, cls.getName());
         map.put(EXCEPTION_KEY, exception.getMessage());
         ofNullable(exception.getCause()).ifPresent(cause -> map.put(CAUSE_KEY, cause.getMessage()));
+        return map;
+    }
+
+    private Map<String, Object> mapLogInfo(Object data, String template, Object result) {
+        Map<String, Object> map = new ConcurrentHashMap<>();
+        map.put(DATA_KEY, data);
+        map.put(TEMPLATE_KEY, template);
+        map.put(RESULT_KEY, result);
         return map;
     }
 

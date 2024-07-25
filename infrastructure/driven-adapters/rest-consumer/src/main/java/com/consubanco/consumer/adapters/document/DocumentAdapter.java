@@ -110,9 +110,11 @@ public class DocumentAdapter implements DocumentGateway {
 
     @Override
     public Flux<PreviousDocumentVO> getDocsFromPreviousApplication(String previousApplicationId, List<AttachmentConfigVO> docs) {
+        GetDocsPreviousApplicationReqDTO request = new GetDocsPreviousApplicationReqDTO(apis.getApplicationId(), previousApplicationId, docs);
+        logger.info("Request getDocsFromPreviousApplication: "+apis.getApiConnect().getApiDocsPrevious(), request);
         return this.apiConnectClient.post()
                 .uri(apis.getApiConnect().getApiDocsPrevious())
-                .bodyValue(new GetDocsPreviousApplicationReqDTO(apis.getApplicationId(), previousApplicationId, docs))
+                .bodyValue(request)
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
                 })
@@ -127,7 +129,7 @@ public class DocumentAdapter implements DocumentGateway {
                     return monoTechnicalError(cause, API_DOCS_PREVIOUS_ERROR);
                 })
                 .onErrorMap(WebClientRequestException.class, error -> requestError(error, API_REQUEST_ERROR))
-                .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_DOCS_PREVIOUS_ERROR))
+                .onErrorMap(WebClientResponseException.class, error -> responseError(error, API_DOCS_PREVIOUS_ERROR))
                 .onErrorMap(error -> !(error instanceof TechnicalException), error -> {
                     if (error.getCause() instanceof TimeoutException)
                         return buildTechnical(error.getCause(), API_DOCS_PREVIOUS_TIMEOUT);
