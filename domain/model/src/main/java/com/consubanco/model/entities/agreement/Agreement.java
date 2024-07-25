@@ -30,7 +30,7 @@ public class Agreement {
     private String signatureColor;
     private List<Catalog> employeeType;
     private List<Catalog> quotationType;
-    private List<Catalog> contract_type;
+    private List<Catalog> contractType;
     private List<Catalog> positions;
     private Boolean videoTaskIsRequired;
     private List<Document> documents;
@@ -97,8 +97,17 @@ public class Agreement {
 
     }
 
-    public Boolean isMN() {
+    public boolean isMN() {
         return CompanyNames.MN.equalsIgnoreCase(this.company);
+    }
+
+    public List<String> getDocumentsToGenerate() {
+        return this.getDocuments().parallelStream()
+                .flatMap(document -> document.getFields().stream())
+                .map(Agreement.Document.Field::getTechnicalName)
+                .distinct()
+                .map(docName -> isMN() ? docName: CompanyNames.CSB.toLowerCase().concat("/").concat(docName))
+                .toList();
     }
 
 }

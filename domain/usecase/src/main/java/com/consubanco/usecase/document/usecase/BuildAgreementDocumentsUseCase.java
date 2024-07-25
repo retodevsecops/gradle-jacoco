@@ -28,22 +28,27 @@ public class BuildAgreementDocumentsUseCase {
     private final DocumentGateway documentGateway;
     private final FileConvertGateway fileConvertGateway;
 
-    public Flux<File> execute(Process process, List<Agreement.Document> documents) {
-        List<String> documentsToGenerate = getListDocumentsToGenerate(documents);
+    public Flux<File> execute(Process process, Agreement agreement) {
         String directory = FileConstants.documentsDirectory(process.getOffer().getId());
         return buildPayloadUseCase.execute(process)
-                .flatMap(payload -> documentGateway.generateMultiple(documentsToGenerate, payload))
-                .flatMapMany(documentUrlsMap -> generateFilesFromUrls(documentUrlsMap, documentsToGenerate, directory))
+                .flatMap(payload -> generateDocuments(agreement, payload))
+                .flatMapMany(documentUrlsMap -> generateFilesFromUrls(documentUrlsMap, agreement, directory))
                 .parallel()
                 .runOn(Schedulers.parallel())
                 .flatMap(fileRepository::save)
                 .sequential();
     }
 
+    private Mono<Map<String, String>> generateDocuments(Agreement agreement, Map<String, Object> payload) {
+        List<String> documentsToGenerate = agreement.getDocumentsToGenerate();
+        if (agreement.isMN()) return documentGateway.generateMultipleMN(documentsToGenerate, payload);
+        return documentGateway.generateMultiple(documentsToGenerate, payload);
+    }
+
     private Flux<File> generateFilesFromUrls(Map<String, String> documentUrls,
-                                             List<String> documentsToGenerate,
+                                             Agreement agreement,
                                              String directory) {
-        return Flux.fromIterable(documentsToGenerate)
+        return Flux.fromIterable(agreement.getDocumentsToGenerate())
                 .map(DocumentUtil::getDocumentNameFromPath)
                 .flatMap(documentName -> getDocumentContent(documentName, documentUrls)
                         .map(documentContent -> buildFile(documentName, documentContent, directory)));
@@ -62,15 +67,6 @@ public class BuildAgreementDocumentsUseCase {
                 .directoryPath(directory)
                 .extension(FileExtensions.PDF)
                 .build();
-    }
-
-    private List<String> getListDocumentsToGenerate(List<Agreement.Document> documents) {
-        return documents.parallelStream()
-                .flatMap(document -> document.getFields().stream())
-                .map(Agreement.Document.Field::getTechnicalName)
-                .distinct()
-                .map("csb/"::concat)
-                .toList();
     }
 
 }

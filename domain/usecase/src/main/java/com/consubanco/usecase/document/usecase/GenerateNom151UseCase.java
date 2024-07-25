@@ -14,6 +14,7 @@ import com.consubanco.model.entities.process.Process;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 import reactor.function.TupleUtils;
+import reactor.util.function.Tuple2;
 import reactor.util.function.Tuple3;
 
 import java.time.LocalDateTime;
@@ -62,9 +63,9 @@ public class GenerateNom151UseCase {
 
     private Mono<File> processNom151(Agreement agreement, File file, Process process) {
         DocumentSignatureRequestVO signatureRequest = buildSignatureRequest(process, file);
-        return generateNom151(agreement, signatureRequest)
-                .map(nom151 -> buildFile(nom151, process.getOfferId()))
-                .flatMap(fileRepository::save);
+        if (Boolean.TRUE.equals(agreement.isMN()))
+            return generateNom151ForMN(signatureRequest, process);
+        return generateNom151ForCSB(signatureRequest, process);
     }
 
     private DocumentSignatureRequestVO buildSignatureRequest(Process process, File file) {
@@ -76,31 +77,65 @@ public class GenerateNom151UseCase {
                 .build();
     }
 
-    private Mono<String> generateNom151(Agreement agreement, DocumentSignatureRequestVO signatureRequest) {
-        if (agreement.isMN()) return generateNom151ForMN(signatureRequest);
-        return generateNom151ForCSB(signatureRequest);
-    }
-
-    private Mono<String> generateNom151ForCSB(DocumentSignatureRequestVO signatureRequest) {
-        return signedDocumentGateway.loadDocumentForCSB(signatureRequest)
-                .filter(result -> result)
-                .flatMap(status -> signedDocumentGateway.getSignedDocumentForCSB(signatureRequest.getId()))
-                .switchIfEmpty(ExceptionFactory.buildBusiness(FAILED_LOAD_DOCUMENT));
-    }
-
-    private Mono<String> generateNom151ForMN(DocumentSignatureRequestVO signatureRequest) {
+    private Mono<File> generateNom151ForMN(DocumentSignatureRequestVO signatureRequest, Process process) {
         return signedDocumentGateway.loadDocumentForMN(signatureRequest)
                 .filter(result -> result)
-                .flatMap(status -> signedDocumentGateway.getNom151ForMN(signatureRequest.getId()))
+                .flatMap(status -> Mono.zip(
+                        uploadSignedDocumentForMN(signatureRequest, process),
+                        uploadNom151ForMN(signatureRequest, process)))
+                .map(Tuple2::getT1)
                 .switchIfEmpty(ExceptionFactory.buildBusiness(FAILED_LOAD_DOCUMENT));
     }
 
-    private static File buildFile(String contentInBase64, String offerId) {
+    private Mono<File> uploadSignedDocumentForMN(DocumentSignatureRequestVO signatureRequest, Process process) {
+        return signedDocumentGateway.getSignedDocumentForMN(signatureRequest.getId())
+                .map(base64 -> buildApplicantRecordFile(base64, process.getOfferId()))
+                .flatMap(fileRepository::save);
+    }
+
+    private Mono<File> uploadNom151ForMN(DocumentSignatureRequestVO signatureRequest, Process process) {
+        return signedDocumentGateway.getNom151ForMN(signatureRequest.getId())
+                .map(base64 -> buildNom151File(process, base64))
+                .flatMap(fileRepository::save);
+    }
+
+    private Mono<File> generateNom151ForCSB(DocumentSignatureRequestVO signatureRequest, Process process) {
+        return signedDocumentGateway.loadDocumentForCSB(signatureRequest)
+                .filter(result -> result)
+                .flatMap(status -> Mono.zip(
+                        uploadSignedDocumentForCSB(signatureRequest, process),
+                        uploadNom151ForCSB(signatureRequest, process)))
+                .map(Tuple2::getT1)
+                .switchIfEmpty(ExceptionFactory.buildBusiness(FAILED_LOAD_DOCUMENT));
+    }
+
+    private Mono<File> uploadSignedDocumentForCSB(DocumentSignatureRequestVO signatureRequest, Process process) {
+        return signedDocumentGateway.getSignedDocumentForCSB(signatureRequest.getId())
+                .map(base64 -> buildApplicantRecordFile(base64, process.getOfferId()))
+                .flatMap(fileRepository::save);
+    }
+
+    private Mono<File> uploadNom151ForCSB(DocumentSignatureRequestVO signatureRequest, Process process) {
+        return signedDocumentGateway.getNom151ForCSB(signatureRequest.getId())
+                .map(base64 -> buildNom151File(process, base64))
+                .flatMap(fileRepository::save);
+    }
+
+    private File buildApplicantRecordFile(String contentInBase64, String offerId) {
         return File.builder()
                 .name(DocumentNames.APPLICANT_RECORD)
                 .content(contentInBase64)
                 .directoryPath(documentsDirectory(offerId))
                 .extension(FileExtensions.PDF)
+                .build();
+    }
+
+    private File buildNom151File(Process process, String base64) {
+        return File.builder()
+                .name(process.getOfferId())
+                .content(base64)
+                .directoryPath(documentsDirectory(process.getOfferId()))
+                .extension(FileExtensions.CONS)
                 .build();
     }
 

@@ -11,21 +11,21 @@
         "clabe": customer_data.preApplicationData.paymentData.clabe,
         "banco": customer_data.preApplicationData.paymentData.bankDesc,
         "numero-empleado": offer_data.offer.employeeNumber,
-        "rfc": customer_data.customer.rfc
+        "rfc": customer_data.customer.rfc,
+        "folio-fiscal": FunctionsUtil.getFolioFiscal(ocr_documents_data)
     }
     current_date_timestamp = .now?long
     promotorCompleteName = promoter_data.name1 + " " + promoter_data.lastname1
     termDesc = offer_data.offer.term + " " + offer_data.offer.frequency
     amountTotalToPay = offer_data.offer.discount?replace(",", "")?number * offer_data.offer.term
+    fileConsNom151 = files_data?filter(file -> file.name == offer_data.offer.id)?first
 >
 <#-- Functions -->
 <#function getFieldValue(field)>
-    <#if field.value?has_content>
-        <#return field.value>
-    <#elseif fieldValues[field.technicalName]??>
+    <#if fieldValues[field.technicalName]??>
         <#return fieldValues[field.technicalName]>
     <#else>
-        <#return "">
+        <#return field.value>
     </#if>
 </#function>
 <#-- Template -->
@@ -73,6 +73,16 @@
                 },
                 "brmsCode": "${customer_data.preApplicationData.agreement.brmsCode}",
                 "documents": [
+                    {
+                        "id": "999",
+                        "technicalName": "opp-constancia-conservacion-digital",
+                        "fileName": "${fileConsNom151.name + ".cons"}",
+                        "name": "CONSTANCIA DE CONSERVACION",
+                        "clasification": "D",
+                        "url": "${fileConsNom151.storageRoute}",
+                        "required": true,
+                        "visible": false
+                    },
                     <#list customer_data.preApplicationData.documents as document>
                         <#assign file_data_matched_sec = files_data?filter(file_data -> file_data.name == document.technicalName) >
                         <#assign file_data_matched = file_data_matched_sec?first?if_exists >

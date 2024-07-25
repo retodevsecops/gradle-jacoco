@@ -25,7 +25,7 @@ import static com.consubanco.model.entities.loan.message.LoanBusinessMessage.APP
 @RequiredArgsConstructor
 public class CreateApplicationLoanUseCase {
 
-    private final static String MESSAGE = "The loan application has been successfully completed.";
+    private static final String MESSAGE = "The loan application has been successfully completed.";
     private final LoanApplicationValidationHelper loanApplicationValidationHelper;
     private final GetProcessByIdUseCase getProcessByIdUseCase;
     private final FileRepository fileRepository;
