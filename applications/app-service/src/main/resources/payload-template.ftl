@@ -183,10 +183,12 @@
     "solicitud": "100800009599",
     "fechaSolicitud": "${current_date_timestamp?c}",
     "banco": "${(customer_data.preApplicationData.paymentData.bankId)! ''}",
-    "imssAgrement": true,
+    "imssAgrement": false,
     "tipoCredito": "NUEVO",
     "tipoDisposicion": "T",
     "clabe": "${(customer_data.preApplicationData.paymentData.clabe)! ''}",
+    "funcionarioPublico": "N",
+    "parienteFuncionarioPublico": "N",
     "oferta": {
         "montoPago": 2309.31,
         "cat": ${offer_data.offer.cat?replace(",", ".")},
@@ -209,6 +211,15 @@
         "distributorName": "${agreement_data.providerCapacity}"
     },
     "cliente": {
+        "codigoPuestoOcupacion": "1X5",
+        "ocupacion": "PENDING",
+        "idDocumentData": {
+            "ocr": "${(customer_data.customer.credentialData.ocr)!''}",
+            "type": "IFE / INE"
+        },
+        "tipoRegimenFiscal": {
+            "description": "PENDING"
+        },
         "satisfactorio": "Satisfactoria",
         "apellidoPaterno": "${(customer_data.customer.lastName)!''}",
         "apellidoMaterno": "${(customer_data.customer.secondLastName)!''}",
@@ -223,13 +234,13 @@
         "correo": "${(customer_data.customer.email)!''}",
         "estadoCivil": "${(customer_data.customer.maritalStatus.description)!''}",
         "telefonos": {
-            "movil": "${defaultPhones?filter(phone -> phone.phoneType == "MOVIL")?first?if_exists.number}",
+            "movil": "3138920033",
             "trabajo": ""
         },
         "domicilio": {
             "calle": "${defaultAddress.street!''}",
             "ciudad": "${defaultAddress.city!''}",
-            "codigoEstado": "${defaultAddress.stateDesc!''}",
+            "codigoEstado": "AGS",
             "codigoPais": "${defaultAddress.country!''}",
             "colonia": "${defaultAddress.township!''}",
             "municipio": "${defaultAddress.suburb!''}",
@@ -242,7 +253,7 @@
             "personal": {
                 "apellidoMaterno": "${reference.lastName2!''}",
                 "apellidoPaterno": "${reference.lastName1!''}",
-                "codigoRelacion": "${reference.relationship?has_content?then(reference.relationship.key, '')}",
+                "codigoRelacion": "05",
                 "clientId": "${reference.clientId!''}",
                 "nombre": "${reference.name1!''}",
                 "segundoNombre": "${reference.name2!''}",
@@ -254,12 +265,16 @@
     },
     "vendedor": {
         "oficina": "",
-        "nombre": "CESAR RODRIGO GONZALEZ TORRES",
-        "persona": "0010007540",
+        "nombre": "Canal Digital",
+        "persona": "",
         "claveImss": "",
         "rfc": ""
     },
     "documentPhotos": {},
+    "geolocation": {
+        "latitude": "PENDING",
+        "longitude": "PENDING"
+    },
     "firmas": {
         "cliente": "https://storage.googleapis.com/csb_puc_statics_prod/unsigned.png",
         "promotor": "https://storage.googleapis.com/csb_puc_statics_prod/unsigned.png"
