@@ -12,10 +12,7 @@
         "banco": customer_data.preApplicationData.paymentData.bankDesc,
         "numero-empleado": offer_data.offer.employeeNumber,
         "rfc": customer_data.customer.rfc,
-        "folio-fiscal": FunctionsUtil.getFolioFiscal(ocr_documents_data),
-        "puesto": "",
-        "fecha-ingreso": "",
-        "capacidad-pago": ""
+        "folio-fiscal": FunctionsUtil.getFolioFiscal(ocr_documents_data)
     }
     current_date_timestamp = .now?long
     promotorCompleteName = promoter_data.name1 + " " + promoter_data.lastname1
