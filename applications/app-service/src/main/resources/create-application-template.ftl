@@ -180,6 +180,6 @@
             "folioApplication": "${offer_data.offer.id}",
             "sourceChannelApp": "RENEX",
             "promotorCompleteName": "${promotorCompleteName}"
-     }
+        }
     }
 }

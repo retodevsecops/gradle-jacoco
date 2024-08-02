@@ -68,7 +68,7 @@
             "currentDiscount": ${discount},
             "discountAmount": ${discount},
             "frequencyDescription": "${offer_data.offer.frequency}",
-            "monthlyTI": ${offer_data.offer.monthlyTI?replace(",", ".")},
+            "monthlyTI": "${offer_data.offer.monthlyTI?c}",
             "openingCommissionPercentage": ${offer_data.offer.commissions?replace(",", ".")},
             "plazo": ${offer_data.offer.term},
             "requestedAmount": ${offer_data.offer.amount?c},
