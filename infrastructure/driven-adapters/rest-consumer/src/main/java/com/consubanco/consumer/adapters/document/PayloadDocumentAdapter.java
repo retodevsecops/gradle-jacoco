@@ -4,7 +4,6 @@ import com.consubanco.consumer.services.CustomerApiService;
 import com.consubanco.consumer.services.OfferApiService;
 import com.consubanco.consumer.services.promoter.PromoterApiService;
 import com.consubanco.freemarker.ITemplateOperations;
-import com.consubanco.logger.CustomLogger;
 import com.consubanco.model.entities.agreement.vo.AgreementConfigVO;
 import com.consubanco.model.entities.document.gateway.PayloadDocumentGateway;
 import org.springframework.cache.annotation.Cacheable;
@@ -20,18 +19,15 @@ import static com.consubanco.model.entities.document.message.DocumentTechnicalMe
 @Service
 public class PayloadDocumentAdapter implements PayloadDocumentGateway {
 
-    private final CustomLogger logger;
     private final PromoterApiService promoterApiService;
     private final CustomerApiService customerApiService;
     private final OfferApiService offerApiService;
     private final ITemplateOperations templateOperations;
 
-    public PayloadDocumentAdapter(final CustomLogger logger,
-                                  final PromoterApiService promoterApiService,
+    public PayloadDocumentAdapter(final PromoterApiService promoterApiService,
                                   final CustomerApiService customerApiService,
                                   final OfferApiService offerApiService,
                                   final ITemplateOperations templateOperations) {
-        this.logger = logger;
         this.promoterApiService = promoterApiService;
         this.customerApiService = customerApiService;
         this.offerApiService = offerApiService;
@@ -61,7 +57,6 @@ public class PayloadDocumentAdapter implements PayloadDocumentGateway {
     public Mono<Map<String, Object>> buildPayload(String template, Map<String, Object> data) {
         return templateOperations.process(template, data, Map.class)
                 .map(map -> (Map<String, Object>) map)
-                .doOnNext(payload -> logger.info("Built payload.", payload))
                 .onErrorMap(throwTechnicalError(PAYLOAD_ERROR));
     }
 

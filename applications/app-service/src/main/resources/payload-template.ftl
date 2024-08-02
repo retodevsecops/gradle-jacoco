@@ -1,21 +1,38 @@
 <#-- This is a freemarker template that is used to dynamically build the payload object to consume the developer api for document generation. -->
 <#-- Variables -->
-<#assign 
+<#assign
     current_date_timestamp = .now?long
     amountTotalToPay = (offer_data.offer.discount?replace(",", "")?number * offer_data.offer.term)?replace(",", "")
     discount = offer_data.offer.discount?replace(",", "")?number?c
     defaultAddress = customer_data.customer.address?filter(dataAddres -> dataAddres.addressType.key == "XXDEFAULT")?first?if_exists
     maritalStatusDescription = (customer_data.customer.maritalStatus.description)!""
+    company = agreement_data.company?lower_case
 >
 <#-- Functions -->
+<#function getPreferredPhone address>
+    <#if address?exists && address.phones?exists>
+        <#assign mobilePhone = address.phones?filter(phone -> phone.phoneType == "MOVIL")?first?if_exists>
+        <#assign principalPhone = address.phones?filter(phone -> phone.phoneType == "PRINCIPAL")?first?if_exists>
+        <#if mobilePhone??>
+            <#return mobilePhone.number>
+        <#elseif principalPhone??>
+            <#return principalPhone.number>
+        <#else>
+            <#return "">
+        </#if>
+    <#else>
+        <#return "">
+    </#if>
+</#function>
 <#-- Template -->
+<#if company == "csb">
 {
     "id": "${offer_data.offer.id}",
     "created_at": "${current_date_timestamp?c}",
     "contactInformation": {
         "email": "${customer_data.customer.email?lower_case!''}",
         "phoneAddress": "${(defaultAddress?exists && defaultAddress.phones?exists)?then((defaultAddress.phones?filter(phone -> phone.phoneType == "PRINCIPAL" || phone.phoneType == "MOVIL"))?first?if_exists.number, '')}",
-        "phone": "${(defaultAddress?exists && defaultAddress.phones?exists)?then((defaultAddress.phones?filter(phone -> phone.phoneType == "MOVIL" || phone.phoneType == "PRINCIPAL"))?first?if_exists.number, '')}"
+        "phone": "${getPreferredPhone(defaultAddress)}"
     },
     "generalData": {
         "interviewResult": "Satisfactoria"
@@ -51,7 +68,7 @@
             "currentDiscount": ${discount},
             "discountAmount": ${discount},
             "frequencyDescription": "${offer_data.offer.frequency}",
-            "monthlyTI": ${offer_data.offer.monthlyTI?replace(",", ".")},
+            "monthlyTI": "${offer_data.offer.monthlyTI?c}",
             "openingCommissionPercentage": ${offer_data.offer.commissions?replace(",", ".")},
             "plazo": ${offer_data.offer.term},
             "requestedAmount": ${offer_data.offer.amount?c},
@@ -174,3 +191,112 @@
     "signatureColor": "#000000",
     "origin": "RENEX"
 }
+<#elseif company == "mn">
+<#-- This is a freemarker template for Masnomina aggrements. -->
+  {
+    "origen": "RENEX",
+    "solicitud": "100800009599",
+    "fechaSolicitud": "${current_date_timestamp?c}",
+    "banco": "${(customer_data.preApplicationData.paymentData.bankId)! ''}",
+    "imssAgrement": false,
+    "tipoCredito": "NUEVO",
+    "tipoDisposicion": "T",
+    "clabe": "${(customer_data.preApplicationData.paymentData.clabe)! ''}",
+    "funcionarioPublico": "N",
+    "parienteFuncionarioPublico": "N",
+    "oferta": {
+        "montoPago": 2309.31,
+        "cat": ${offer_data.offer.cat?replace(",", ".")},
+        "tasa": 2.77,
+        "montoPrestamo": ${offer_data.offer.amount?c},
+        "plazo": ${offer_data.offer.term},
+        "frecuencia": "${offer_data.offer.frequency}",
+        "cnca": true
+    },
+    "convenio": {
+        "agreement": "${offer_data.offer.agreement.key}",
+        "codigoBaseCalculo": "${agreement_data.calculationBaseCode}",
+        "tipoAmortizacion": "${agreement_data.amortizationType}",
+        "razonSocial": "${offer_data.offer.agreement.description}",
+        "name": "${agreement_data.name}",
+        "codigoCsb": "${agreement_data.csbCode}",
+        "nombreCsb": "${agreement_data.csbName}",
+        "codigoSector": "${agreement_data.sectorCode}",
+        "branchName": "${agreement_data.businessName}",
+        "distributorName": "${agreement_data.providerCapacity}"
+    },
+    "cliente": {
+        "codigoPuestoOcupacion": "1X5",
+        "ocupacion": "PENDING",
+        "idDocumentData": {
+            "ocr": "${(customer_data.customer.credentialData.ocr)!''}",
+            "type": "IFE / INE"
+        },
+        "tipoRegimenFiscal": {
+            "description": "PENDING"
+        },
+        "satisfactorio": "Satisfactoria",
+        "apellidoPaterno": "${(customer_data.customer.lastName)!''}",
+        "apellidoMaterno": "${(customer_data.customer.secondLastName)!''}",
+        "nombre": "${customer_data.customer.firstName!''}",
+        "codigoPaisNacimiento": "MX",
+        "rfc": "${(customer_data.customer.rfc)!''}",
+        "curp": "${(customer_data.customer.curp)!''}",
+        "sexo": "${(customer_data.customer.gender)!''}",
+        "fechaNacimiento": "${(customer_data.customer.dateBirth)!''}",
+        "codigoEstadoNacimiento": "${(customer_data.customer.placeBirth)!''}",
+        "nacionalidad": "${(customer_data.customer.nationality.description)!''}",
+        "correo": "${(customer_data.customer.email)!''}",
+        "estadoCivil": "${(customer_data.customer.maritalStatus.description)!''}",
+        "telefonos": {
+            "movil": "3138920033",
+            "trabajo": ""
+        },
+        "domicilio": {
+            "calle": "${defaultAddress.street!''}",
+            "ciudad": "${defaultAddress.city!''}",
+            "codigoEstado": "AGS",
+            "codigoPais": "${defaultAddress.country!''}",
+            "colonia": "${defaultAddress.township!''}",
+            "municipio": "${defaultAddress.suburb!''}",
+            "numeroExterior": "${defaultAddress.externalNumber!''}",
+            "numeroInterior": "${defaultAddress.internalNumber!''}"
+        },
+        <#if customer_data.preApplicationData.references??>
+        "referencias": {
+            <#assign reference = customer_data.preApplicationData.references?first>
+            "personal": {
+                "apellidoMaterno": "${reference.lastName2!''}",
+                "apellidoPaterno": "${reference.lastName1!''}",
+                "codigoRelacion": "05",
+                "clientId": "${reference.clientId!''}",
+                "nombre": "${reference.name1!''}",
+                "segundoNombre": "${reference.name2!''}",
+                "telefono": "${reference.cellPhone!''}",
+                "telefonoFijo": "${reference.phone!''}"
+            }
+        }
+        </#if>
+    },
+    "vendedor": {
+        "oficina": "",
+        "nombre": "Canal Digital",
+        "persona": "",
+        "claveImss": "",
+        "rfc": ""
+    },
+    "documentPhotos": {},
+    "geolocation": {
+        "latitude": "PENDING",
+        "longitude": "PENDING"
+    },
+    "firmas": {
+        "cliente": "https://storage.googleapis.com/csb_puc_statics_prod/unsigned.png",
+        "promotor": "https://storage.googleapis.com/csb_puc_statics_prod/unsigned.png"
+    }
+}
+<#else>
+{
+    "message": "There is not a valid company ${company}"
+}
+</#if>
