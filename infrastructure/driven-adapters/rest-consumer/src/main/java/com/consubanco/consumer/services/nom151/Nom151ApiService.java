@@ -109,7 +109,7 @@ public class Nom151ApiService {
                 });
     }
 
-    public Integer getValidDays() {
+    public Integer getValidTime() {
         return properties.getValidTimeMin();
     }
 

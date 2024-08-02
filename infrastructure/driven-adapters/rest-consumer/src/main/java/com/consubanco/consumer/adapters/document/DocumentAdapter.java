@@ -104,6 +104,7 @@ public class DocumentAdapter implements DocumentGateway {
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {})
                 .onErrorMap(WebClientRequestException.class, error -> requestError(error, API_REQUEST_ERROR))
+                .doOnError(e-> logger.error("Error generating multiple documents", e))
                 .onErrorMap(WebClientResponseException.class, error -> responseError(error, API_PROMOTER_ERROR))
                 .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(API_PROMOTER_ERROR));
     }

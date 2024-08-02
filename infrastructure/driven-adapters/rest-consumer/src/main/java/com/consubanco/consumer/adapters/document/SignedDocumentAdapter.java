@@ -53,7 +53,7 @@ public class SignedDocumentAdapter implements SignedDocumentGateway {
 
     @Override
     public Integer getValidMinutes() {
-        return nom151ApiService.getValidDays();
+        return nom151ApiService.getValidTime();
     }
 
     private Mono<LoadDocumentReqDTO> buildRequestDTO(DocumentSignatureRequestVO signatureRequest) {
