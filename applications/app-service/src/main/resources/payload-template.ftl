@@ -9,6 +9,21 @@
     company = agreement_data.company?lower_case
 >
 <#-- Functions -->
+<#function getPreferredPhone address>
+    <#if address?exists && address.phones?exists>
+        <#assign mobilePhone = address.phones?filter(phone -> phone.phoneType == "MOVIL")?first?if_exists>
+        <#assign principalPhone = address.phones?filter(phone -> phone.phoneType == "PRINCIPAL")?first?if_exists>
+        <#if mobilePhone??>
+            <#return mobilePhone.number>
+        <#elseif principalPhone??>
+            <#return principalPhone.number>
+        <#else>
+            <#return "">
+        </#if>
+    <#else>
+        <#return "">
+    </#if>
+</#function>
 <#-- Template -->
 <#if company == "csb">
 {
@@ -17,7 +32,7 @@
     "contactInformation": {
         "email": "${customer_data.customer.email?lower_case!''}",
         "phoneAddress": "${(defaultAddress?exists && defaultAddress.phones?exists)?then((defaultAddress.phones?filter(phone -> phone.phoneType == "PRINCIPAL" || phone.phoneType == "MOVIL"))?first?if_exists.number, '')}",
-        "phone": "${(defaultAddress?exists && defaultAddress.phones?exists)?then((defaultAddress.phones?filter(phone -> phone.phoneType == "MOVIL" || phone.phoneType == "PRINCIPAL"))?first?if_exists.number, '')}"
+        "phone": "${getPreferredPhone(defaultAddress)}"
     },
     "generalData": {
         "interviewResult": "Satisfactoria"
