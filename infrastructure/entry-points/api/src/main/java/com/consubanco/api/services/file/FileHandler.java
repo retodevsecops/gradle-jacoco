@@ -2,10 +2,7 @@ package com.consubanco.api.services.file;
 
 import com.consubanco.api.commons.util.FilePartUtil;
 import com.consubanco.api.commons.util.HttpResponseUtil;
-import com.consubanco.api.services.file.dto.FileResDTO;
-import com.consubanco.api.services.file.dto.GenerateDocumentReqDTO;
-import com.consubanco.api.services.file.dto.GenerateDocumentResDTO;
-import com.consubanco.api.services.file.dto.GetAndUploadDocumentReqDTO;
+import com.consubanco.api.services.file.dto.*;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.vo.FileUploadVO;
 import com.consubanco.usecase.agreement.GetAttachmentsByAgreementUseCase;
@@ -84,6 +81,12 @@ public class FileHandler {
         return fileUseCase.getManagementFiles()
                 .map(FileResDTO::new)
                 .collectList()
+                .flatMap(HttpResponseUtil::ok);
+    }
+
+    public  Mono<ServerResponse> validateTemplate(ServerRequest request) {
+        return request.bodyToMono(ValidateTemplateReqDTO.class)
+                .flatMap(req -> fileUseCase.validateTemplate(req.getTemplate(), req.getData()))
                 .flatMap(HttpResponseUtil::ok);
     }
 

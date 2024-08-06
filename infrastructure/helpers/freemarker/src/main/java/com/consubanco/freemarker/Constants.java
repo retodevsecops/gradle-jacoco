@@ -13,6 +13,7 @@ public class Constants {
     public static final String EXCEPTION_KEY = "exception-message";
     public static final String CAUSE_KEY = "exception-cause";
     public static final String MESSAGE_ERROR = "Error processing template with Freemarker";
+    public static final String MESSAGE_JSON_ERROR = "Error processing string to json with jackson";
     public static final String MESSAGE_SUCCESS = "This is the result of the freemarker template after processing";
 
 }

@@ -193,7 +193,7 @@
 }
 <#elseif company == "mn">
 <#-- This is a freemarker template for Masnomina aggrements. -->
-  {
+{
     "origen": "RENEX",
     "solicitud": "100800009599",
     "fechaSolicitud": "${current_date_timestamp?c}",
