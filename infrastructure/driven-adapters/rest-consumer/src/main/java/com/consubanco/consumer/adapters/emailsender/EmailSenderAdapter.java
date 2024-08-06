@@ -39,9 +39,8 @@ public class EmailSenderAdapter implements EmailGateway {
 
     @Override
     public Mono<Boolean> sendEmail(String email, String bp, String fullName, String base64File) {
-        logger.info("Sending email contract to customer BP: " + bp + "email: " + email + "contract : " + base64File.substring(0, 200));
         var bodyRequest = buildBodyRequest(email, bp, fullName, base64File);
-        logger.info("body request sendGenericEmail: " + bodyRequest.toString());
+        logger.info("body request sendGenericEmail: " + apis.getApiConnect().getApiSendGenericEmail(), bodyRequest);
         return this.sendGenericEmailClient.post()
                 .uri(apis.getApiConnect().getApiSendGenericEmail())
                 .bodyValue(bodyRequest)

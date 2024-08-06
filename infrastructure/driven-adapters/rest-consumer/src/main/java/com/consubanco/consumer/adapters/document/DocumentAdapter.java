@@ -2,6 +2,7 @@ package com.consubanco.consumer.adapters.document;
 
 import com.consubanco.consumer.adapters.document.dto.*;
 import com.consubanco.consumer.adapters.document.properties.DocumentApisProperties;
+import com.consubanco.logger.CustomLogger;
 import com.consubanco.model.commons.exception.TechnicalException;
 import com.consubanco.model.entities.agreement.vo.AttachmentConfigVO;
 import com.consubanco.model.entities.document.gateway.DocumentGateway;
@@ -25,6 +26,7 @@ import java.util.Map;
 import static com.consubanco.consumer.adapters.document.dto.GetDocsPreviousApplicationResDTO.getResponseCode;
 import static com.consubanco.consumer.adapters.document.dto.GetDocsPreviousApplicationResDTO.getResponseMessage;
 import static com.consubanco.consumer.commons.ClientExceptionFactory.requestError;
+import static com.consubanco.consumer.commons.ClientExceptionFactory.responseError;
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.*;
 import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.API_DOCS_PREVIOUS_ERROR;
 import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.API_DOCS_PREVIOUS_TIMEOUT;
@@ -33,6 +35,7 @@ import static com.consubanco.model.entities.file.message.FileTechnicalMessage.*;
 @Service
 public class DocumentAdapter implements DocumentGateway {
 
+    private final CustomLogger logger;
     private final WebClient apiConnectClient;
     private final WebClient apiPromoterClient;
     private final DocumentApisProperties apis;
@@ -41,16 +44,19 @@ public class DocumentAdapter implements DocumentGateway {
     public DocumentAdapter(final @Qualifier("ApiConnectClient") WebClient apiConnectClient,
                            final @Qualifier("ApiPromoterClient") WebClient apiPromoterClient,
                            final DocumentApisProperties apisProperties,
-                           final ObjectMapper objectMapper) {
+                           final ObjectMapper objectMapper,
+                           final CustomLogger logger) {
         this.apiConnectClient = apiConnectClient;
         this.apiPromoterClient = apiPromoterClient;
         this.apis = apisProperties;
         this.objectMapper = objectMapper;
+        this.logger = logger;
     }
 
     @Override
     public Mono<String> generateContentCNCALetter(String loanId) {
         GenerateCNCALetterReqDTO requestDTO = new GenerateCNCALetterReqDTO(apis.getApplicationId(), loanId);
+        logger.info("Generate CNCALetter Request: ", requestDTO);
         return this.apiConnectClient.post()
                 .uri(apis.getCNCAApiEndpoint())
                 .bodyValue(requestDTO)
@@ -76,21 +82,40 @@ public class DocumentAdapter implements DocumentGateway {
 
     @Override
     public Mono<Map<String, String>> generateMultiple(List<String> documents, Map<String, Object> payload) {
+        GenerateDocumentRequestCsbDTO requestDTO = new GenerateDocumentRequestCsbDTO(documents, payload);
+        logger.info("Generate multiple documents Request for CSB: ", requestDTO);
         return this.apiPromoterClient.post()
                 .uri(apis.generateDocumentApiEndpoint())
-                .bodyValue(new GenerateDocumentRequestDTO(documents, payload))
+                .bodyValue(requestDTO)
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {})
                 .onErrorMap(WebClientRequestException.class, error -> requestError(error, API_REQUEST_ERROR))
-                .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_PROMOTER_ERROR))
+                .onErrorMap(WebClientResponseException.class, error -> responseError(error, API_PROMOTER_ERROR))
+                .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(API_PROMOTER_ERROR));
+    }
+
+    @Override
+    public Mono<Map<String, String>> generateMultipleMN(List<String> documents, Map<String, Object> payload) {
+        GenerateDocumentRequestMnDTO requestDTO = new GenerateDocumentRequestMnDTO(documents, payload);
+        logger.info("Generate multiple documents Request for MN: ", requestDTO);
+        return this.apiPromoterClient.post()
+                .uri(apis.generateDocumentMnEndpoint())
+                .bodyValue(requestDTO)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {})
+                .onErrorMap(WebClientRequestException.class, error -> requestError(error, API_REQUEST_ERROR))
+                .doOnError(e-> logger.error("Error generating multiple documents", e))
+                .onErrorMap(WebClientResponseException.class, error -> responseError(error, API_PROMOTER_ERROR))
                 .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(API_PROMOTER_ERROR));
     }
 
     @Override
     public Flux<PreviousDocumentVO> getDocsFromPreviousApplication(String previousApplicationId, List<AttachmentConfigVO> docs) {
+        GetDocsPreviousApplicationReqDTO request = new GetDocsPreviousApplicationReqDTO(apis.getApplicationId(), previousApplicationId, docs);
+        logger.info("Request getDocsFromPreviousApplication: "+apis.getApiConnect().getApiDocsPrevious(), request);
         return this.apiConnectClient.post()
                 .uri(apis.getApiConnect().getApiDocsPrevious())
-                .bodyValue(new GetDocsPreviousApplicationReqDTO(apis.getApplicationId(), previousApplicationId, docs))
+                .bodyValue(request)
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
                 })
@@ -105,7 +130,7 @@ public class DocumentAdapter implements DocumentGateway {
                     return monoTechnicalError(cause, API_DOCS_PREVIOUS_ERROR);
                 })
                 .onErrorMap(WebClientRequestException.class, error -> requestError(error, API_REQUEST_ERROR))
-                .onErrorMap(WebClientResponseException.class, error -> buildTechnical(error.getResponseBodyAsString(), API_DOCS_PREVIOUS_ERROR))
+                .onErrorMap(WebClientResponseException.class, error -> responseError(error, API_DOCS_PREVIOUS_ERROR))
                 .onErrorMap(error -> !(error instanceof TechnicalException), error -> {
                     if (error.getCause() instanceof TimeoutException)
                         return buildTechnical(error.getCause(), API_DOCS_PREVIOUS_TIMEOUT);
@@ -117,7 +142,7 @@ public class DocumentAdapter implements DocumentGateway {
     public Mono<String> generate(GenerateDocumentVO generateDocumentVO, Map<String, Object> payload) {
         return this.apiPromoterClient.post()
                 .uri(apis.generateDocumentApiEndpoint())
-                .bodyValue(new GenerateDocumentRequestDTO(generateDocumentVO, payload))
+                .bodyValue(new GenerateDocumentRequestCsbDTO(generateDocumentVO, payload))
                 .retrieve()
                 .bodyToMono(GenerateDocumentResponseDTO.class)
                 .map(GenerateDocumentResponseDTO::getPublicUrl)

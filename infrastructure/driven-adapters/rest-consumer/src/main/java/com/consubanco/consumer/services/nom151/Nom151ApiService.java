@@ -4,6 +4,7 @@ import com.consubanco.consumer.services.nom151.util.ApiResponseNom151Util;
 import com.consubanco.consumer.services.nom151.util.GetNom151Util;
 import com.consubanco.consumer.services.nom151.util.GetSignedDocumentUtil;
 import com.consubanco.consumer.services.nom151.util.LoadDocumentReqDTO;
+import com.consubanco.logger.CustomLogger;
 import com.consubanco.model.commons.exception.TechnicalException;
 import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,13 +27,16 @@ import static com.consubanco.model.entities.otp.message.OtpTechnicalMessage.API_
 public class Nom151ApiService {
 
     private static final String SOAP_ACTION = "SOAPAction";
+    private final CustomLogger logger;
     private final WebClient nom151Client;
     private final Nom151ApiProperties properties;
 
     public Nom151ApiService(final @Qualifier("nom151Client") WebClient nom151Client,
-                            final Nom151ApiProperties apisProperties) {
+                            final Nom151ApiProperties apisProperties,
+                            final CustomLogger logger) {
         this.nom151Client = nom151Client;
         this.properties = apisProperties;
+        this.logger = logger;
     }
 
     public Mono<Boolean> loadDocumentForCSB(LoadDocumentReqDTO loadDocumentReqDTO) {
@@ -60,10 +64,12 @@ public class Nom151ApiService {
     }
 
     private Mono<Boolean> loadDocument(LoadDocumentReqDTO loadDocumentReqDTO, String user, String password) {
+        String requestBody = loadDocumentReqDTO.buildRequest(user, password);
+        logger.info("Request load document for nom151", requestBody);
         return nom151Client.post()
                 .uri(properties.getEndpoint())
                 .header(SOAP_ACTION, properties.getActions().getLoadDocument())
-                .bodyValue(loadDocumentReqDTO.buildRequest(user, password))
+                .bodyValue(requestBody)
                 .exchangeToMono(response -> getResponse(response, LoadDocumentReqDTO::getSuccessfulResponse))
                 .map(LoadDocumentReqDTO::resultIsSuccess)
                 .onErrorMap(WebClientRequestException.class, error -> requestError(error, API_REQUEST_ERROR))
@@ -71,21 +77,24 @@ public class Nom151ApiService {
     }
 
     private Mono<String> getSignedDocument(String user, String password, String documentId) {
-        String bodyValue = buildRequest(user, password, documentId);
+        String requestBody = buildRequest(user, password, documentId);
+        logger.info("Request get signed document for nom151", requestBody);
         return nom151Client.post()
                 .uri(properties.getEndpoint())
                 .header(SOAP_ACTION, properties.getActions().getGetDocumentSigned())
-                .bodyValue(bodyValue)
+                .bodyValue(requestBody)
                 .exchangeToMono(response -> getResponse(response, GetSignedDocumentUtil::getSuccessfulResponse))
                 .onErrorMap(WebClientRequestException.class, error -> requestError(error, API_REQUEST_ERROR))
                 .onErrorMap(e -> !(e instanceof TechnicalException), error -> buildTechnical(error, API_NOM151_ERROR));
     }
 
     private Mono<String> getNom151(String user, String password, String documentId) {
+        String requestBody = GetNom151Util.buildRequest(user, password, documentId);
+        logger.info("Request get nom151", requestBody);
         return nom151Client.post()
                 .uri(properties.getEndpoint())
                 .header(SOAP_ACTION, properties.getActions().getGetNom151())
-                .bodyValue(GetNom151Util.buildRequest(user, password, documentId))
+                .bodyValue(requestBody)
                 .exchangeToMono(response -> getResponse(response, GetNom151Util::getSuccessfulResponse))
                 .onErrorMap(WebClientRequestException.class, error -> requestError(error, API_REQUEST_ERROR))
                 .onErrorMap(e -> !(e instanceof TechnicalException), error -> buildTechnical(error, API_NOM151_ERROR));
@@ -100,7 +109,7 @@ public class Nom151ApiService {
                 });
     }
 
-    public Integer getValidDays() {
+    public Integer getValidTime() {
         return properties.getValidTimeMin();
     }
 

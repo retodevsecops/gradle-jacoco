@@ -116,7 +116,7 @@ public class BuildCompoundDocumentsUseCase {
 
     private Mono<File> createUnsignedApplicantRecord(List<File> files, String directory) {
         List<String> base64Documents = files.stream().map(File::getContent).toList();
-        return pdfDocumentGateway.merge(base64Documents)
+        return pdfDocumentGateway.mergeAndAddBlankPage(base64Documents)
                 .map(documentContent -> buildCompundDocumentFile(UNSIGNED_APPLICANT_RECORD, documentContent, directory))
                 .flatMap(fileRepository::save);
     }

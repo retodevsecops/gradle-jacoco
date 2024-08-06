@@ -24,16 +24,6 @@
         "namePreviousDocument": "RECIBO-NOMINA",
         "isRequired": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
-      },
-      {
-        "name": "Comprobante de domicilio",
-        "technicalName": "comprobante-domicilio",
-        "maxFiles": 1,
-        "isOcr": false,
-        "isRecoverable": true,
-        "namePreviousDocument": "COMPROBANTE-DOMICILIO",
-        "isRequired": true,
-        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       }
     ],
     "compoundDocuments": [

@@ -16,6 +16,7 @@ public class DocumentApisProperties {
     public static class Promoter {
         private String channel;
         private String apiGenerateDocument;
+        private String apiGenerateDocumentMn;
     }
 
     @Data
@@ -37,6 +38,9 @@ public class DocumentApisProperties {
 
     public String generateDocumentApiEndpoint() {
         return this.getPromoter().getApiGenerateDocument();
+    }
+    public String generateDocumentMnEndpoint(){
+        return this.getPromoter().getApiGenerateDocumentMn();
     }
 
 }

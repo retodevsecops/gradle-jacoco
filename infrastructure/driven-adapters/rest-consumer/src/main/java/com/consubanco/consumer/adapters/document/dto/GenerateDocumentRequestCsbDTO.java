@@ -13,17 +13,17 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Data
-public class GenerateDocumentRequestDTO {
+public class GenerateDocumentRequestCsbDTO {
 
     private List<DocumentDTO> documents;
     private Map<String, Object> payload;
 
-    public GenerateDocumentRequestDTO(GenerateDocumentVO generateDocumentVO, Map<String, Object> payload) {
+    public GenerateDocumentRequestCsbDTO(GenerateDocumentVO generateDocumentVO, Map<String, Object> payload) {
         this.documents = documentsToDTO(generateDocumentVO.getDocuments());
         this.payload = addAttachmentsToPayload(payload, generateDocumentVO);
     }
 
-    public GenerateDocumentRequestDTO(List<String> documents, Map<String, Object> payload) {
+    public GenerateDocumentRequestCsbDTO(List<String> documents, Map<String, Object> payload) {
         this.documents = documentsToDTO(documents);
         this.payload = enableIndividualDocumentsInPayload(payload);
     }

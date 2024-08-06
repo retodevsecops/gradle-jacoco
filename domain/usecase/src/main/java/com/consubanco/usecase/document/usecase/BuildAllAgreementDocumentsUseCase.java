@@ -14,7 +14,7 @@ public class BuildAllAgreementDocumentsUseCase {
 
     public Mono<Void> execute(Process process) {
         return agreementUseCase.findByNumber(process.getAgreementNumber())
-                .flatMapMany(agreement -> buildAgreementDocumentsUseCase.execute(process, agreement.getDocuments()))
+                .flatMapMany(agreement -> buildAgreementDocumentsUseCase.execute(process, agreement))
                 .collectList()
                 .flatMap(docsGenerated -> buildCompoundDocumentsUseCase.execute(process, docsGenerated));
     }
