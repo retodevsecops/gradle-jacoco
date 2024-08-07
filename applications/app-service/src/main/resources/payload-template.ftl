@@ -196,14 +196,14 @@
 {
     "origen": "ECSB",
     "solicitud": "100800009599",
-    "fechaSolicitud": "${current_date_timestamp?c}",
-    "banco": "${(customer_data.preApplicationData.paymentData.bankId)! ''}",
+    "fechaSolicitud": ${current_date_timestamp?c},
+    "banco": "${customer_data.preApplicationData.paymentData.bankDesc! ''}",
     "imssAgrement": false,
     "tipoCredito": "NUEVO",
     "tipoDisposicion": "T",
     "clabe": "${(customer_data.preApplicationData.paymentData.clabe)! ''}",
-    "funcionarioPublico": "N",
-    "parienteFuncionarioPublico": "N",
+    "funcionarioPublico": "${customer_data.preApplicationData.applicant.pep?if_exists && !customer_data.preApplicationData.applicant.pep?boolean ? 'N' : ''}",
+    "parienteFuncionarioPublico": "${customer_data.preApplicationData.applicant.familiarPep?if_exists && !customer_data.preApplicationData.applicant.familiarPep?boolean ? 'N' : ''}",
     "oferta": {
         "montoPago": 2309.31,
         "cat": ${offer_data.offer.cat?replace(",", ".")},
@@ -227,13 +227,14 @@
     },
     "cliente": {
         "codigoPuestoOcupacion": "1X5",
-        "ocupacion": "PENDING",
+        "ocupacion": "${(customer_data.preApplicationData.applicant.occupation.description)!''}",
         "idDocumentData": {
             "ocr": "${(customer_data.customer.credentialData.ocr)!''}",
             "type": "IFE / INE"
         },
         "tipoRegimenFiscal": {
-            "description": "PENDING"
+            "key": "${customer_data.customer.regimenFiscal.key}",
+            "description": "${customer_data.customer.regimenFiscal.description}"
         },
         "satisfactorio": "Satisfactoria",
         "apellidoPaterno": "${(customer_data.customer.lastName)!''}",
