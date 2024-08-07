@@ -24,6 +24,13 @@
         <#return "">
     </#if>
 </#function>
+<#function getStringFromBoolean value>
+  <#if value?exists && value == true>
+    <#return "Y">
+  <#else>
+    <#return "N">
+  </#if>
+</#function>
 <#-- Template -->
 <#if company == "csb">
 {
@@ -203,8 +210,6 @@
     "tipoCredito": "NUEVO",
     "tipoDisposicion": "T",
     "clabe": "${(customer_data.preApplicationData.paymentData.clabe)! ''}",
-    "funcionarioPublico": "${customer_data.preApplicationData.applicant.pep?if_exists && !customer_data.preApplicationData.applicant.pep?boolean ? 'N' : ''}",
-    "parienteFuncionarioPublico": "${customer_data.preApplicationData.applicant.familiarPep?if_exists && !customer_data.preApplicationData.applicant.familiarPep?boolean ? 'N' : ''}",
     "oferta": {
         "montoPago": 2309.31,
         "cat": ${offer_data.offer.cat?replace(",", ".")},
@@ -216,6 +221,7 @@
     },
     "convenio": {
         "agreement": "${offer_data.offer.agreement.key}",
+        "agreementCRM": "${offer_data.offer.agreement.key}",
         "codigoBaseCalculo": "${agreement_data.calculationBaseCode}",
         "tipoAmortizacion": "${agreement_data.amortizationType}",
         "razonSocial": "${offer_data.offer.agreement.description}",
@@ -227,6 +233,8 @@
         "distributorName": "${agreement_data.providerCapacity}"
     },
     "cliente": {
+        "funcionarioPublico": "${getStringFromBoolean(customer_data.preApplicationData.applicant.pep)}",
+        "parienteFuncionarioPublico": "${getStringFromBoolean(customer_data.preApplicationData.applicant.familiarPep)}",
         "codigoPuestoOcupacion": "${(customer_data.preApplicationData.applicant.occupation.key)!''}",
         "ocupacion": "${(customer_data.preApplicationData.applicant.occupation.description)!''}",
         "idDocumentData": {
