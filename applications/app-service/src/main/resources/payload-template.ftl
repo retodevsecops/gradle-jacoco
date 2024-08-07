@@ -194,7 +194,7 @@
 <#elseif company == "mn">
 <#-- This is a freemarker template for Masnomina aggrements. -->
 {
-    "origen": "RENEX",
+    "origen": "ECSB",
     "solicitud": "100800009599",
     "fechaSolicitud": "${current_date_timestamp?c}",
     "banco": "${(customer_data.preApplicationData.paymentData.bankId)! ''}",
@@ -261,9 +261,9 @@
             "municipio": "${defaultAddress.suburb!''}",
             "numeroExterior": "${defaultAddress.externalNumber!''}",
             "numeroInterior": "${defaultAddress.internalNumber!''}"
-        },
+        }
         <#if customer_data.preApplicationData.references??>
-        "referencias": {
+        ,"referencias": {
             <#assign reference = customer_data.preApplicationData.references?first>
             "personal": {
                 "apellidoMaterno": "${reference.lastName2!''}",
