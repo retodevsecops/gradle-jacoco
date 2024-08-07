@@ -227,7 +227,7 @@
         "distributorName": "${agreement_data.providerCapacity}"
     },
     "cliente": {
-        "codigoPuestoOcupacion": "1X5",
+        "codigoPuestoOcupacion": "${(customer_data.preApplicationData.applicant.occupation.key)!''}",
         "ocupacion": "${(customer_data.preApplicationData.applicant.occupation.description)!''}",
         "idDocumentData": {
             "ocr": "${(customer_data.customer.credentialData.ocr)!''}",
