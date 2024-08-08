@@ -212,13 +212,18 @@
     "tipoDisposicion": "T",
     "clabe": "${(customer_data.preApplicationData.paymentData.clabe)! ''}",
     "oferta": {
-        "montoPago": 2309.31,
+        "montoPago": ${offer_data.offer.amount?c},
         "cat": ${offer_data.offer.cat?replace(",", ".")},
-        "tasa": 2.77,
+        "tasa": "${offer_data.offer.monthlyTI?c}",
         "montoPrestamo": ${offer_data.offer.amount?c},
         "plazo": ${offer_data.offer.term},
         "frecuencia": "${offer_data.offer.frequency}",
+        "comisionApertura": ${offer_data.offer.commissions?replace(",", ".")},
+        "fechaAnterior": null,
+        "montoAnterior": null,
+        "montototalLibranza": "",
         "cnca": true
+        "montoTotal": ${amountTotalToPay}
     },
     "convenio": {
         "agreement": "${offer_data.offer.agreement.key}",
@@ -234,6 +239,7 @@
         "distributorName": "${agreement_data.providerCapacity}"
     },
     "cliente": {
+        "numeroEmpleadoEmp": "${offer_data.offer.employeeNumber?string}",
         "funcionarioPublico": "${getStringFromBoolean(customer_data.preApplicationData.applicant.pep)}",
         "parienteFuncionarioPublico": "${getStringFromBoolean(customer_data.preApplicationData.applicant.familiarPep)}",
         "codigoPuestoOcupacion": "${(customer_data.preApplicationData.applicant.occupation.key)!''}",
