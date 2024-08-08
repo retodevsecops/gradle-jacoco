@@ -317,8 +317,8 @@
     },
     "documentPhotos": {},
     "geolocation": {
-        "latitude": "PENDING",
-        "longitude": "PENDING"
+        "latitude": "",
+        "longitude": ""
     },
     "firmas": {
         "cliente": "https://storage.googleapis.com/csb_puc_statics_prod/unsigned.png",
