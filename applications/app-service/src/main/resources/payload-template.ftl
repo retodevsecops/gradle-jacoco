@@ -212,7 +212,7 @@
     "tipoDisposicion": "T",
     "clabe": "${(customer_data.preApplicationData.paymentData.clabe)! ''}",
     "oferta": {
-        "montoPago": ${offer_data.offer.amount?c},
+        "montoPago": ${offer_data.offer.discount?c},
         "cat": ${offer_data.offer.cat?replace(",", ".")},
         "tasa": "${offer_data.offer.monthlyTI?c}",
         "montoPrestamo": ${offer_data.offer.amount?c},
@@ -309,9 +309,9 @@
         </#if>
     },
     "vendedor": {
-        "oficina": "",
+        "oficina": "Canal Digital,
         "nombre": "Canal Digital",
-        "persona": "",
+        "persona": "Canal Digital",
         "claveImss": "",
         "rfc": ""
     },
