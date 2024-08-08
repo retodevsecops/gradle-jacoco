@@ -103,6 +103,12 @@
     ],
     "compoundDocuments": [
       {
+        "name": "formato-solicitud-gratuita",
+        "documents": [
+          { "name": "solicitud_credito" }
+        ]
+      },
+      {
         "name": "contrato-cliente",
         "documents": [
           { "name": "anexo_b" },
