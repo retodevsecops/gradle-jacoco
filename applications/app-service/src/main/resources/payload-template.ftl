@@ -222,7 +222,7 @@
         "fechaAnterior": null,
         "montoAnterior": null,
         "montototalLibranza": "",
-        "cnca": true
+        "cnca": true,
         "montoTotal": ${amountTotalToPay}
     },
     "convenio": {
