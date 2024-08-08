@@ -238,10 +238,16 @@
     ],
     "compoundDocuments": [
       {
+        "name": "formato-solicitud-gratuita",
+        "documents": [
+          { "name": "caratula_credito_sjt_v2" }
+        ]
+      },
+      {
         "name": "contrato-cliente",
         "documents": [
-          { "name": "formato-unico-caratula" },
-          { "name": "formato-unico-contrato-credito" }
+          { "name": "caratula_credito_sjt_v2" },
+          { "name": "solicitud_credito_sjt_v2" }
         ]
       },
       {
@@ -250,9 +256,8 @@
           { "name": "identificacion-oficial" },
           { "name": "recibo-nomina" },
           { "name": "comprobante-domicilio" },
-          { "name": "formato-unico-caratula" },
-          { "name": "pagare" },
-          { "name": "formato-solicitud-gratuita"},
+          { "name": "caratula_credito_sjt_v2" },
+          { "name": "solicitud_credito_sjt_v2" },
           { "name": "carta-autorizacion-descuento" }
         ]
       }
