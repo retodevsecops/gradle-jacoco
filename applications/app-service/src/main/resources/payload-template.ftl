@@ -240,7 +240,7 @@
     },
     "cliente": {
         "numeroEmpleadoEmp": "${offer_data.offer.employeeNumber?string}",
-        "lastFolioFiscal": "${FunctionsUtil.getFolioFiscal(ocr_documents_data)}",
+        "ultimoFolioFiscal": "${FunctionsUtil.getFolioFiscal(ocr_documents_data)}",
         "funcionarioPublico": "${getStringFromBoolean(customer_data.preApplicationData.applicant.pep)}",
         "parienteFuncionarioPublico": "${getStringFromBoolean(customer_data.preApplicationData.applicant.familiarPep)}",
         "codigoPuestoOcupacion": "${(customer_data.preApplicationData.applicant.occupation.key)!''}",
