@@ -5,6 +5,7 @@
     amountTotalToPay = (offer_data.offer.discount?replace(",", "")?number * offer_data.offer.term)?replace(",", "")
     discount = offer_data.offer.discount?replace(",", "")?number?c
     defaultAddress = customer_data.customer.address?filter(dataAddres -> dataAddres.addressType.key == "XXDEFAULT")?first?if_exists
+    fiscalAddress = customer_data.customer.address?filter(dataAddres -> dataAddres.addressType.key == "ZFISCAL")?first?if_exists
     maritalStatusDescription = (customer_data.customer.maritalStatus.description)!""
     company = agreement_data.company?lower_case
 >
@@ -265,12 +266,24 @@
         "domicilio": {
             "calle": "${defaultAddress.street!''}",
             "ciudad": "${defaultAddress.city!''}",
-            "codigoEstado": "AGS",
+            "codigoEstado": "${defaultAddress.stateDesc!''}",
             "codigoPais": "${defaultAddress.country!''}",
-            "colonia": "${defaultAddress.township!''}",
-            "municipio": "${defaultAddress.suburb!''}",
+            "colonia": "${defaultAddress.suburb!''}",
+            "municipio": "${defaultAddress.township!''}",
             "numeroExterior": "${defaultAddress.externalNumber!''}",
-            "numeroInterior": "${defaultAddress.internalNumber!''}"
+            "numeroInterior": "${defaultAddress.internalNumber!''}",
+            "cp": "${defaultAddress.zipCode!''}"
+        },
+        "domicilioFiscal": {
+            "calle": "${fiscalAddress.street!''}",
+            "ciudad": "${fiscalAddress.city!''}",
+            "codigoEstado": "${fiscalAddress.stateDesc!''}",
+            "codigoPais": "${fiscalAddress.country!''}",
+            "colonia": "${fiscalAddress.suburb!''}",
+            "municipio": "${fiscalAddress.township!''}",
+            "numeroExterior": "${fiscalAddress.externalNumber!''}",
+            "numeroInterior": "${fiscalAddress.internalNumber!''}",
+            "cp": "${fiscalAddress.zipCode!''}"
         }
         <#if customer_data.preApplicationData.references??>
         ,"referencias": {
