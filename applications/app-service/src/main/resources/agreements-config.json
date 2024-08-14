@@ -2,7 +2,7 @@
   {
     "agreementName": "cdmx - csb",
     "agreementNumber": "10000041",
-    "promoterId": "0017123040",
+    "promoterId": "17123050",
     "branchId": "51187515",
     "attachmentsDocuments": [
       {
@@ -67,7 +67,7 @@
   {
     "agreementName": "cdmx - MN",
     "agreementNumber": "10001121",
-    "promoterId": "0017123040",
+    "promoterId": "17123050",
     "branchId": "51187515",
     "attachmentsDocuments": [
       {
@@ -138,7 +138,7 @@
   {
     "agreementName": "GEM - CSB",
     "agreementNumber": "10000080",
-    "promoterId": "0017123040",
+    "promoterId": "17123050",
     "branchId": "51187515",
     "attachmentsDocuments": [
       {
@@ -202,7 +202,7 @@
   {
     "agreementName": "GEM - MN",
     "agreementNumber": "10001183",
-    "promoterId": "0017123040",
+    "promoterId": "17123050",
     "branchId": "51187515",
     "attachmentsDocuments": [
       {
@@ -259,6 +259,72 @@
           { "name": "caratula_credito_sjt_v2" },
           { "name": "solicitud_credito_sjt_v2" },
           { "name": "carta-autorizacion-descuento" }
+        ]
+      }
+    ],
+    "customerVisibleDocuments": [
+      "formato-solicitud-gratuita",
+      "contrato-cliente",
+      "carta-de-liquidacion"
+    ]
+  },
+  {
+    "agreementName": "IEEPO - CSB",
+    "agreementNumber": "10000790",
+    "promoterId": "17123050",
+    "branchId": "51187515",
+    "attachmentsDocuments": [
+      {
+        "name": "Identificación oficial",
+        "technicalName": "identificacion-oficial",
+        "maxFiles": 1,
+        "isOcr": false,
+        "isRecoverable": true,
+        "namePreviousDocument": "IDENTIFICACIONOFICIAL",
+        "isRequired": true,
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
+      },
+      {
+        "name": "Recibos de nomina",
+        "technicalName": "recibo-nomina",
+        "maxFiles": 2,
+        "isOcr": true,
+        "isRecoverable": false,
+        "namePreviousDocument": "RECIBO-NOMINA",
+        "isRequired": true,
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
+      },
+      {
+        "name": "Comprobante de domicilio",
+        "technicalName": "comprobante-domicilio",
+        "maxFiles": 1,
+        "isOcr": false,
+        "isRecoverable": true,
+        "namePreviousDocument": "COMPROBANTE-DOMICILIO",
+        "isRequired": true,
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
+      }
+    ],
+    "compoundDocuments": [
+      {
+        "name": "formato-autorizacion",
+        "documents": [
+          { "name": "formato-autorizacion-nomipay" },
+          { "name": "aviso-de-privacidad" }
+        ]
+      },
+      {
+        "name": "contrato-cliente",
+        "documents": [
+          { "name": "formato-unico-caratula" },
+          { "name": "formato-unico-contrato-credito" }
+        ]
+      },
+      {
+        "name": "documentos-cobranza",
+        "documents": [
+          { "name": "identificacion-oficial" },
+          { "name": "recibo-nomina" }
         ]
       }
     ],

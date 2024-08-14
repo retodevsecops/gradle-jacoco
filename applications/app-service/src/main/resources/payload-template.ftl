@@ -204,6 +204,7 @@
 {
     "origen": "ECSB",
     "destinoCredito": "",
+    "empresa": "SE DEBE TOMAR DE LA SUCURSAL ASOCIADA AL CONVENIO promoter_data.branches[].empresa.enterpriseName",
     "solicitud": "100800009599",
     "fechaSolicitud": ${current_date_timestamp?c},
     "banco": "${customer_data.preApplicationData.paymentData.bankDesc! ''}",
@@ -217,7 +218,7 @@
         "tasa": "${offer_data.offer.monthlyTI?c}",
         "montoPrestamo": ${offer_data.offer.amount?c},
         "plazo": ${offer_data.offer.term},
-        "frecuencia": "${offer_data.offer.frequency}",
+        "frecuencia": "${offer_data.offer.frequency?substring(0, 1)?upper_case}",
         "comisionApertura": ${offer_data.offer.commissions?replace(",", ".")},
         "fechaAnterior": null,
         "montoAnterior": null,
@@ -227,6 +228,7 @@
     },
     "convenio": {
         "agreement": "${offer_data.offer.agreement.key}",
+        "agreementCRM": "${offer_data.offer.agreement.key}",
         "agreementCRM": "${offer_data.offer.agreement.key}",
         "codigoBaseCalculo": "${agreement_data.calculationBaseCode}",
         "tipoAmortizacion": "${agreement_data.amortizationType}",
@@ -313,7 +315,7 @@
         "nombre": "Canal Digital",
         "persona": "",
         "claveImss": "",
-        "rfc": ""
+        "rfc": "Canal Digital"
     },
     "documentPhotos": {},
     "geolocation": {
