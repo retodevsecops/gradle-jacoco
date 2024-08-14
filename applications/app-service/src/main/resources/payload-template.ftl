@@ -8,6 +8,7 @@
     fiscalAddress = customer_data.customer.address?filter(dataAddres -> dataAddres.addressType.key == "ZFISCAL")?first?if_exists
     maritalStatusDescription = (customer_data.customer.maritalStatus.description)!""
     company = agreement_data.company?lower_case
+    branch = promoter_data.branches?filter(branch -> branch.branchID == agreement_configuration_data.branchId)?first?if_exists
 >
 <#-- Functions -->
 <#function getPreferredPhone address>
@@ -49,8 +50,8 @@
         "apellidoPaterno": "",
         "apellidoMaterno": "",
         "bpId": "",
-        "nombre1": "Canal",
-        "nombre2": "Digital",
+        "nombre1": "${promoter_data.name1}",
+        "nombre2": "",
         "rfc": ""
     },
     "employmentData": {
@@ -204,8 +205,8 @@
 {
     "origen": "ECSB",
     "destinoCredito": "",
-    "empresa": "SE DEBE TOMAR DE LA SUCURSAL ASOCIADA AL CONVENIO promoter_data.branches[].empresa.enterpriseName",
-    "solicitud": "100800009599",
+    "empresa": "${(branch.empresa.enterpriseName)!''}",
+    "solicitud": "${offer_data.offer.id}",
     "fechaSolicitud": ${current_date_timestamp?c},
     "banco": "${customer_data.preApplicationData.paymentData.bankDesc! ''}",
     "imssAgrement": false,
@@ -311,11 +312,11 @@
         </#if>
     },
     "vendedor": {
-        "oficina": "Canal Digital,
-        "nombre": "Canal Digital",
-        "persona": "Canal Digital",
+        "oficina": "",
+        "nombre": "${promoter_data.name1}",
+        "persona": "",
         "claveImss": "",
-        "rfc": "Canal Digital"
+        "rfc": "${promoter_data.name1}"
     },
     "documentPhotos": {},
     "geolocation": {
