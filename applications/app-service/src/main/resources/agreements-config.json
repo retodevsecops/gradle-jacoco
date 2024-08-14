@@ -272,7 +272,7 @@
     "agreementName": "IEEPO - CSB",
     "agreementNumber": "10000790",
     "promoterId": "17123050",
-    "branchId": "51187515",
+    "branchId": "51187451",
     "attachmentsDocuments": [
       {
         "name": "Identificación oficial",
@@ -323,8 +323,9 @@
       {
         "name": "documentos-cobranza",
         "documents": [
-          { "name": "identificacion-oficial" },
-          { "name": "recibo-nomina" }
+          { "name": "formato-unico-caratula" },
+          { "name": "mandato-de-autorizacion-de-descuento" },
+          { "name": "identificacion-oficial" }
         ]
       }
     ],
