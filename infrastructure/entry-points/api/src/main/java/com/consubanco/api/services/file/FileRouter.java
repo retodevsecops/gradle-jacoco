@@ -40,6 +40,7 @@ public class FileRouter {
                         .GET(PAYLOAD_DATA_PATH, offerFileHandler::getPayloadData, getPayloadData())
                         .POST(UPLOAD_OFFICIAL_ID, offerFileHandler::uploadOfficialID, uploadOfficialID())
                         .GET(ATTACHMENT_STATUS_PATH, offerFileHandler::attachmentStatus, attachmentStatus())
+                        .POST(VALIDATE_TEMPLATE, handler::validateTemplate, validateTemplate())
                         .build()
         );
     }

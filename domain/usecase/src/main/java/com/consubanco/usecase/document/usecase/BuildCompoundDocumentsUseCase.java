@@ -60,6 +60,14 @@ public class BuildCompoundDocumentsUseCase {
                 .switchIfEmpty(ExceptionFactory.monoBusiness(CNCA_NOT_FOUND, GENERATE_CNCA));
     }
 
+    private List<File> mergeFiles(List<File> files, List<File> attachments, File cncaLetter) {
+        files.add(cncaLetter);
+        files.addAll(attachments.stream()
+                .filter(attachment -> !checkIfExists(files, attachment.getName()))
+                .toList());
+        return files;
+    }
+
     private Mono<Tuple2<File, List<File>>> processCompoundDocuments(Process process, List<File> allFiles) {
         String directory = FileConstants.documentsDirectory(process.getOffer().getId());
         String agreementNumber = process.getAgreementNumber();
@@ -135,14 +143,6 @@ public class BuildCompoundDocumentsUseCase {
                 .directoryPath(directory)
                 .extension(FileExtensions.PDF)
                 .build();
-    }
-
-    private List<File> mergeFiles(List<File> files, List<File> attachments, File cncaLetter) {
-        files.add(cncaLetter);
-        files.addAll(attachments.stream()
-                .filter(attachment -> !checkIfExists(files, attachment.getName()))
-                .toList());
-        return files;
     }
 
     private Boolean checkIfExists(List<File> files, String nameAttachment) {

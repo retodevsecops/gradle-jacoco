@@ -10,7 +10,8 @@ public enum OcrBusinessMessage implements IExceptionMessage {
 
     UNDEFINED_TYPE("BE_OCR_0001", "No ocr file type defined for the document."),
     OCR_NOT_FOUND("BE_OCR_0002", "No ocr document associated with attachment was found."),
-    OCR_INVALID("BE_OCR_0003", "Ocr document is in invalid status.");
+    OCR_INVALID("BE_OCR_0003", "Ocr document is in invalid status."),
+    INVALID_MONTH("BE_OCR_0003", "Not recognized as a valid month");
 
     private final String code;
     private final String message;

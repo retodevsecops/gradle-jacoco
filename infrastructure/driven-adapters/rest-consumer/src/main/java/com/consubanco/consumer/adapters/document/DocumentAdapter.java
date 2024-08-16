@@ -117,8 +117,7 @@ public class DocumentAdapter implements DocumentGateway {
                 .uri(apis.getApiConnect().getApiDocsPrevious())
                 .bodyValue(request)
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
-                })
+                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
                 .flatMapMany(response -> {
                     Integer responseCode = getResponseCode(response);
                     if (responseCode.equals(HttpStatus.OK.value())) {
