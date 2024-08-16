@@ -2,7 +2,7 @@
   {
     "agreementName": "cdmx - csb",
     "agreementNumber": "10000041",
-    "promoterId": "17123050",
+    "promoterId": "0017123050",
     "branchId": "51187515",
     "attachmentsDocuments": [
       {
@@ -10,8 +10,8 @@
         "technicalName": "identificacion-oficial",
         "maxFiles": 1,
         "isOcr": false,
-        "isRecoverable": true,
-        "namePreviousDocument": "IDENTIFICACIONOFICIAL",
+        "isRecoverable": false,
+        "namePreviousDocument": "identificacionoficial",
         "isRequired": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       },
@@ -37,6 +37,13 @@
       }
     ],
     "compoundDocuments": [
+      {
+        "name": "identificacion-oficial",
+        "documents": [
+          { "name": "frente-identificacion-oficial" },
+          { "name": "reverso-identificacion-oficial" }
+        ]
+      },
       {
         "name": "contrato-cliente",
         "documents": [
@@ -67,7 +74,7 @@
   {
     "agreementName": "cdmx - MN",
     "agreementNumber": "10001121",
-    "promoterId": "17123050",
+    "promoterId": "0017123050",
     "branchId": "51187520",
     "attachmentsDocuments": [
       {
@@ -138,7 +145,7 @@
   {
     "agreementName": "GEM - CSB",
     "agreementNumber": "10000080",
-    "promoterId": "17123050",
+    "promoterId": "0017123050",
     "branchId": "51187515",
     "attachmentsDocuments": [
       {
@@ -202,7 +209,7 @@
   {
     "agreementName": "GEM - MN",
     "agreementNumber": "10001183",
-    "promoterId": "17123050",
+    "promoterId": "0017123050",
     "branchId": "51187515",
     "attachmentsDocuments": [
       {
@@ -271,16 +278,26 @@
   {
     "agreementName": "IEEPO - CSB",
     "agreementNumber": "10000790",
-    "promoterId": "17123050",
+    "promoterId": "0017123050",
     "branchId": "51187451",
     "attachmentsDocuments": [
       {
-        "name": "Identificación oficial",
-        "technicalName": "identificacion-oficial",
+        "name": "Frente de la INE",
+        "technicalName": "frente-identificacion-oficial",
         "maxFiles": 1,
         "isOcr": false,
-        "isRecoverable": true,
-        "namePreviousDocument": "IDENTIFICACIONOFICIAL",
+        "isRecoverable": false,
+        "namePreviousDocument": "IDENTIFICACIONOFICIAL2",
+        "isRequired": true,
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
+      },
+      {
+        "name": "Reverso de la INE",
+        "technicalName": "reverso-identificacion-oficial",
+        "maxFiles": 1,
+        "isOcr": false,
+        "isRecoverable": false,
+        "namePreviousDocument": "IDENTIFICACIONOFICIAL1",
         "isRequired": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       },
@@ -306,6 +323,13 @@
       }
     ],
     "compoundDocuments": [
+      {
+        "name": "identificacion-oficial",
+        "documents": [
+          { "name": "frente-identificacion-oficial" },
+          { "name": "reverso-identificacion-oficial" }
+        ]
+      },
       {
         "name": "formato-autorizacion",
         "documents": [

@@ -57,7 +57,7 @@
     "employmentData": {
         "numeroEmpleado": "${offer_data.offer.employeeNumber?string}"
     },
-   "idDocumentData": {
+    "idDocumentData": {
        "ocr": "${(customer_data.customer.credentialData.ocr)!''}",
        "type": "IFE / INE"
     },
@@ -187,6 +187,10 @@
         </#list>
     ],
     </#if>
+    "geolocation": {
+        "latitude": "",
+        "longitude": ""
+    },
     "signature": [
         {
             "name": "cliente",

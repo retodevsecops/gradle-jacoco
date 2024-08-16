@@ -30,13 +30,13 @@ adapter:
     apis:
       renex:
         audience: ${GCP_AUDIENCE:renovacion-dev}
-        api-health-customer: ${API_HEALTH_CUSTOMER:https://apis-qa.consubanco.com/vd-qa/customers-api/actuator/health}
-        api-customer-process: ${API_CUSTOMER_PROCESS:https://apis-qa.consubanco.com/vd-qa/customers-api/customer/all-info/{processId}}
-        api-customer-biometric-validation: ${API_CUSTOMER_BIOMETRIC_VALIDATION:https://apis-qa.consubanco.com/vd-qa/customers-api/biometric-validation/biometric-task/{processId}}
-        api-health-offer: ${API_HEALTH_OFFER:https://apis-qa.consubanco.com/vd-qa/offers-api/actuator/health}
-        api-active-offer: ${API_ACTIVE_OFFER:https://apis-qa.consubanco.com/vd-qa/offers-api/offers/active-offering?processId={processId}}
-        api-validate-otp: ${API_VALIDATE_OTP:https://apis-qa.consubanco.com/vd-qa/authorization-api/otp/validate}
-        api-accept-offer: ${API_ACCEPT_OFFER:https://apis-qa.consubanco.com/vd-qa/offers-api/offers/accept/{processId}}
+        api-health-customer: ${API_HEALTH_CUSTOMER:http://localhost:3001/customers-api/actuator/health}
+        api-customer-process: ${API_CUSTOMER_PROCESS:http://localhost:3001/customers-api/customer/all-info/{processId}}
+        api-customer-biometric-validation: ${API_CUSTOMER_BIOMETRIC_VALIDATION:http://localhost:3001/customers-api/biometric-validation/biometric-task/{processId}}
+        api-health-offer: ${API_HEALTH_OFFER:http://localhost:3001/offers-api/actuator/health}
+        api-active-offer: ${API_ACTIVE_OFFER:http://localhost:3001/offers-api/offers/active-offering?processId={processId}}
+        api-validate-otp: ${API_VALIDATE_OTP:http://localhost:3001/authorization-api/otp/validate}
+        api-accept-offer: ${API_ACCEPT_OFFER:http://localhost:3001/offers-api/offers/accept/{processId}}
       promoter:
         auth-token: ${API_PROMOTER_AUTH_TOKEN}
         channel: ${API_GET_AGREEMENT_CHANNEL:RENEX}
@@ -48,11 +48,11 @@ adapter:
         client-id: ${API_CONNECT_CLIENT_ID}
         application-id: ${API_CONNECT_APPLICATION_ID:CSB-RENEX}
         api-get-cnca: ${API_GET_CNCA:https://apic.consubanco.com/csb/qa/puc-letter-generate-api/getLetterCNCA}
-        api-search-interlocutor: ${API_SEARCH_INTERLOCUTOR:http://localhost:3001/csb/qa/common-crm-service/searchInterlocutor}
+        api-search-interlocutor: ${API_SEARCH_INTERLOCUTOR:https://apic.consubanco.com/csb/qa/common-crm-service/searchInterlocutor}
         api-send-generic-email: ${API_SEND_GENERIC_EMAIL:http://localhost:3001/ebanking-notification-service/sendGenericMail}
-        api-branches-promoter: ${API_BRANCHES_BY_PROMOTER:http://localhost:3001/csb/qa/opp-catalog-service/getBranchesByPromotor}
+        api-branches-promoter: ${API_BRANCHES_BY_PROMOTER:https://apic.consubanco.com/csb/qa/opp-catalog-service/getBranchesByPromotor}
         api-docs-previous: ${API_DOCS_PREVIOUS:https://apic.consubanco.com/csb/qa/opp-service/findDocsPreviusApplication}
-        api-create-application: ${API_CREATE_APPLICATION:http://localhost:3001/csb/qa/opp-service/createApplication}
+        api-create-application: ${API_CREATE_APPLICATION:http://localhost:3001/opp-service/createApplication}
       nom151:
         valid-time-min: ${VALID_TIME_IN_MINUTES_NOM151:30}
         endpoint: ${API_ENDPOINT_NOM151:https://wstestautosign.doc2sign.com/Doc2SignLite.svc}
@@ -68,6 +68,7 @@ adapter:
           get-document-signed: ${ACTION_GET_DOCUMENT_SIGNED_NOM151:http://tempuri.org/IDoc2SignLite/GETDocFirmado}
           get-nom151: ${ACTION_GET_NOM151:http://tempuri.org/IDoc2SignLite/GETNOM}
       ocr:
+        days-range-for-pay-stubs-validation: ${DAYS_RANGE_FOR_PAY_STUBS_VALIDATION_OCR:45}
         api-key: ${API_KEY_OCR:pending}
         initial-delay-time: ${INITIAL_DELAY_TIME_IN_SECONDS_OCR:5}
         max-retries: ${MAX_RETRIES_OCR:20}
