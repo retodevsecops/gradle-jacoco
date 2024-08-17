@@ -13,6 +13,7 @@
         "isRecoverable": false,
         "namePreviousDocument": "identificacionoficial",
         "isRequired": true,
+        "requestToCustomer": false,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       },
       {
@@ -23,6 +24,7 @@
         "isRecoverable": false,
         "namePreviousDocument": "RECIBO-NOMINA",
         "isRequired": true,
+        "requestToCustomer": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       },
       {
@@ -33,17 +35,11 @@
         "isRecoverable": true,
         "namePreviousDocument": "COMPROBANTE-DOMICILIO",
         "isRequired": true,
+        "requestToCustomer": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       }
     ],
     "compoundDocuments": [
-      {
-        "name": "identificacion-oficial",
-        "documents": [
-          { "name": "frente-identificacion-oficial" },
-          { "name": "reverso-identificacion-oficial" }
-        ]
-      },
       {
         "name": "contrato-cliente",
         "documents": [
@@ -82,9 +78,10 @@
         "technicalName": "identificacion-oficial",
         "maxFiles": 1,
         "isOcr": false,
-        "isRecoverable": true,
+        "isRecoverable": false,
         "namePreviousDocument": "IDENTIFICACIONOFICIAL",
         "isRequired": true,
+        "requestToCustomer": false,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       },
       {
@@ -95,6 +92,7 @@
         "isRecoverable": false,
         "namePreviousDocument": "RECIBO-NOMINA",
         "isRequired": true,
+        "requestToCustomer": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       },
       {
@@ -105,6 +103,7 @@
         "isRecoverable": true,
         "namePreviousDocument": "COMPROBANTE-DOMICILIO",
         "isRequired": false,
+        "requestToCustomer": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       }
     ],
@@ -149,23 +148,14 @@
     "branchId": "51187515",
     "attachmentsDocuments": [
       {
-        "name": "Comprobante de domicilio",
-        "technicalName": "comprobante-domicilio",
-        "maxFiles": 1,
-        "isOcr": false,
-        "isRecoverable": true,
-        "namePreviousDocument": "COMPROBANTE-DOMICILIO",
-        "isRequired": true,
-        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
-      },
-      {
         "name": "Identificación oficial",
         "technicalName": "identificacion-oficial",
         "maxFiles": 1,
         "isOcr": false,
-        "isRecoverable": true,
+        "isRecoverable": false,
         "namePreviousDocument": "IDENTIFICACIONOFICIAL",
         "isRequired": true,
+        "requestToCustomer": false,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       },
       {
@@ -176,6 +166,18 @@
         "isRecoverable": false,
         "namePreviousDocument": "RECIBO-NOMINA",
         "isRequired": true,
+        "requestToCustomer": true,
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
+      },
+      {
+        "name": "Comprobante de domicilio",
+        "technicalName": "comprobante-domicilio",
+        "maxFiles": 1,
+        "isOcr": false,
+        "isRecoverable": true,
+        "namePreviousDocument": "COMPROBANTE-DOMICILIO",
+        "isRequired": true,
+        "requestToCustomer": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       }
     ],
@@ -213,23 +215,14 @@
     "branchId": "51187515",
     "attachmentsDocuments": [
       {
-        "name": "Comprobante de domicilio",
-        "technicalName": "comprobante-domicilio",
-        "maxFiles": 1,
-        "isOcr": false,
-        "isRecoverable": true,
-        "namePreviousDocument": "COMPROBANTE-DOMICILIO",
-        "isRequired": true,
-        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
-      },
-      {
         "name": "Identificación oficial",
         "technicalName": "identificacion-oficial",
         "maxFiles": 1,
         "isOcr": false,
-        "isRecoverable": true,
+        "isRecoverable": false,
         "namePreviousDocument": "IDENTIFICACIONOFICIAL",
         "isRequired": true,
+        "requestToCustomer": false,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       },
       {
@@ -240,6 +233,18 @@
         "isRecoverable": false,
         "namePreviousDocument": "RECIBO-NOMINA",
         "isRequired": true,
+        "requestToCustomer": true,
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
+      },
+      {
+        "name": "Comprobante de domicilio",
+        "technicalName": "comprobante-domicilio",
+        "maxFiles": 1,
+        "isOcr": false,
+        "isRecoverable": true,
+        "namePreviousDocument": "COMPROBANTE-DOMICILIO",
+        "isRequired": true,
+        "requestToCustomer": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       }
     ],
@@ -289,6 +294,7 @@
         "isRecoverable": false,
         "namePreviousDocument": "IDENTIFICACIONOFICIAL2",
         "isRequired": true,
+        "requestToCustomer": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       },
       {
@@ -299,6 +305,7 @@
         "isRecoverable": false,
         "namePreviousDocument": "IDENTIFICACIONOFICIAL1",
         "isRequired": true,
+        "requestToCustomer": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       },
       {
@@ -309,6 +316,7 @@
         "isRecoverable": false,
         "namePreviousDocument": "RECIBO-NOMINA",
         "isRequired": true,
+        "requestToCustomer": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       },
       {
@@ -319,6 +327,7 @@
         "isRecoverable": true,
         "namePreviousDocument": "COMPROBANTE-DOMICILIO",
         "isRequired": true,
+        "requestToCustomer": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       }
     ],

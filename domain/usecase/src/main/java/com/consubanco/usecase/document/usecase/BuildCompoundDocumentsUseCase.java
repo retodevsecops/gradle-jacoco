@@ -2,98 +2,78 @@ package com.consubanco.usecase.document.usecase;
 
 import com.consubanco.logger.CustomLogger;
 import com.consubanco.model.commons.exception.factory.ExceptionFactory;
-import com.consubanco.model.entities.agreement.gateway.AgreementConfigRepository;
+import com.consubanco.model.entities.agreement.Agreement;
 import com.consubanco.model.entities.agreement.vo.AgreementConfigVO;
 import com.consubanco.model.entities.document.gateway.PDFDocumentGateway;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.constant.FileConstants;
-import com.consubanco.model.entities.file.constant.FileExtensions;
-import com.consubanco.model.entities.file.gateway.FileRepository;
+import com.consubanco.model.entities.file.util.FileFactoryUtil;
 import com.consubanco.model.entities.process.Process;
+import com.consubanco.usecase.agreement.GetAgreementConfigUseCase;
+import com.consubanco.usecase.file.helpers.FileHelper;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
-import reactor.util.function.Tuple2;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.consubanco.model.entities.document.constant.DocumentNames.UNSIGNED_APPLICANT_RECORD;
-import static com.consubanco.model.entities.document.message.DocumentBusinessMessage.CNCA_NOT_FOUND;
 import static com.consubanco.model.entities.document.message.DocumentBusinessMessage.DOCUMENT_NOT_FOUND;
-import static com.consubanco.model.entities.document.message.DocumentMessage.GENERATE_CNCA;
 import static com.consubanco.model.entities.document.message.DocumentMessage.documentNotFound;
 
 @RequiredArgsConstructor
 public class BuildCompoundDocumentsUseCase {
 
-    private static final String PATTERN_NAME_ATTACHMENT = ".*-\\d+$";
     private final CustomLogger logger;
-    private final AgreementConfigRepository agreementConfigRepository;
+    private final GetAgreementConfigUseCase getAgreementConfigUseCase;
     private final PDFDocumentGateway pdfDocumentGateway;
-    private final FileRepository fileRepository;
+    private final FileHelper fileHelper;
     private final GenerateNom151UseCase generateNom151UseCase;
 
-    public Mono<Void> execute(Process process, List<File> docsGenerated) {
-        Mono<List<File>> attachments = getAttachmentsByOfferId(process.getOfferId());
-        Mono<File> cncaLetter = getCNCALetterByOfferId(process.getOfferId());
-        return Mono.zip(attachments, cncaLetter)
-                .map(tuple -> mergeFiles(docsGenerated, tuple.getT1(), tuple.getT2()))
-                .flatMap(allFiles -> processCompoundDocuments(process, allFiles))
+    public Mono<Void> execute(Process process, Agreement agreement) {
+        Mono<AgreementConfigVO> agreementConfig = getAgreementConfigUseCase.execute(agreement.getNumber());
+        Mono<List<File>> offerFiles = fileHelper.filesByOfferWithoutUrls(process.getOfferId());
+        return Mono.zip(offerFiles, agreementConfig)
+                .flatMap(tuple -> processCompoundDocuments(tuple.getT1(), tuple.getT2(), agreement, process))
                 .then();
     }
 
-    private Mono<List<File>> getAttachmentsByOfferId(String offerId) {
-        Pattern pattern = Pattern.compile(PATTERN_NAME_ATTACHMENT);
-        return Mono.just(offerId)
-                .map(FileConstants::attachmentsDirectory)
-                .flatMapMany(fileRepository::listByFolderWithoutUrls)
-                .filter(file -> !pattern.matcher(file.getName()).matches())
-                .collectList();
-    }
-
-    private Mono<File> getCNCALetterByOfferId(String offerId) {
-        return Mono.just(offerId)
-                .map(FileConstants::cncaLetterRoute)
-                .flatMap(fileRepository::getByNameWithoutSignedUrl)
-                .switchIfEmpty(ExceptionFactory.monoBusiness(CNCA_NOT_FOUND, GENERATE_CNCA));
-    }
-
-    private List<File> mergeFiles(List<File> files, List<File> attachments, File cncaLetter) {
-        files.add(cncaLetter);
-        files.addAll(attachments.stream()
-                .filter(attachment -> !checkIfExists(files, attachment.getName()))
-                .toList());
-        return files;
-    }
-
-    private Mono<Tuple2<File, List<File>>> processCompoundDocuments(Process process, List<File> allFiles) {
+    private Mono<File> processCompoundDocuments(List<File> files,
+                                                AgreementConfigVO agreementConfig,
+                                                Agreement agreement,
+                                                Process process) {
         String directory = FileConstants.documentsDirectory(process.getOffer().getId());
-        String agreementNumber = process.getAgreementNumber();
-        Mono<File> unsignedApplicantRecord = createUnsignedApplicantRecord(allFiles, directory);
-        Flux<File> compoundDocuments = createConfiguredCompoundDocuments(agreementNumber, allFiles, directory);
-        return Mono.zip(unsignedApplicantRecord, compoundDocuments.collectList())
+        return createConfiguredCompoundDocuments(agreementConfig, files, directory)
+                .flatMap(docs -> createUnsignedApplicantRecord(docs, directory, agreement, agreementConfig))
                 .doOnSuccess(e -> generateSignedApplicantRecord(process));
     }
 
-    private Flux<File> createConfiguredCompoundDocuments(String agreementNumber, List<File> files, String directory) {
-        return agreementConfigRepository.getConfigByAgreement(agreementNumber)
-                .filter(AgreementConfigVO::checkCompoundDocuments)
-                .map(AgreementConfigVO::getCompoundDocuments)
-                .flatMapMany(Flux::fromIterable)
-                .parallel()
-                .runOn(Schedulers.parallel())
-                .flatMap(document -> processCompoundDocument(document, files, directory))
-                .sequential();
+    private Mono<List<File>> createConfiguredCompoundDocuments(AgreementConfigVO agreementConfigVO,
+                                                               List<File> initialFiles,
+                                                               String directory) {
+        AtomicReference<List<File>> filesRef = new AtomicReference<>(new ArrayList<>(initialFiles));
+        return Flux.fromIterable(agreementConfigVO.getCompoundDocuments())
+                .flatMap(compoundDocument -> processCompoundDocument(compoundDocument, filesRef.get(), directory)
+                        .map(file -> {
+                            List<File> updatedFiles = new ArrayList<>(filesRef.get());
+                            updatedFiles.add(file);
+                            filesRef.set(updatedFiles);
+                            return updatedFiles;
+                        })
+                )
+                .last(filesRef.get());
     }
 
     private Mono<File> processCompoundDocument(AgreementConfigVO.CompoundDocument compoundDocument,
                                                List<File> files,
                                                String directory) {
         return getContentCompoundDocument(compoundDocument, files)
-                .map(content -> buildCompundDocumentFile(compoundDocument.getName(), content, directory))
-                .flatMap(fileRepository::save);
+                .map(document -> FileFactoryUtil.buildPDF(compoundDocument.getName(), document, directory))
+                .flatMap(fileHelper::save);
     }
 
     private Mono<String> getContentCompoundDocument(AgreementConfigVO.CompoundDocument compoundDocument,
@@ -122,11 +102,28 @@ public class BuildCompoundDocumentsUseCase {
                 .defaultIfEmpty(file.getContent());
     }
 
-    private Mono<File> createUnsignedApplicantRecord(List<File> files, String directory) {
-        List<String> base64Documents = files.stream().map(File::getContent).toList();
+    private Mono<File> createUnsignedApplicantRecord(List<File> files,
+                                                     String directory,
+                                                     Agreement agreement,
+                                                     AgreementConfigVO agreementConfig) {
+        List<String> base64Documents = this.filesForApplicantRecord(files, agreement, agreementConfig);
         return pdfDocumentGateway.mergeAndAddBlankPage(base64Documents)
-                .map(documentContent -> buildCompundDocumentFile(UNSIGNED_APPLICANT_RECORD, documentContent, directory))
-                .flatMap(fileRepository::save);
+                .map(document -> FileFactoryUtil.buildPDF(UNSIGNED_APPLICANT_RECORD, document, directory))
+                .flatMap(fileHelper::save);
+    }
+
+    private List<String> filesForApplicantRecord(List<File> files, Agreement agreement, AgreementConfigVO agreementConfig) {
+        List<String> agreementDocuments = new ArrayList<>(agreement.getSortedDocuments());
+        agreementDocuments.addAll(agreementConfig.getAttachmentsTechnicalNames());
+        return agreementDocuments.stream()
+                .map(documentName -> files.stream()
+                        .filter(file -> file.getName().equalsIgnoreCase(documentName))
+                        .map(File::getContent)
+                        .findFirst()
+                        .orElse(null))
+                .filter(Objects::nonNull)
+                .toList();
+
     }
 
     private void generateSignedApplicantRecord(Process process) {
@@ -134,19 +131,6 @@ public class BuildCompoundDocumentsUseCase {
                 .doFinally(e -> logger.info("The file signed with nom151 was generated from the creation of compound documents for process.", process))
                 .subscribeOn(Schedulers.parallel())
                 .subscribe();
-    }
-
-    private File buildCompundDocumentFile(String name, String content, String directory) {
-        return File.builder()
-                .name(name)
-                .content(content)
-                .directoryPath(directory)
-                .extension(FileExtensions.PDF)
-                .build();
-    }
-
-    private Boolean checkIfExists(List<File> files, String nameAttachment) {
-        return files.stream().anyMatch(file -> file.getName().equalsIgnoreCase(nameAttachment));
     }
 
 }

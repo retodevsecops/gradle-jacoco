@@ -46,16 +46,15 @@ public class GetAttachmentsByAgreementUseCase {
 
     private Flux<AttachmentConfigVO> getAttachmentByAgreement(Process process) {
         return agreementConfigRepository.getConfigByAgreement(process.getAgreementNumber())
-                .map(AgreementConfigVO::attachments)
-                .flatMapMany(attachments -> filterAttachments(process, attachments));
+                .flatMapMany(agreementConfig -> filterAttachments(process, agreementConfig));
     }
 
-    private Flux<AttachmentConfigVO> filterAttachments(Process process, List<AttachmentConfigVO> attachments) {
-        List<AttachmentConfigVO> attachmentsToRetrieved = attachmentsToRetrieved(attachments);
-        if (attachmentsToRetrieved.isEmpty()) return Flux.fromIterable(attachments);
+    private Flux<AttachmentConfigVO> filterAttachments(Process process, AgreementConfigVO agreementConfig) {
+        List<AttachmentConfigVO> attachmentsToRetrieved = attachmentsToRetrieved(agreementConfig.attachments());
+        if (attachmentsToRetrieved.isEmpty()) return Flux.fromIterable(agreementConfig.attachmentsRequestedToCustomer());
         return retrieveDocuments(process, attachmentsToRetrieved)
                 .collectList()
-                .flatMapMany(list -> Flux.fromIterable(attachments)
+                .flatMapMany(list -> Flux.fromIterable(agreementConfig.attachmentsRequestedToCustomer())
                         .filter(attachConfig -> isNotRecoveredFile(list, attachConfig.getTechnicalName())));
     }
 
