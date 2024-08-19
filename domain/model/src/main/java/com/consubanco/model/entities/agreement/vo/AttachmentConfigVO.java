@@ -20,4 +20,8 @@ public class AttachmentConfigVO {
     private Boolean isRequired;
     private Boolean requestToCustomer;
     private List<String> typeFile;
+
+    public Boolean isRequiredToCustomer() {
+        return requestToCustomer && isRequired;
+    }
 }

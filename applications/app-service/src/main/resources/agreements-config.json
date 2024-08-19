@@ -6,14 +6,23 @@
     "branchId": "51187515",
     "attachmentsDocuments": [
       {
-        "name": "Identificación oficial",
-        "technicalName": "identificacion-oficial",
+        "name": "Frente de la INE",
+        "technicalName": "frente-identificacion-oficial",
         "maxFiles": 1,
         "isOcr": false,
         "isRecoverable": false,
-        "namePreviousDocument": "identificacionoficial",
         "isRequired": true,
-        "requestToCustomer": false,
+        "requestToCustomer": true,
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
+      },
+      {
+        "name": "Reverso de la INE",
+        "technicalName": "reverso-identificacion-oficial",
+        "maxFiles": 1,
+        "isOcr": false,
+        "isRecoverable": false,
+        "isRequired": true,
+        "requestToCustomer": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       },
       {
@@ -40,6 +49,13 @@
       }
     ],
     "compoundDocuments": [
+      {
+        "name": "identificacion-oficial",
+        "documents": [
+          { "name": "frente-identificacion-oficial" },
+          { "name": "reverso-identificacion-oficial" }
+        ]
+      },
       {
         "name": "contrato-cliente",
         "documents": [
@@ -287,25 +303,14 @@
     "branchId": "51187451",
     "attachmentsDocuments": [
       {
-        "name": "Frente de la INE",
-        "technicalName": "frente-identificacion-oficial",
+        "name": "Identificación oficial",
+        "technicalName": "identificacion-oficial",
         "maxFiles": 1,
         "isOcr": false,
         "isRecoverable": false,
-        "namePreviousDocument": "IDENTIFICACIONOFICIAL2",
+        "namePreviousDocument": "IDENTIFICACIONOFICIAL",
         "isRequired": true,
-        "requestToCustomer": true,
-        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
-      },
-      {
-        "name": "Reverso de la INE",
-        "technicalName": "reverso-identificacion-oficial",
-        "maxFiles": 1,
-        "isOcr": false,
-        "isRecoverable": false,
-        "namePreviousDocument": "IDENTIFICACIONOFICIAL1",
-        "isRequired": true,
-        "requestToCustomer": true,
+        "requestToCustomer": false,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       },
       {
@@ -332,13 +337,6 @@
       }
     ],
     "compoundDocuments": [
-      {
-        "name": "identificacion-oficial",
-        "documents": [
-          { "name": "frente-identificacion-oficial" },
-          { "name": "reverso-identificacion-oficial" }
-        ]
-      },
       {
         "name": "formato-autorizacion",
         "documents": [

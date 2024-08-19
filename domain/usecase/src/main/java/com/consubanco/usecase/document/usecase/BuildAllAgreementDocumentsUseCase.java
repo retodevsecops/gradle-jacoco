@@ -23,5 +23,4 @@ public class BuildAllAgreementDocumentsUseCase {
                 .then(buildCompoundDocumentsUseCase.execute(process, agreement));
     }
 
-
 }

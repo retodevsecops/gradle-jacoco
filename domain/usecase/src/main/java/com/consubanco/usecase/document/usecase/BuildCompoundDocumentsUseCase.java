@@ -4,6 +4,7 @@ import com.consubanco.logger.CustomLogger;
 import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.consubanco.model.entities.agreement.Agreement;
 import com.consubanco.model.entities.agreement.vo.AgreementConfigVO;
+import com.consubanco.model.entities.document.constant.DocumentNames;
 import com.consubanco.model.entities.document.gateway.PDFDocumentGateway;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.constant.FileConstants;
@@ -20,9 +21,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 
 import static com.consubanco.model.entities.document.constant.DocumentNames.UNSIGNED_APPLICANT_RECORD;
+import static com.consubanco.model.entities.document.message.DocumentBusinessMessage.CNCA_NOT_FOUND;
 import static com.consubanco.model.entities.document.message.DocumentBusinessMessage.DOCUMENT_NOT_FOUND;
+import static com.consubanco.model.entities.document.message.DocumentMessage.GENERATE_CNCA;
 import static com.consubanco.model.entities.document.message.DocumentMessage.documentNotFound;
 
 @RequiredArgsConstructor
@@ -79,20 +83,21 @@ public class BuildCompoundDocumentsUseCase {
     private Mono<String> getContentCompoundDocument(AgreementConfigVO.CompoundDocument compoundDocument,
                                                     List<File> files) {
         return Flux.fromIterable(compoundDocument.getDocuments())
-                .flatMap(documentData -> getFileContentByName(documentData, files))
+                .flatMap(documentData -> getFileContentByName(documentData, files, compoundDocument.getName()))
                 .collectList()
                 .flatMap(pdfDocumentGateway::merge);
     }
 
-    private Mono<String> getFileContentByName(AgreementConfigVO.DocumentData documentData, List<File> files) {
-        return findFileByName(documentData, files)
-                .switchIfEmpty(ExceptionFactory.monoBusiness(DOCUMENT_NOT_FOUND, documentNotFound(documentData.getName())))
+    private Mono<String> getFileContentByName(AgreementConfigVO.DocumentData documentData, List<File> files, String compoundDocumentName) {
+        String documentDataName = documentData.getName();
+        return findFileByName(documentDataName, files)
+                .switchIfEmpty(ExceptionFactory.monoBusiness(DOCUMENT_NOT_FOUND, documentNotFound(documentDataName, compoundDocumentName)))
                 .flatMap(file -> extractPageIfNeeded(documentData.getPage(), file));
     }
 
-    private Mono<File> findFileByName(AgreementConfigVO.DocumentData documentData, List<File> files) {
+    private Mono<File> findFileByName(String documentDataName, List<File> files) {
         return Flux.fromIterable(files)
-                .filter(file -> documentData.getName().equalsIgnoreCase(file.getName()))
+                .filter(file -> documentDataName.equalsIgnoreCase(file.getName()))
                 .next();
     }
 
@@ -113,17 +118,28 @@ public class BuildCompoundDocumentsUseCase {
     }
 
     private List<String> filesForApplicantRecord(List<File> files, Agreement agreement, AgreementConfigVO agreementConfig) {
+        String cncaLetterContent = getCncaLetterContent(files);
         List<String> agreementDocuments = new ArrayList<>(agreement.getSortedDocuments());
         agreementDocuments.addAll(agreementConfig.getAttachmentsTechnicalNames());
-        return agreementDocuments.stream()
-                .map(documentName -> files.stream()
-                        .filter(file -> file.getName().equalsIgnoreCase(documentName))
-                        .map(File::getContent)
-                        .findFirst()
-                        .orElse(null))
-                .filter(Objects::nonNull)
+        Stream<String> documentContents = agreementDocuments.stream()
+                .map(documentName -> retrieveDocumentContent(files, documentName))
+                .filter(Objects::nonNull);
+        return Stream.concat(documentContents, Stream.of(cncaLetterContent))
                 .toList();
+    }
 
+    private String getCncaLetterContent(List<File> files) {
+        String cncaContent = retrieveDocumentContent(files, DocumentNames.CNCA_LETTER);
+        if (Objects.nonNull(cncaContent)) return cncaContent;
+        throw ExceptionFactory.buildBusiness(GENERATE_CNCA, CNCA_NOT_FOUND);
+    }
+
+    private String retrieveDocumentContent(List<File> files, String documentName) {
+        return files.stream()
+                .filter(file -> file.getName().equalsIgnoreCase(documentName))
+                .map(File::getContent)
+                .findFirst()
+                .orElse(null);
     }
 
     private void generateSignedApplicantRecord(Process process) {

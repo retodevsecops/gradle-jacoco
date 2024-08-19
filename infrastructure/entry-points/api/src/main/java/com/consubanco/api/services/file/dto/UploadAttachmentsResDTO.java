@@ -19,7 +19,7 @@ public class UploadAttachmentsResDTO {
 
 
     @Schema(description = "list of validated documents.", requiredMode = REQUIRED)
-    private List<OcrDocumentDTO> documents;
+    private List<OcrDocumentDTO> documentsPendingValidation;
 
     @Data
     @Builder
@@ -46,7 +46,7 @@ public class UploadAttachmentsResDTO {
     }
 
     public UploadAttachmentsResDTO(List<OcrDocument> ocrDocuments) {
-        this.documents = toListDTO(ocrDocuments);
+        this.documentsPendingValidation = toListDTO(ocrDocuments);
     }
 
     private List<OcrDocumentDTO> toListDTO(List<OcrDocument> ocrDocuments) {

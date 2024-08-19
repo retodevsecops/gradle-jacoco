@@ -1,9 +1,11 @@
 package com.consubanco.usecase.file;
 
+import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.consubanco.model.entities.agreement.Agreement;
 import com.consubanco.model.entities.agreement.gateway.AgreementConfigRepository;
 import com.consubanco.model.entities.agreement.gateway.AgreementGateway;
 import com.consubanco.model.entities.agreement.vo.AgreementConfigVO;
+import com.consubanco.model.entities.document.constant.DocumentNames;
 import com.consubanco.model.entities.document.gateway.PDFDocumentGateway;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.constant.FileConstants;
@@ -23,6 +25,8 @@ import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
 
+import static com.consubanco.model.entities.document.message.DocumentBusinessMessage.CNCA_NOT_FOUND;
+import static com.consubanco.model.entities.document.message.DocumentMessage.GENERATE_CNCA;
 import static com.consubanco.model.entities.file.constant.FileConstants.attachmentsDirectory;
 import static com.consubanco.model.entities.file.util.AttachmentValidatorUtil.checkAttachments;
 import static com.consubanco.model.entities.file.util.AttachmentValidatorUtil.checkAttachmentsSize;
@@ -46,17 +50,25 @@ public class UploadAgreementAttachmentsUseCase {
     private Mono<List<OcrDocument>> startProcess(List<AttachmentFileVO> attachments, Process process) {
         Mono<Agreement> agreement = agreementGateway.findByNumber(process.getAgreementNumber());
         Mono<AgreementConfigVO> agreementConfig = agreementConfigRepository.getConfigByAgreement(process.getAgreementNumber());
-        Mono<List<String>> attachmentsInStorage = getAttachmentsInStorageByOffer(process.getOfferId());
-        return Mono.zip(agreement, agreementConfig, attachmentsInStorage)
-                .flatMap(tuple -> checkAttachments(tuple.getT2().getAttachmentsDocuments(), attachments, tuple.getT3())
+        Mono<List<String>> filesInStorage = filesByOffer(process.getOfferId());
+        return Mono.zip(agreement, agreementConfig, filesInStorage)
+                .flatMap(tuple -> Mono.fromCallable(() -> validateCncaLetter(tuple.getT3()))
+                        .then(checkAttachments(tuple.getT2().getAttachmentsDocuments(), attachments, tuple.getT3()))
                         .flatMap(validAttachments -> uploadAttachments(validAttachments, process.getOfferId()))
                         .flatMap(list -> processOcrAttachments.execute(process, tuple.getT2(), list)));
     }
 
-    private Mono<List<String>> getAttachmentsInStorageByOffer(String offerId) {
-        return fileRepository.listByFolder(FileConstants.attachmentsDirectory(offerId))
+    private Mono<List<String>> filesByOffer(String offerId) {
+        return fileRepository.listByFolder(FileConstants.offerDirectory(offerId))
                 .map(FileWithStorageRouteVO::getName)
                 .collectList();
+    }
+
+    private String validateCncaLetter(List<String> filesInStorage) {
+        return filesInStorage.stream()
+                .filter(fileName -> fileName.equalsIgnoreCase(DocumentNames.CNCA_LETTER))
+                .findFirst()
+                .orElseThrow(() -> ExceptionFactory.buildBusiness(GENERATE_CNCA, CNCA_NOT_FOUND));
     }
 
     private Mono<List<File>> uploadAttachments(List<AttachmentFileVO> attachments, String offerId) {
