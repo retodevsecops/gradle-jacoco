@@ -19,14 +19,14 @@ import static com.consubanco.model.entities.ocr.message.OcrMessage.*;
 @UtilityClass
 public class PeriodicityValidatorUtil {
 
-    public OcrDocumentUpdateVO validatePeriodicity(OcrDocument ocrDocument, List<OcrDataVO> ocrDataList, OcrDataVO initialPeriod, OcrDataVO finalPeriod) {
+    public OcrDocumentUpdateVO validatePeriodicity(OcrDocument ocrDocument, List<OcrDataVO> ocrDataList, OcrDataVO initialPeriod, OcrDataVO finalPeriod, Integer daysRange) {
         LocalDate initialDate = DateUtil.stringToDate(initialPeriod.getValue());
         LocalDate finalDate = DateUtil.stringToDate(finalPeriod.getValue());
         long daysBetween = ChronoUnit.DAYS.between(initialDate, finalDate);
         if (periodicityIsMonthly(daysBetween)) {
             return monthlyValidation(ocrDocument, ocrDataList, initialDate, finalDate);
         } else if (periodicityIsFortnightly(daysBetween)) {
-            return fortnightValidation(ocrDocument, ocrDataList, initialDate, finalDate);
+            return fortnightValidation(ocrDocument, ocrDataList, initialDate, finalDate, daysRange);
         }
         String reason = unknownPeriodicity(initialDate, finalDate, daysBetween);
         return new OcrDocumentUpdateVO(ocrDocument.getId(), ocrDataList, UNKNOWN_PERIODICITY, reason);
@@ -41,9 +41,9 @@ public class PeriodicityValidatorUtil {
         return new OcrDocumentUpdateVO(ocrDocument.getId(), ocrDataList, INVALID_DATE, reason);
     }
 
-    private static OcrDocumentUpdateVO fortnightValidation(OcrDocument ocrDocument, List<OcrDataVO> ocrDataList, LocalDate initialDate, LocalDate finalDate) {
+    private static OcrDocumentUpdateVO fortnightValidation(OcrDocument ocrDocument, List<OcrDataVO> ocrDataList, LocalDate initialDate, LocalDate finalDate, Integer daysRange) {
         int index = ocrDocument.getDocumentIndex();
-        LocalDate[] fortnightDates = FortnightDates.getDatesFromIndex(index);
+        LocalDate[] fortnightDates = FortnightDates.getDatesFromIndex(index, daysRange);
         if (isDateWithinPeriod(fortnightDates, initialDate, finalDate)) {
             return new OcrDocumentUpdateVO(ocrDocument.getId(), ocrDataList);
         }

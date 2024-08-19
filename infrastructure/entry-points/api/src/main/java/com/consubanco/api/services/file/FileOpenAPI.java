@@ -176,4 +176,15 @@ public class FileOpenAPI {
                 .response(responseInternalError());
     }
 
+    public static Consumer<Builder> validateTemplate() {
+        return ops -> ops.tag(TAG_MANAGEMENT)
+                .operationId("validateTemplate")
+                .description("Validate template freemarker.")
+                .summary("Validate template freemarker.")
+                .requestBody(RequestsOpenAPI.body(ValidateTemplateReqDTO.class))
+                .response(responseOk(Map.class))
+                .response(responseBusinessException())
+                .response(responseInternalError());
+    }
+
 }

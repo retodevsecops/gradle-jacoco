@@ -51,9 +51,21 @@ public class AgreementConfigVO {
         return attachmentsDocuments;
     }
 
+    public List<AttachmentConfigVO> attachmentsRequestedToCustomer() {
+        return attachmentsDocuments.stream()
+                .filter(AttachmentConfigVO::getRequestToCustomer)
+                .toList();
+    }
+
     public List<String> getOcrAttachmentsTechnicalNames() {
         return this.getAttachmentsDocuments().stream()
                 .filter(AttachmentConfigVO::getIsOcr)
+                .map(AttachmentConfigVO::getTechnicalName)
+                .toList();
+    }
+
+    public List<String> getAttachmentsTechnicalNames() {
+        return this.getAttachmentsDocuments().stream()
                 .map(AttachmentConfigVO::getTechnicalName)
                 .toList();
     }

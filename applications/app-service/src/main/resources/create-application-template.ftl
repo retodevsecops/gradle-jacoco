@@ -41,7 +41,7 @@
         "clasification": "${field.clasification}",
         "type": "${field.type}",
         "required": ${field.required?c},
-        "value": "${getFieldValue(field)}"
+        "value": "${getFieldValue(field)?replace("\"", "")?replace("\\", "")}"
     }<#if field?has_next>,</#if>
     </#list>
 </#macro>

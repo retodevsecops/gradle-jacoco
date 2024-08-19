@@ -51,6 +51,11 @@ public class OcrDocumentConsumerAdapter implements OcrDocumentGateway {
     }
 
     @Override
+    public Integer getDaysRangeForPayStubsValidation() {
+        return apiProperties.getDaysRangeForPayStubsValidation();
+    }
+
+    @Override
     public Mono<String> notifyDocumentForAnalysis(String storageRoute, OcrDocumentType ocrDocumentType) {
         NotifyDocumentReqDTO request = new NotifyDocumentReqDTO(apiProperties.getApplicationId(), storageRoute, ocrDocumentType.getType());
         logger.info(apiProperties.getApiNotifyDocument() + ": body request to notify ocr document", request);

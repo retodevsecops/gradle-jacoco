@@ -1,5 +1,6 @@
 package com.consubanco.usecase.document.usecase;
 
+import com.consubanco.model.entities.agreement.Agreement;
 import com.consubanco.model.entities.process.Process;
 import com.consubanco.usecase.agreement.AgreementUseCase;
 import lombok.RequiredArgsConstructor;
@@ -14,9 +15,12 @@ public class BuildAllAgreementDocumentsUseCase {
 
     public Mono<Void> execute(Process process) {
         return agreementUseCase.findByNumber(process.getAgreementNumber())
-                .flatMapMany(agreement -> buildAgreementDocumentsUseCase.execute(process, agreement))
-                .collectList()
-                .flatMap(docsGenerated -> buildCompoundDocumentsUseCase.execute(process, docsGenerated));
+                .flatMap(agreement -> buildDocuments(process, agreement));
+    }
+
+    private Mono<Void> buildDocuments(Process process, Agreement agreement) {
+        return buildAgreementDocumentsUseCase.execute(process, agreement)
+                .then(buildCompoundDocumentsUseCase.execute(process, agreement));
     }
 
 }

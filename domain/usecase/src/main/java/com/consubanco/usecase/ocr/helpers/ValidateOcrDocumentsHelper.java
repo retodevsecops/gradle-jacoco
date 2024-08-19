@@ -6,7 +6,6 @@ import com.consubanco.model.entities.ocr.constant.OcrDocumentType;
 import com.consubanco.model.entities.ocr.gateway.OcrDocumentGateway;
 import com.consubanco.model.entities.ocr.gateway.OcrDocumentRepository;
 import com.consubanco.model.entities.ocr.util.OcrDataUtil;
-import com.consubanco.model.entities.ocr.util.PeriodicityValidatorUtil;
 import com.consubanco.model.entities.ocr.vo.OcrDataVO;
 import com.consubanco.model.entities.ocr.vo.OcrDocumentUpdateVO;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +19,7 @@ import java.util.Optional;
 
 import static com.consubanco.model.entities.ocr.constant.FailureReason.*;
 import static com.consubanco.model.entities.ocr.constant.PayStubProperties.*;
+import static com.consubanco.model.entities.ocr.util.PeriodicityValidatorUtil.validatePeriodicity;
 
 @RequiredArgsConstructor
 public class ValidateOcrDocumentsHelper {
@@ -80,7 +80,7 @@ public class ValidateOcrDocumentsHelper {
         if (initialPeriod.isEmpty()) return new OcrDocumentUpdateVO(ocrId, ocrDataList, INITIAL_PAY_NOT_FOUND);
         if (finalPeriod.isEmpty()) return new OcrDocumentUpdateVO(ocrId, ocrDataList, FINAL_PAY_NOT_FOUND);
         if (ocrDocument.getDocumentIndex() == -1) return new OcrDocumentUpdateVO(ocrId, ocrDataList, NOT_INDEX);
-        return PeriodicityValidatorUtil.validatePeriodicity(ocrDocument, ocrDataList, initialPeriod.get(), finalPeriod.get());
+        return validatePeriodicity(ocrDocument, ocrDataList, initialPeriod.get(), finalPeriod.get(), ocrDocumentGateway.getDaysRangeForPayStubsValidation());
     }
 
     private OcrDocumentUpdateVO checkProofAddress(OcrDocument ocrDocument, List<OcrDataVO> ocrData) {
