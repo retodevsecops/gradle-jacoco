@@ -18,5 +18,10 @@ public class AttachmentConfigVO {
     private Boolean isRecoverable;
     private String namePreviousDocument;
     private Boolean isRequired;
+    private Boolean requestToCustomer;
     private List<String> typeFile;
+
+    public Boolean isRequiredToCustomer() {
+        return requestToCustomer && isRequired;
+    }
 }

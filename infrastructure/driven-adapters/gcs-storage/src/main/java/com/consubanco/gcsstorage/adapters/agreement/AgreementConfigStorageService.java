@@ -74,8 +74,7 @@ public class AgreementConfigStorageService {
 
     private List<AgreementConfigVO> deserializeAgreementConfigList(byte[] content) {
         try {
-            return objectMapper.readValue(content, new TypeReference<List<AgreementConfigVO>>() {
-            });
+            return objectMapper.readValue(content, new TypeReference<List<AgreementConfigVO>>() {});
         } catch (IOException exception) {
             throw buildTechnical(exception, STRUCTURE_INVALID);
         }

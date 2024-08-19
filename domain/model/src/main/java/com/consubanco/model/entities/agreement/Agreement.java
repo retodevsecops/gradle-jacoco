@@ -3,6 +3,7 @@ package com.consubanco.model.entities.agreement;
 import com.consubanco.model.entities.agreement.constant.CompanyNames;
 import lombok.*;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Getter
@@ -107,6 +108,15 @@ public class Agreement {
                 .map(Agreement.Document.Field::getTechnicalName)
                 .distinct()
                 .map(docName -> isMN() ? docName: CompanyNames.CSB.toLowerCase().concat("/").concat(docName))
+                .toList();
+    }
+
+    public List<String> getSortedDocuments() {
+        return this.getDocuments().parallelStream()
+                .flatMap(document -> document.getFields().stream())
+                .sorted(Comparator.comparing(Document.Field::getOrder))
+                .map(Document.Field::getNameFromTechnicalName)
+                .distinct()
                 .toList();
     }
 

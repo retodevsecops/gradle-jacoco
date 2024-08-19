@@ -71,7 +71,7 @@ public class AttachmentValidatorUtil {
         List<String> attachmentsNames = providedAttachmentNames(attachmentsProvided);
         List<String> allAttachments = joinLists(attachmentsNames, attachmentsInStorage);
         return Flux.fromIterable(attachmentsByAgreement)
-                .filter(AttachmentConfigVO::getIsRequired)
+                .filter(AttachmentConfigVO::isRequiredToCustomer)
                 .map(AttachmentConfigVO::getTechnicalName)
                 .filter(technicalName -> !allAttachments.contains(technicalName))
                 .collectList()
