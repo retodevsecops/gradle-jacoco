@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+
 import static com.consubanco.model.entities.file.message.FileBusinessMessage.*;
 
 @RequiredArgsConstructor
@@ -54,6 +56,10 @@ public class FileUseCase {
         return fileRepository.listByFolderWithUrls(FileConstants.MANAGEMENT_DIRECTORY_PATH);
     }
 
+    public Mono<Map> validateTemplate(String template, Map<String, Object> data) {
+        return fileRepository.validateTemplate(template, data);
+    }
+
     public Mono<File> loadCreateApplicationTemplate() {
         return fileRepository.loadCreateApplicationTemplate()
                 .flatMap(file -> fileRepository.getCreateApplicationTemplateWithoutSignedUrl());
@@ -62,6 +68,5 @@ public class FileUseCase {
     private Mono<FileUploadVO> checkFileSize(FileUploadVO fileUploadVO) {
         return AttachmentValidatorUtil.checkFileSize(fileUploadVO, fileRepository.getMaxSizeOfFileInMBAllowed());
     }
-
 
 }

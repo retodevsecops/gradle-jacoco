@@ -23,6 +23,9 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
@@ -179,6 +182,12 @@ public class FileStorageAdapter implements FileRepository {
                 .switchIfEmpty(uploadLocalCreateApplicationTemplate());
     }
 
+    @Override
+    public Mono<Map> validateTemplate(String template, Map<String, Object> data) {
+        return this.getTemplate(template)
+                .flatMap(templateAsBase64 -> templateOperations.process(templateAsBase64, data, Map.class));
+    }
+
     private Mono<File> uploadLocalCreateApplicationTemplate() {
         return Mono.just(properties.getFilesPath().getCreateApplicationTemplate())
                 .map(FileUtil::getFileNameWithExtension)
@@ -212,7 +221,7 @@ public class FileStorageAdapter implements FileRepository {
                 .map(Storage.BlobListOption::prefix)
                 .map(option -> storage.list(properties.getBucketName(), option))
                 .flatMapIterable(Page::iterateAll)
-                .doOnError(error -> logger.error("Error when consulting the files in folder " +  folderPath, error))
+                .doOnError(error -> logger.error("Error when consulting the files in folder " + folderPath, error))
                 .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(GET_FILE_ERROR));
     }
 
@@ -221,6 +230,15 @@ public class FileStorageAdapter implements FileRepository {
                 .map(blobInfo -> storage.signUrl(blobInfo, properties.getSignUrlDays(), DAYS, withV4Signature()))
                 .map(URL::toString)
                 .onErrorMap(throwTechnicalError(SIGN_URL_ERROR));
+    }
+
+    private Mono<String> getTemplate(String template) {
+        if (template.equalsIgnoreCase("payload"))
+            return getPayloadTemplateWithoutSignedUrl().map(File::getContent);
+        if (template.equalsIgnoreCase("create-application"))
+            return getCreateApplicationTemplateWithoutSignedUrl().map(File::getContent);
+        String templateAsBase64 = Base64.getEncoder().encodeToString(template.getBytes(StandardCharsets.UTF_8));
+        return Mono.just(templateAsBase64);
     }
 
 }

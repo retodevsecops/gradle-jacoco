@@ -2,6 +2,7 @@ package com.consubanco.freemarker;
 
 import com.consubanco.freemarker.util.FunctionsUtil;
 import com.consubanco.logger.CustomLogger;
+import com.fasterxml.jackson.core.JsonParseException;
 import freemarker.template.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,14 +30,20 @@ public class TemplateAdapter implements ITemplateOperations {
     public <T> Mono<T> process(String templateAsString, Object data, Class<T> cls) {
         String templateDecode = new String(Base64.getDecoder().decode(templateAsString));
         return Mono.fromCallable(() -> {
+            String rendered = null;
             try (StringWriter writer = new StringWriter()) {
                 Template template = buildTemplate(templateDecode);
                 Map<String, Object> dataMap = buildDataMap(data);
                 template.process(dataMap, writer);
-                String rendered = writer.toString();
+                rendered = writer.toString();
                 T result = FunctionsUtil.readLValue(rendered, cls);
                 logger.info(MESSAGE_SUCCESS, mapLogInfo(data, templateDecode, result));
                 return result;
+            } catch (JsonParseException exception) {
+                Map<String, Object> dataMap = mapLogError(data, templateDecode, cls, exception);
+                dataMap.put("result", rendered);
+                logger.error(MESSAGE_JSON_ERROR, dataMap);
+                throw new Exception(exception);
             } catch (IOException | TemplateException exception) {
                 logger.error(MESSAGE_ERROR, mapLogError(data, templateDecode, cls, exception));
                 throw new Exception(exception);

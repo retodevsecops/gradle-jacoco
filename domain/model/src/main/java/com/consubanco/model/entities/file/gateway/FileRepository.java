@@ -6,6 +6,8 @@ import com.consubanco.model.entities.file.vo.FileWithStorageRouteVO;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+
 public interface FileRepository {
     Mono<File> save(File file);
 
@@ -40,4 +42,6 @@ public interface FileRepository {
     Mono<File> uploadCreateApplicationTemplate(FileUploadVO fileUploadVO);
 
     Mono<File> loadCreateApplicationTemplate();
+
+    Mono<Map> validateTemplate(String template, Map<String, Object> data);
 }

@@ -26,26 +26,23 @@ public class ProcessOcrAttachmentsUseCase {
         return notifyOcrDocuments.execute(process, config, attachments)
                 .filter(list -> !list.isEmpty())
                 .flatMap(unvalidatedOcrDocuments -> validateOcrDocuments(unvalidatedOcrDocuments, process))
-                .switchIfEmpty(generateAgreementDocuments(process));
+                .switchIfEmpty(buildDocuments(process).thenReturn(List.of()));
     }
 
     private Mono<List<OcrDocument>> validateOcrDocuments(List<OcrDocument> unvalidatedOcrDocuments, Process process) {
         return validateOcrDocuments.execute(unvalidatedOcrDocuments)
-                .filter(this::ocrDocumentsAreValid)
-                .flatMap(validatedOcrDocuments -> buildAllAgreementDocuments.execute(process))
-                .doOnError(error -> logger.error("Failed validation and generation of documents for the id process: " + process.getId(), error.getMessage()))
-                .doOnSuccess(e -> logger.info("All the documents were generated for process: "+process.getId(), process))
-                .thenReturn(unvalidatedOcrDocuments);
+                .flatMap(docs -> docsAreValid(docs) ? buildDocuments(process).thenReturn(docs) : Mono.just(docs));
     }
 
-    private boolean ocrDocumentsAreValid(List<OcrDocument> ocrDocuments) {
-        return ocrDocuments.parallelStream()
+    private boolean docsAreValid(List<OcrDocument> ocrDocuments) {
+        return ocrDocuments.stream()
                 .allMatch(ocrDocument -> ocrDocument.getStatus().equals(OcrStatus.SUCCESS));
     }
 
-    private Mono<List<OcrDocument>> generateAgreementDocuments(Process process) {
+    private Mono<Void> buildDocuments(Process process) {
         return buildAllAgreementDocuments.execute(process)
-                .thenReturn(List.of());
+                .doOnError(error -> logger.error("Failure to generate agreement documents for id process: " + process.getId(), error.getMessage()))
+                .doOnSuccess(e -> logger.info("Agreement documents were generated for process: " + process.getId(), process));
     }
 
 }

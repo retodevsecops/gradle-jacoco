@@ -18,6 +18,7 @@ public class OcrApiProperties {
     private Integer maxRetries;
     private Integer retryDelay;
     private Integer maxRetryDelay;
+    private Integer daysRangeForPayStubsValidation;
 
     public Duration initialDelayInSeconds() {
         return Duration.ofSeconds(initialDelayTime);

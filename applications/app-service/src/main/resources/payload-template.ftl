@@ -5,8 +5,10 @@
     amountTotalToPay = (offer_data.offer.discount?replace(",", "")?number * offer_data.offer.term)?replace(",", "")
     discount = offer_data.offer.discount?replace(",", "")?number?c
     defaultAddress = customer_data.customer.address?filter(dataAddres -> dataAddres.addressType.key == "XXDEFAULT")?first?if_exists
+    fiscalAddress = customer_data.customer.address?filter(dataAddres -> dataAddres.addressType.key == "ZFISCAL")?first?if_exists
     maritalStatusDescription = (customer_data.customer.maritalStatus.description)!""
     company = agreement_data.company?lower_case
+    branch = promoter_data.branches?filter(branch -> branch.branchID == agreement_configuration_data.branchId)?first?if_exists
 >
 <#-- Functions -->
 <#function getPreferredPhone address>
@@ -23,6 +25,13 @@
     <#else>
         <#return "">
     </#if>
+</#function>
+<#function getStringFromBoolean value>
+  <#if value?exists && value == true>
+    <#return "Y">
+  <#else>
+    <#return "N">
+  </#if>
 </#function>
 <#-- Template -->
 <#if company == "csb">
@@ -41,14 +50,14 @@
         "apellidoPaterno": "",
         "apellidoMaterno": "",
         "bpId": "",
-        "nombre1": "Canal",
-        "nombre2": "Digital",
+        "nombre1": "${promoter_data.name1}",
+        "nombre2": "",
         "rfc": ""
     },
     "employmentData": {
         "numeroEmpleado": "${offer_data.offer.employeeNumber?string}"
     },
-   "idDocumentData": {
+    "idDocumentData": {
        "ocr": "${(customer_data.customer.credentialData.ocr)!''}",
        "type": "IFE / INE"
     },
@@ -178,6 +187,10 @@
         </#list>
     ],
     </#if>
+    "geolocation": {
+        "latitude": "",
+        "longitude": ""
+    },
     "signature": [
         {
             "name": "cliente",
@@ -193,28 +206,35 @@
 }
 <#elseif company == "mn">
 <#-- This is a freemarker template for Masnomina aggrements. -->
-  {
-    "origen": "RENEX",
-    "solicitud": "100800009599",
-    "fechaSolicitud": "${current_date_timestamp?c}",
-    "banco": "${(customer_data.preApplicationData.paymentData.bankId)! ''}",
+{
+    "origen": "ECSB",
+    "destinoCredito": "",
+    "empresa": "${(branch.empresa.enterpriseName)!''}",
+    "solicitud": "${offer_data.offer.id}",
+    "fechaSolicitud": ${current_date_timestamp?c},
+    "banco": "${customer_data.preApplicationData.paymentData.bankDesc! ''}",
     "imssAgrement": false,
     "tipoCredito": "NUEVO",
     "tipoDisposicion": "T",
     "clabe": "${(customer_data.preApplicationData.paymentData.clabe)! ''}",
-    "funcionarioPublico": "N",
-    "parienteFuncionarioPublico": "N",
     "oferta": {
-        "montoPago": 2309.31,
+        "montoPago": ${offer_data.offer.discount?c},
         "cat": ${offer_data.offer.cat?replace(",", ".")},
-        "tasa": 2.77,
+        "tasa": "${offer_data.offer.monthlyTI?c}",
         "montoPrestamo": ${offer_data.offer.amount?c},
         "plazo": ${offer_data.offer.term},
-        "frecuencia": "${offer_data.offer.frequency}",
-        "cnca": true
+        "frecuencia": "${offer_data.offer.frequency?substring(0, 1)?upper_case}",
+        "comisionApertura": ${offer_data.offer.commissions?replace(",", ".")},
+        "fechaAnterior": null,
+        "montoAnterior": null,
+        "montototalLibranza": "",
+        "cnca": true,
+        "montoTotal": ${amountTotalToPay}
     },
     "convenio": {
         "agreement": "${offer_data.offer.agreement.key}",
+        "agreementCRM": "${offer_data.offer.agreement.key}",
+        "agreementCRM": "${offer_data.offer.agreement.key}",
         "codigoBaseCalculo": "${agreement_data.calculationBaseCode}",
         "tipoAmortizacion": "${agreement_data.amortizationType}",
         "razonSocial": "${offer_data.offer.agreement.description}",
@@ -226,14 +246,19 @@
         "distributorName": "${agreement_data.providerCapacity}"
     },
     "cliente": {
-        "codigoPuestoOcupacion": "1X5",
-        "ocupacion": "PENDING",
+        "numeroEmpleadoEmp": "${offer_data.offer.employeeNumber?string}",
+        "ultimoFolioFiscal": "${FunctionsUtil.getFolioFiscal(ocr_documents_data)}",
+        "funcionarioPublico": "${getStringFromBoolean(customer_data.preApplicationData.applicant.pep)}",
+        "parienteFuncionarioPublico": "${getStringFromBoolean(customer_data.preApplicationData.applicant.familiarPep)}",
+        "codigoPuestoOcupacion": "${(customer_data.preApplicationData.applicant.occupation.key)!''}",
+        "ocupacion": "${(customer_data.preApplicationData.applicant.occupation.description)!''}",
         "idDocumentData": {
             "ocr": "${(customer_data.customer.credentialData.ocr)!''}",
             "type": "IFE / INE"
         },
         "tipoRegimenFiscal": {
-            "description": "PENDING"
+            "key": "${customer_data.customer.regimenFiscal.key}",
+            "description": "${customer_data.customer.regimenFiscal.description}"
         },
         "satisfactorio": "Satisfactoria",
         "apellidoPaterno": "${(customer_data.customer.lastName)!''}",
@@ -255,15 +280,27 @@
         "domicilio": {
             "calle": "${defaultAddress.street!''}",
             "ciudad": "${defaultAddress.city!''}",
-            "codigoEstado": "AGS",
+            "codigoEstado": "${defaultAddress.stateDesc!''}",
             "codigoPais": "${defaultAddress.country!''}",
-            "colonia": "${defaultAddress.township!''}",
-            "municipio": "${defaultAddress.suburb!''}",
+            "colonia": "${defaultAddress.suburb!''}",
+            "municipio": "${defaultAddress.township!''}",
             "numeroExterior": "${defaultAddress.externalNumber!''}",
-            "numeroInterior": "${defaultAddress.internalNumber!''}"
+            "numeroInterior": "${defaultAddress.internalNumber!''}",
+            "cp": "${defaultAddress.zipCode!''}"
         },
+        "domicilioFiscal": {
+            "calle": "${fiscalAddress.street!''}",
+            "ciudad": "${fiscalAddress.city!''}",
+            "codigoEstado": "${fiscalAddress.stateDesc!''}",
+            "codigoPais": "${fiscalAddress.country!''}",
+            "colonia": "${fiscalAddress.suburb!''}",
+            "municipio": "${fiscalAddress.township!''}",
+            "numeroExterior": "${fiscalAddress.externalNumber!''}",
+            "numeroInterior": "${fiscalAddress.internalNumber!''}",
+            "cp": "${fiscalAddress.zipCode!''}"
+        }
         <#if customer_data.preApplicationData.references??>
-        "referencias": {
+        ,"referencias": {
             <#assign reference = customer_data.preApplicationData.references?first>
             "personal": {
                 "apellidoMaterno": "${reference.lastName2!''}",
@@ -280,15 +317,15 @@
     },
     "vendedor": {
         "oficina": "",
-        "nombre": "Canal Digital",
+        "nombre": "${promoter_data.name1}",
         "persona": "",
         "claveImss": "",
-        "rfc": ""
+        "rfc": "${promoter_data.name1}"
     },
     "documentPhotos": {},
     "geolocation": {
-        "latitude": "PENDING",
-        "longitude": "PENDING"
+        "latitude": "",
+        "longitude": ""
     },
     "firmas": {
         "cliente": "https://storage.googleapis.com/csb_puc_statics_prod/unsigned.png",
