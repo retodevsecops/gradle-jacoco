@@ -307,7 +307,7 @@
         "technicalName": "identificacion-oficial",
         "maxFiles": 1,
         "isOcr": false,
-        "isRecoverable": false,
+        "isRecoverable": true,
         "namePreviousDocument": "IDENTIFICACIONOFICIAL",
         "isRequired": true,
         "requestToCustomer": false,
