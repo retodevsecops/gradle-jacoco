@@ -28,4 +28,10 @@ public class FileHelper {
     public Mono<File> save(File file) {
         return fileRepository.save(file);
     }
+
+    public Mono<File> findByName(String name) {
+        return fileRepository.getByNameWithoutSignedUrl(name)
+                .switchIfEmpty(monoBusiness(FILES_NOT_FOUND, FileMessage.notFoundByName(name)));
+    }
+
 }

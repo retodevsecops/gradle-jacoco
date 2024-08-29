@@ -20,7 +20,7 @@ import reactor.function.TupleUtils;
 import java.util.List;
 
 import static com.consubanco.model.entities.ocr.message.OcrBusinessMessage.OCR_NOT_FOUND;
-import static com.consubanco.model.entities.ocr.message.OcrMessage.ocrNotFound;
+import static com.consubanco.model.entities.ocr.message.OcrMessage.ocrNotAssociated;
 
 @RequiredArgsConstructor
 public class GetStatusAttachmentUseCase {
@@ -66,7 +66,7 @@ public class GetStatusAttachmentUseCase {
         return ocrDocuments.stream()
                 .filter(ocrDocument -> ocrDocument.getStorageId().equals(attachment.getId()))
                 .findFirst()
-                .orElseThrow(() -> ExceptionFactory.buildBusiness(ocrNotFound(attachment), OCR_NOT_FOUND));
+                .orElseThrow(() -> ExceptionFactory.buildBusiness(ocrNotAssociated(attachment), OCR_NOT_FOUND));
     }
 
     private List<String> getAttachmentsConfiguredWithOcr(AgreementConfigVO agreementConfig) {

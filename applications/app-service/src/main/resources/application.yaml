@@ -114,6 +114,7 @@ entry:
       agreement: /agreement
       file: /file
       loans: /loans
+      ocr: /ocr
 helpers:
   caffeine:
     expire-after-write: ${CACHE_EXPIRE_TIME_MINUTES:60}

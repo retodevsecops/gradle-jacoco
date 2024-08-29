@@ -90,14 +90,23 @@
     "branchId": "51187520",
     "attachmentsDocuments": [
       {
-        "name": "Identificación oficial",
-        "technicalName": "identificacion-oficial",
+        "name": "Frente de la INE",
+        "technicalName": "frente-identificacion-oficial",
         "maxFiles": 1,
         "isOcr": false,
         "isRecoverable": false,
-        "namePreviousDocument": "IDENTIFICACIONOFICIAL",
         "isRequired": true,
-        "requestToCustomer": false,
+        "requestToCustomer": true,
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
+      },
+      {
+        "name": "Reverso de la INE",
+        "technicalName": "reverso-identificacion-oficial",
+        "maxFiles": 1,
+        "isOcr": false,
+        "isRecoverable": false,
+        "isRequired": true,
+        "requestToCustomer": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       },
       {
@@ -124,6 +133,13 @@
       }
     ],
     "compoundDocuments": [
+      {
+        "name": "identificacion-oficial",
+        "documents": [
+          { "name": "frente-identificacion-oficial" },
+          { "name": "reverso-identificacion-oficial" }
+        ]
+      },
       {
         "name": "formato-solicitud-gratuita",
         "documents": [
