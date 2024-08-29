@@ -26,11 +26,10 @@ public class OcrHandler {
     public Mono<ServerResponse> validateDocument(ServerRequest request) {
         String processId = request.pathVariable(OcrParams.PROCESS_ID);
         boolean applyOcr = this.getApplyOcr(request);
-        String documentName = "comprobante-domicilio";
         return request.body(BodyExtractors.toParts())
                 .ofType(FilePart.class)
                 .next()
-                .flatMap(filePart -> FilePartUtil.buildFileUploadVOFromFilePart(filePart, documentName))
+                .flatMap(FilePartUtil::buildFileUploadVOFromFilePart)
                 .flatMap(fileUploadVO -> validateOcrDocumentUseCase.execute(processId, fileUploadVO, applyOcr))
                 .map(OcrResulSetResDTO::new)
                 .flatMap(HttpResponseUtil::ok);

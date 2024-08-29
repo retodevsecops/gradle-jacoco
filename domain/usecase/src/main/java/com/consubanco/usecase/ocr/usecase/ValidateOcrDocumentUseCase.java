@@ -16,11 +16,13 @@ import com.consubanco.usecase.file.helpers.PdfConvertHelper;
 import com.consubanco.usecase.ocr.helpers.ValidateOcrDocumentsHelper;
 import com.consubanco.usecase.process.GetProcessByIdUseCase;
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 
 import static com.consubanco.model.entities.file.constant.FileConstants.attachmentsDirectory;
+import static reactor.core.publisher.Mono.just;
 
 @RequiredArgsConstructor
 public class ValidateOcrDocumentUseCase {
@@ -36,22 +38,16 @@ public class ValidateOcrDocumentUseCase {
         return getProcessById.execute(processId)
                 .flatMap(process -> buildFile(fileUploadVO, process.getOfferId())
                         .flatMap(fileHelper::save)
-                        .flatMap(file -> {
-                            if (applyOcr) return processOcrFile(process, file);
-                            return Mono.just(OcrResulSetVO.builder()
-                                    .file(file)
-                                    .build());
-                        })
-                );
+                        .flatMap(file -> applyOcr ? processOcrFile(process, file) : just(new OcrResulSetVO(file))));
     }
 
     private Mono<OcrResulSetVO> processOcrFile(Process process, File file) {
         return notifyDocument(process, file)
-                .flatMap(ocrDocument -> validateOcrDocuments.execute(List.of(ocrDocument)))
-                .map(ocrDocuments -> OcrResulSetVO.builder()
-                        .file(file)
-                        .ocrDocument(ocrDocuments.stream().findFirst().get())
-                        .build());
+                .map(List::of)
+                .flatMap(validateOcrDocuments::execute)
+                .flatMapMany(Flux::fromIterable)
+                .next()
+                .map(ocrDocument -> new OcrResulSetVO(file, ocrDocument));
     }
 
     private Mono<File> buildFile(FileUploadVO fileUploadVO, String offerId) {
