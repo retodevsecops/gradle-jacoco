@@ -41,6 +41,17 @@ public class OcrOpenAPI {
                 .response(responseInternalError());
     }
 
+    public static Consumer<Builder> findByProcessId() {
+        return ops -> ops.tag(TAG_OCR)
+                .operationId("findByProcessId")
+                .description("List documents validated with ocr by process id.")
+                .summary("List ocr documents by process id.")
+                .parameter(ParamsOpenAPI.path(OcrParams.PROCESS_ID, "Process identifier"))
+                .response(responseOkWithList(OcrResulSetResDTO.class))
+                .response(responseBusinessException())
+                .response(responseInternalError());
+    }
+
     public static Consumer<Builder> findByDocumentName() {
         return ops -> ops.tag(TAG_OCR)
                 .operationId("findByDocumentName")

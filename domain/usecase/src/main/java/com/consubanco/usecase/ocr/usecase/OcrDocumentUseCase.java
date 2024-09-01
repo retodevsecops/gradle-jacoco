@@ -9,6 +9,7 @@ import com.consubanco.model.entities.ocr.vo.OcrResulSetVO;
 import com.consubanco.usecase.file.helpers.FileHelper;
 import com.consubanco.usecase.process.GetProcessByIdUseCase;
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.buildBusiness;
@@ -27,6 +28,12 @@ public class OcrDocumentUseCase {
         return this.validateField(analysisId, ID_ANALYSIS_REQUIRED)
                 .flatMap(ocrDocumentRepository::findByAnalysisId)
                 .switchIfEmpty(monoBusiness(OCR_DOCUMENT_NOT_FOUND, OcrMessage.notFoundByAnalysisId(analysisId)));
+    }
+
+    public Flux<OcrDocument> findByProcessId(String processId) {
+        return this.validateField(processId, PROCESS_ID_REQUIRED)
+                .flatMapMany(ocrDocumentRepository::findByProcessId)
+                .switchIfEmpty(monoBusiness(OCR_DOCUMENT_NOT_FOUND, OcrMessage.notFoundByProcessId(processId)));
     }
 
     public Mono<OcrDocument> findByStorageId(String storageId) {

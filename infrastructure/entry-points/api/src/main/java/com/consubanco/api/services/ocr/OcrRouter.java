@@ -28,6 +28,7 @@ public class OcrRouter {
                 route()
                     .GET( handler::findByAnalysisId, findByAnalysisId())
                     .POST(PROCESS_PATH, handler::validateDocument, validateDocument())
+                    .GET(PROCESS_PATH, handler::findByProcessId, findByProcessId())
                     .GET(FIND_BY_DOCUMENT_NAME_PATH, handler::findByDocumentName, findByDocumentName())
                 .build()
         );

@@ -35,6 +35,15 @@ public class OcrHandler {
                 .flatMap(HttpResponseUtil::ok);
     }
 
+    public Mono<ServerResponse> findByProcessId(ServerRequest request) {
+        String processId = request.pathVariable(OcrParams.PROCESS_ID);
+        return ocrDocumentUseCase.findByProcessId(processId)
+                .map(OcrDocumentResDTO::new)
+                .collectList()
+                .flatMap(HttpResponseUtil::ok);
+    }
+
+
     public Mono<ServerResponse> findByAnalysisId(ServerRequest request) {
         return ParamsValidator.queryParam(request, OcrParams.ANALYSIS_ID)
                 .flatMap(ocrDocumentUseCase::findByAnalysisId)

@@ -15,7 +15,8 @@ public enum OcrBusinessMessage implements IExceptionMessage {
     OCR_DOCUMENT_NOT_FOUND("BE_OCR_0005", "No ocr document found with this id."),
     ID_ANALYSIS_REQUIRED("BE_OCR_0006", "The analysis identifier is required."),
     DOCUMENT_NAME_REQUIRED("BE_OCR_0007", "The document technical name is required."),
-    STORAGE_ID_REQUIRED("BE_OCR_0008", "The storage id of document is required.");
+    STORAGE_ID_REQUIRED("BE_OCR_0008", "The storage id of document is required."),
+    PROCESS_ID_REQUIRED("BE_OCR_0009", "The process identifier is required.");
 
     private final String code;
     private final String message;

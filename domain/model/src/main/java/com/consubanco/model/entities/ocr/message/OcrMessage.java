@@ -20,6 +20,7 @@ public class OcrMessage {
     private static final String INVALID_MONTHLY_PAY_STUB = "The monthly pay stub must be date: %s to %s. The current receipt is from %s to %s.";
     private static final String OCR_NOT_FOUND = "No ocr document was found with the analysis id %s";
     private static final String NOT_FOUND_BY_STORAGE_ID = "No ocr document was found with the storage id %s";
+    private static final String NOT_FOUND_BY_PROCESS = "No ocr documents was found with the process id %s";
 
     public static String typeNotFound(final String documentName) {
         return String.format(TYPE_NOT_FOUND, documentName);
@@ -35,6 +36,10 @@ public class OcrMessage {
 
     public static String notFoundByAnalysisId(String analysisId) {
         return String.format(OCR_NOT_FOUND, analysisId);
+    }
+
+    public static String notFoundByProcessId(String processId) {
+        return String.format(NOT_FOUND_BY_PROCESS, processId);
     }
 
     public static String notFoundByStorageId(String storageId) {
