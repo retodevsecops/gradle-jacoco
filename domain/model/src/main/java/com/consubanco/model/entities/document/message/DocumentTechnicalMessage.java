@@ -21,7 +21,8 @@ public enum DocumentTechnicalMessage implements IExceptionMessage {
     API_NOM151_RESPONSE_ERROR("TE_DOCUMENT_0011", "The api nom151 responded with error."),
     API_BRANCHES_BY_PROMOTER_ERROR("TE_DOCUMENT_0012", "Error when consuming branches by promoter API."),
     API_BIOMETRIC_TASK("TE_DOCUMENT_PAYLOAD_0013", "Error when consuming biometric task API."),
-    API_REQUEST_ERROR("TE_DOCUMENT_0014", "Error when consuming request API.");
+    API_REQUEST_ERROR("TE_DOCUMENT_0014", "Error when consuming request API."),
+    SIGNED_DOCUMENT_FAIL("TE_DOCUMENT_0015", "Failed to get signed document after retries.");
 
     private final String code;
     private final String message;
