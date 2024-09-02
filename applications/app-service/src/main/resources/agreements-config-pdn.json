@@ -6,13 +6,23 @@
     "branchId": "51221882",
     "attachmentsDocuments": [
       {
-        "name": "Identificación oficial",
-        "technicalName": "identificacion-oficial",
+        "name": "Frente de la INE",
+        "technicalName": "frente-identificacion-oficial",
         "maxFiles": 1,
         "isOcr": false,
         "isRecoverable": false,
-        "namePreviousDocument": "identificacionoficial",
         "isRequired": true,
+        "requestToCustomer": true,
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
+      },
+      {
+        "name": "Reverso de la INE",
+        "technicalName": "reverso-identificacion-oficial",
+        "maxFiles": 1,
+        "isOcr": false,
+        "isRecoverable": false,
+        "isRequired": true,
+        "requestToCustomer": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       },
       {
@@ -23,10 +33,18 @@
         "isRecoverable": false,
         "namePreviousDocument": "RECIBO-NOMINA",
         "isRequired": true,
+        "requestToCustomer": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       }
     ],
     "compoundDocuments": [
+      {
+        "name": "identificacion-oficial",
+        "documents": [
+          { "name": "frente-identificacion-oficial" },
+          { "name": "reverso-identificacion-oficial" }
+        ]
+      },
       {
         "name": "contrato-cliente",
         "documents": [
