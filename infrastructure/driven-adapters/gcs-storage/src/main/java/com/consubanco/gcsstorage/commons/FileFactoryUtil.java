@@ -6,34 +6,21 @@ import com.google.cloud.storage.Blob;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.codec.binary.Base64;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
 @UtilityClass
 public class FileFactoryUtil {
 
+    private static final ZoneId SYSTEM_ZONE_ID = ZoneId.systemDefault();
     private static final String URI_GS = "gs://%s/%s";
 
     public static File buildFromBlob(Blob blob) {
-        return File.builder()
-                .id(blob.getGeneratedId())
-                .name(FileUtil.getFileName(blob.getName()))
-                .content(Base64.encodeBase64String(blob.getContent()))
-                .directoryPath(FileUtil.getDirectory(blob.getName()))
-                .size(FileUtil.getSize(blob))
-                .storageRoute(String.format(URI_GS, blob.getBucket(), blob.getName()))
-                .creationDate(blob.getCreateTimeOffsetDateTime().toLocalDateTime())
-                .build();
+        return buildFileFromBlob(blob, null);
     }
 
     public static File buildFromBlobWithUrl(Blob blob, String url) {
-        return File.builder()
-                .id(blob.getGeneratedId())
-                .url(url)
-                .name(FileUtil.getFileName(blob.getName()))
-                .content(Base64.encodeBase64String(blob.getContent()))
-                .directoryPath(FileUtil.getDirectory(blob.getName()))
-                .size(FileUtil.getSize(blob))
-                .storageRoute(String.format(URI_GS, blob.getBucket(), blob.getName()))
-                .creationDate(blob.getCreateTimeOffsetDateTime().toLocalDateTime())
-                .build();
+        return buildFileFromBlob(blob, url);
     }
 
     public static FileWithStorageRouteVO buildFileWithStorageRouteVO(Blob blob) {
@@ -51,6 +38,20 @@ public class FileFactoryUtil {
                 .size(FileUtil.getSize(blob))
                 .storageRoute(String.format(URI_GS, blob.getBucket(), blob.getName()))
                 .creationDate(blob.getCreateTimeOffsetDateTime().toLocalDateTime())
+                .build();
+    }
+
+    private static File buildFileFromBlob(Blob blob, String url) {
+        ZonedDateTime zonedDateTime = blob.getCreateTimeOffsetDateTime().atZoneSameInstant(SYSTEM_ZONE_ID);
+        return File.builder()
+                .id(blob.getGeneratedId())
+                .url(url)
+                .name(FileUtil.getFileName(blob.getName()))
+                .content(Base64.encodeBase64String(blob.getContent()))
+                .directoryPath(FileUtil.getDirectory(blob.getName()))
+                .size(FileUtil.getSize(blob))
+                .storageRoute(String.format(URI_GS, blob.getBucket(), blob.getName()))
+                .creationDate(zonedDateTime.toLocalDateTime())
                 .build();
     }
 

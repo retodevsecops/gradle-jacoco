@@ -63,8 +63,7 @@ public class GenerateNom151UseCase {
 
     private Mono<File> processNom151(Agreement agreement, File file, Process process) {
         DocumentSignatureRequestVO signatureRequest = buildSignatureRequest(process, file);
-        if (Boolean.TRUE.equals(agreement.isMN()))
-            return generateNom151ForMN(signatureRequest, process);
+        if (Boolean.TRUE.equals(agreement.isMN())) return generateNom151ForMN(signatureRequest, process);
         return generateNom151ForCSB(signatureRequest, process);
     }
 

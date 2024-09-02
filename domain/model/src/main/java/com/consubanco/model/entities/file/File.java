@@ -47,7 +47,7 @@ public class File {
 
     public boolean checkCreationMinutes(Integer minutes) {
         long minutesBetween = ChronoUnit.MINUTES.between(creationDate, LocalDateTime.now());
-        return minutesBetween <= minutes;
+        return Math.abs(minutesBetween) <= minutes;
     }
 
     public String baseFileName() {

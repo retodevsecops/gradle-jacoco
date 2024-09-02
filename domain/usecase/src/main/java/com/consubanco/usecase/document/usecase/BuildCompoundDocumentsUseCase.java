@@ -39,7 +39,7 @@ public class BuildCompoundDocumentsUseCase {
     private final GenerateNom151UseCase generateNom151UseCase;
 
     public Mono<Void> execute(Process process, Agreement agreement) {
-        Mono<AgreementConfigVO> agreementConfig = getAgreementConfigUseCase.execute(agreement.getNumber());
+        Mono<AgreementConfigVO> agreementConfig = getAgreementConfigUseCase.execute(process.getAgreementNumber());
         Mono<List<File>> offerFiles = fileHelper.filesByOfferWithoutUrls(process.getOfferId());
         return Mono.zip(offerFiles, agreementConfig)
                 .flatMap(tuple -> processCompoundDocuments(tuple.getT1(), tuple.getT2(), agreement, process))
