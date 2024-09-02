@@ -26,6 +26,8 @@ public class ManagementRouter {
                 route()
                     .GET(ManagementPaths.CACHE, handler::getItemsCache, ManagementOpenAPI.getItemsCache())
                     .DELETE(ManagementPaths.CACHE, handler::cleanCache, ManagementOpenAPI.cleanCache())
+                    .GET(ManagementPaths.CACHE_BY_ITEM, handler::getObjectsByItem, ManagementOpenAPI.objectsByItem())
+                    .DELETE(ManagementPaths.CACHE_BY_ITEM, handler::cleanCacheByItem, ManagementOpenAPI.cleanByItem())
                 .build()
         );
     }
