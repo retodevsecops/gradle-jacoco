@@ -31,4 +31,24 @@ public class ManagementHandler {
                 .flatMap(HttpResponseUtil::ok);
     }
 
+    public Mono<ServerResponse> getCacheByName(ServerRequest request) {
+        String cacheName = request.pathVariable("name");
+        return Flux.fromIterable(cacheManager.getCacheNames())
+                .filter(name -> cacheManager.getCache(name) != null)
+                .map(key -> {
+                    Cache cache = cacheManager.getCache(key);
+                    if (cache != null) cache.clear();
+                    return key;
+                })
+                .collectList()
+                .map(list -> Map.of("items_removed", list))
+                .flatMap(HttpResponseUtil::ok);
+    }
+
+    public Mono<ServerResponse> getItemsCache(ServerRequest request) {
+        return Flux.fromIterable(cacheManager.getCacheNames())
+                .collectList()
+                .map(list -> Map.of("items_in_cache", list))
+                .flatMap(HttpResponseUtil::ok);
+    }
 }

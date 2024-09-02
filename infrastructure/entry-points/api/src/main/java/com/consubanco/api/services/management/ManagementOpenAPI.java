@@ -23,4 +23,14 @@ public class ManagementOpenAPI {
                 .response(responseInternalError());
     }
 
+    public static Consumer<Builder> getItemsCache() {
+        return ops -> ops.tag(TAG)
+                .operationId("getItemsCache")
+                .description("Get Items of cache.")
+                .summary("Get Items of cache.")
+                .response(responseOkWithList(String.class))
+                .response(responseBusinessException())
+                .response(responseInternalError());
+    }
+
 }

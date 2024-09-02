@@ -24,6 +24,7 @@ public class ManagementRouter {
         return RouterFunctions.nest(
                 path(managementServicesPath).and(accept(APPLICATION_JSON)),
                 route()
+                    .GET(ManagementPaths.CACHE, handler::getItemsCache, ManagementOpenAPI.getItemsCache())
                     .DELETE(ManagementPaths.CACHE, handler::cleanCache, ManagementOpenAPI.cleanCache())
                 .build()
         );
