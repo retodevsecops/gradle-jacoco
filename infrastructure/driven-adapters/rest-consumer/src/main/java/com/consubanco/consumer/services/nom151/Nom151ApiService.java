@@ -13,15 +13,15 @@ import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
 import java.util.function.Function;
 
 import static com.consubanco.consumer.commons.ClientExceptionFactory.requestError;
 import static com.consubanco.consumer.services.nom151.util.GetSignedDocumentUtil.buildRequest;
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.buildTechnical;
-import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.API_NOM151_ERROR;
-import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.API_NOM151_RESPONSE_ERROR;
-import static com.consubanco.model.entities.otp.message.OtpTechnicalMessage.API_REQUEST_ERROR;
+import static com.consubanco.model.entities.document.message.DocumentMessage.retriesFailed;
+import static com.consubanco.model.entities.document.message.DocumentTechnicalMessage.*;
 
 @Service
 public class Nom151ApiService {
@@ -63,6 +63,10 @@ public class Nom151ApiService {
         return getNom151(properties.getUserMN(), properties.getPasswordMN(), documentId);
     }
 
+    public Integer getValidTime() {
+        return properties.getValidTimeMin();
+    }
+
     private Mono<Boolean> loadDocument(LoadDocumentReqDTO loadDocumentReqDTO, String user, String password) {
         String requestBody = loadDocumentReqDTO.buildRequest(user, password);
         logger.info("Request load document for nom151", requestBody);
@@ -79,6 +83,19 @@ public class Nom151ApiService {
     private Mono<String> getSignedDocument(String user, String password, String documentId) {
         String requestBody = buildRequest(user, password, documentId);
         logger.info("Request get signed document for nom151", requestBody);
+        String messageFormat = "Retry #%s for get signed document %s with error: %s";
+        return callApiGetSignedDocument(requestBody)
+                .retryWhen(Retry.fixedDelay(properties.getRetryStrategy().getMaxRetries(), properties.retryDelay())
+                        .doBeforeRetry(signal -> {
+                            long retries = signal.totalRetriesInARow();
+                            String errorMessage = signal.failure().getMessage();
+                            String message = String.format(messageFormat, retries, documentId, errorMessage);
+                            logger.info(message);
+                        }))
+                .onErrorMap(e -> buildTechnical(retriesFailed(documentId, e.getMessage()), SIGNED_DOCUMENT_FAIL));
+    }
+
+    private Mono<String> callApiGetSignedDocument(String requestBody) {
         return nom151Client.post()
                 .uri(properties.getEndpoint())
                 .header(SOAP_ACTION, properties.getActions().getGetDocumentSigned())
@@ -107,10 +124,6 @@ public class Nom151ApiService {
                     String errorDetail = ApiResponseNom151Util.getErrorDetail(responseAsString);
                     throw ExceptionFactory.buildTechnical(errorDetail, API_NOM151_RESPONSE_ERROR);
                 });
-    }
-
-    public Integer getValidTime() {
-        return properties.getValidTimeMin();
     }
 
 }

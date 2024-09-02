@@ -18,8 +18,7 @@ public class CaffeineCacheConfig {
     private final CaffeineProperties caffeineProperties;
 
     @Bean
-    public CacheManager cacheManager() {
-        CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager();
+    public CacheManager caffeineCacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
         cacheManager.setCaffeine(Caffeine.newBuilder()
                 .maximumSize(caffeineProperties.getMaxSizeElements())

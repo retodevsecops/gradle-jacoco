@@ -4,6 +4,8 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.Duration;
+
 @Data
 @Configuration
 @ConfigurationProperties(prefix = "adapter.rest-consumer.apis.nom151")
@@ -13,6 +15,7 @@ public class Nom151ApiProperties {
     private String endpoint;
     private Credential credentials;
     private Action actions;
+    private RetryStrategy retryStrategy;
 
     @Data
     public static class Credential {
@@ -33,6 +36,12 @@ public class Nom151ApiProperties {
         private String getNom151;
     }
 
+    @Data
+    public static class RetryStrategy {
+        private Integer maxRetries;
+        private Integer retryDelay;
+    }
+
     public String getUserCSB() {
         return this.credentials.csb.user;
     }
@@ -49,5 +58,9 @@ public class Nom151ApiProperties {
         return this.credentials.masNomina.password;
     }
 
+
+    public Duration retryDelay() {
+        return Duration.ofSeconds(this.retryStrategy.retryDelay);
+    }
 
 }
