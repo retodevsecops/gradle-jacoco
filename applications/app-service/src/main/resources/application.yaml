@@ -119,6 +119,7 @@ entry:
       file: /file
       loans: /loans
       management: /management
+      ocr: /ocr
 helpers:
   caffeine:
     expire-after-write: ${CACHE_EXPIRE_TIME_MINUTES:60}
