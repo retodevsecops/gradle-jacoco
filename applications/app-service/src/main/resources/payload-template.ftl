@@ -1,6 +1,10 @@
 <#-- This is a freemarker template that is used to dynamically build the payload object to consume the developer api for document generation. -->
 <#-- Variables -->
 <#assign
+    months = {
+        "ENE": "01", "FEB": "02", "MAR": "03", "ABR": "04", "MAY": "05", "JUN": "06",
+        "JUL": "07", "AGO": "08", "SEP": "09", "OCT": "10", "NOV": "11", "DIC": "12"
+    }
     current_date_timestamp = .now?long
     amountTotalToPay = (offer_data.offer.discount?replace(",", "")?number * offer_data.offer.term)?replace(",", "")
     discount = offer_data.offer.discount?replace(",", "")?number?c
@@ -9,6 +13,7 @@
     maritalStatusDescription = (customer_data.customer.maritalStatus.description)!""
     company = agreement_data.company?lower_case
     branch = promoter_data.branches?filter(branch -> branch.branchID == agreement_configuration_data.branchId)?first?if_exists
+    folioFiscal = getFolioFiscal(ocr_documents_data)?replace("-", "")
 >
 <#-- Functions -->
 <#function getPreferredPhone address>
@@ -27,11 +32,27 @@
     </#if>
 </#function>
 <#function getStringFromBoolean value>
-  <#if value?exists && value == true>
-    <#return "Y">
-  <#else>
-    <#return "N">
-  </#if>
+    <#return (value?exists && value == true)?string("Y", "N")>
+</#function>
+<#function dateToNumberFormat(dateString)>
+    <#assign day = dateString?substring(0, 2)>
+    <#assign monthName = dateString?substring(3, 6)>
+    <#assign year = dateString?substring(7, 11)>
+    <#assign monthNumber = months[monthName]>
+    <#return year + "/" + monthNumber + "/" + day>
+</#function>
+<#function getFolioFiscal(ocrDocuments)>
+    <#assign latestDate = "1999/12/31"?date("yyyy/MM/dd")>
+    <#assign folioFiscal = "">
+    <#list ocrDocuments as document>
+        <#assign finalPayPeriod = document.data?filter(data -> data.name == "periodo-final-pago")?first.value>
+        <#assign finalDate = dateToNumberFormat(finalPayPeriod)?date("yyyy/MM/dd")>
+        <#if finalDate gt latestDate>
+            <#assign latestDate = finalDate>
+            <#assign folioFiscal = document.data?filter(data -> data.name == "folio-fiscal")?first.value>
+        </#if>
+    </#list>
+    <#return folioFiscal>
 </#function>
 <#-- Template -->
 <#if company == "csb">
@@ -85,7 +106,7 @@
         }
     },
     "person": {
-        "lastFolioFiscal": "${FunctionsUtil.getFolioFiscal(ocr_documents_data)}",
+        "lastFolioFiscal": "${folioFiscal}",
         "address": [
             <#list customer_data.customer.address as residence>
             {
@@ -247,7 +268,7 @@
     },
     "cliente": {
         "numeroEmpleadoEmp": "${offer_data.offer.employeeNumber?string}",
-        "ultimoFolioFiscal": "${FunctionsUtil.getFolioFiscal(ocr_documents_data)}",
+        "ultimoFolioFiscal": "${folioFiscal}",
         "funcionarioPublico": "${getStringFromBoolean(customer_data.preApplicationData.applicant.pep)}",
         "parienteFuncionarioPublico": "${getStringFromBoolean(customer_data.preApplicationData.applicant.familiarPep)}",
         "codigoPuestoOcupacion": "${(customer_data.preApplicationData.applicant.occupation.key)!''}",

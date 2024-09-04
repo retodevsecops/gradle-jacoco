@@ -1,6 +1,10 @@
 <#-- Freemarker template used to build the request to consume the create loan application api. -->
 <#-- Variables -->
 <#assign
+    months = {
+        "ENE": "01", "FEB": "02", "MAR": "03", "ABR": "04", "MAY": "05", "JUN": "06",
+        "JUL": "07", "AGO": "08", "SEP": "09", "OCT": "10", "NOV": "11", "DIC": "12"
+    }
     fieldValues = {
         "monto-a-liquidar": offer_data.offer.amount?c,
         "aplica-mismo-dcsp": "true",
@@ -12,7 +16,7 @@
         "banco": customer_data.preApplicationData.paymentData.bankDesc,
         "numero-empleado": offer_data.offer.employeeNumber,
         "rfc": customer_data.customer.rfc,
-        "folio-fiscal": FunctionsUtil.getFolioFiscal(ocr_documents_data)
+        "folio-fiscal": getFolioFiscal(ocr_documents_data)?replace("-", "")
     }
     current_date_timestamp = .now?long
     promotorCompleteName = promoter_data.name1 + " " + promoter_data.lastname1
@@ -30,6 +34,26 @@
     <#else>
         <#return field.value>
     </#if>
+</#function>
+<#function dateToNumberFormat(dateString)>
+    <#assign day = dateString?substring(0, 2)>
+    <#assign monthName = dateString?substring(3, 6)>
+    <#assign year = dateString?substring(7, 11)>
+    <#assign monthNumber = months[monthName]>
+    <#return year + "/" + monthNumber + "/" + day>
+</#function>
+<#function getFolioFiscal(ocrDocuments)>
+    <#assign latestDate = "1999/12/31"?date("yyyy/MM/dd")>
+    <#assign folioFiscal = "">
+    <#list ocrDocuments as document>
+        <#assign finalPayPeriod = document.data?filter(data -> data.name == "periodo-final-pago")?first.value>
+        <#assign finalDate = dateToNumberFormat(finalPayPeriod)?date("yyyy/MM/dd")>
+        <#if finalDate gt latestDate>
+            <#assign latestDate = finalDate>
+            <#assign folioFiscal = document.data?filter(data -> data.name == "folio-fiscal")?first.value>
+        </#if>
+    </#list>
+    <#return folioFiscal>
 </#function>
 <#-- Macros -->
 <#macro renderFields fields>
