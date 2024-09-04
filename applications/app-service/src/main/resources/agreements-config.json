@@ -90,21 +90,30 @@
     "branchId": "51187520",
     "attachmentsDocuments": [
       {
-        "name": "Identificación oficial",
-        "technicalName": "identificacion-oficial",
+        "name": "Frente de la INE",
+        "technicalName": "frente-identificacion-oficial",
         "maxFiles": 1,
         "isOcr": false,
         "isRecoverable": false,
-        "namePreviousDocument": "IDENTIFICACIONOFICIAL",
         "isRequired": true,
-        "requestToCustomer": false,
+        "requestToCustomer": true,
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
+      },
+      {
+        "name": "Reverso de la INE",
+        "technicalName": "reverso-identificacion-oficial",
+        "maxFiles": 1,
+        "isOcr": false,
+        "isRecoverable": false,
+        "isRequired": true,
+        "requestToCustomer": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       },
       {
         "name": "Recibos de nomina",
         "technicalName": "recibo-nomina",
         "maxFiles": 2,
-        "isOcr": true,
+        "isOcr": false,
         "isRecoverable": false,
         "namePreviousDocument": "RECIBO-NOMINA",
         "isRequired": true,
@@ -124,6 +133,13 @@
       }
     ],
     "compoundDocuments": [
+      {
+        "name": "identificacion-oficial",
+        "documents": [
+          { "name": "frente-identificacion-oficial" },
+          { "name": "reverso-identificacion-oficial" }
+        ]
+      },
       {
         "name": "formato-solicitud-gratuita",
         "documents": [
@@ -164,21 +180,30 @@
     "branchId": "51187515",
     "attachmentsDocuments": [
       {
-        "name": "Identificación oficial",
-        "technicalName": "identificacion-oficial",
+        "name": "Frente de la INE",
+        "technicalName": "frente-identificacion-oficial",
         "maxFiles": 1,
         "isOcr": false,
         "isRecoverable": false,
-        "namePreviousDocument": "IDENTIFICACIONOFICIAL",
         "isRequired": true,
-        "requestToCustomer": false,
+        "requestToCustomer": true,
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
+      },
+      {
+        "name": "Reverso de la INE",
+        "technicalName": "reverso-identificacion-oficial",
+        "maxFiles": 1,
+        "isOcr": false,
+        "isRecoverable": false,
+        "isRequired": true,
+        "requestToCustomer": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       },
       {
         "name": "Recibos de nomina",
         "technicalName": "recibo-nomina",
         "maxFiles": 2,
-        "isOcr": true,
+        "isOcr": false,
         "isRecoverable": false,
         "namePreviousDocument": "RECIBO-NOMINA",
         "isRequired": true,
@@ -199,6 +224,13 @@
     ],
     "compoundDocuments": [
       {
+        "name": "identificacion-oficial",
+        "documents": [
+          { "name": "frente-identificacion-oficial" },
+          { "name": "reverso-identificacion-oficial" }
+        ]
+      },
+      {
         "name": "contrato-cliente",
         "documents": [
           { "name": "formato-unico-caratula" },
@@ -213,7 +245,7 @@
           { "name": "comprobante-domicilio" },
           { "name": "formato-unico-caratula" },
           { "name": "pagare" },
-          { "name": "formato-solicitud-gratuita"},
+          { "name": "formato-unico-contrato-credito"},
           { "name": "carta-autorizacion-descuento" }
         ]
       }
@@ -231,21 +263,30 @@
     "branchId": "51187515",
     "attachmentsDocuments": [
       {
-        "name": "Identificación oficial",
-        "technicalName": "identificacion-oficial",
+        "name": "Frente de la INE",
+        "technicalName": "frente-identificacion-oficial",
         "maxFiles": 1,
         "isOcr": false,
         "isRecoverable": false,
-        "namePreviousDocument": "IDENTIFICACIONOFICIAL",
         "isRequired": true,
-        "requestToCustomer": false,
+        "requestToCustomer": true,
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
+      },
+      {
+        "name": "Reverso de la INE",
+        "technicalName": "reverso-identificacion-oficial",
+        "maxFiles": 1,
+        "isOcr": false,
+        "isRecoverable": false,
+        "isRequired": true,
+        "requestToCustomer": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       },
       {
         "name": "Recibos de nomina",
         "technicalName": "recibo-nomina",
         "maxFiles": 2,
-        "isOcr": true,
+        "isOcr": false,
         "isRecoverable": false,
         "namePreviousDocument": "RECIBO-NOMINA",
         "isRequired": true,
@@ -265,6 +306,13 @@
       }
     ],
     "compoundDocuments": [
+      {
+        "name": "identificacion-oficial",
+        "documents": [
+          { "name": "frente-identificacion-oficial" },
+          { "name": "reverso-identificacion-oficial" }
+        ]
+      },
       {
         "name": "formato-solicitud-gratuita",
         "documents": [
@@ -303,21 +351,30 @@
     "branchId": "51187451",
     "attachmentsDocuments": [
       {
-        "name": "Identificación oficial",
-        "technicalName": "identificacion-oficial",
+        "name": "Frente de la INE",
+        "technicalName": "frente-identificacion-oficial",
         "maxFiles": 1,
         "isOcr": false,
         "isRecoverable": false,
-        "namePreviousDocument": "IDENTIFICACIONOFICIAL",
         "isRequired": true,
-        "requestToCustomer": false,
+        "requestToCustomer": true,
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
+      },
+      {
+        "name": "Reverso de la INE",
+        "technicalName": "reverso-identificacion-oficial",
+        "maxFiles": 1,
+        "isOcr": false,
+        "isRecoverable": false,
+        "isRequired": true,
+        "requestToCustomer": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       },
       {
         "name": "Recibos de nomina",
         "technicalName": "recibo-nomina",
         "maxFiles": 2,
-        "isOcr": true,
+        "isOcr": false,
         "isRecoverable": false,
         "namePreviousDocument": "RECIBO-NOMINA",
         "isRequired": true,
@@ -337,6 +394,13 @@
       }
     ],
     "compoundDocuments": [
+      {
+        "name": "identificacion-oficial",
+        "documents": [
+          { "name": "frente-identificacion-oficial" },
+          { "name": "reverso-identificacion-oficial" }
+        ]
+      },
       {
         "name": "formato-autorizacion",
         "documents": [

@@ -9,6 +9,7 @@ public class DocumentMessage {
     public static final String FORMAT_NOM151 = "Should have been answered with the format: %s";
     public static final String GENERATE_CNCA = "First generate cnca letter to generate the compound documents.";
     public static final String DOCUMENTS_NOT_GENERATED = "No documents have been generated for offer %s.";
+    private static final String RETRIES_FAILED = "Failed to get signed document %s after retries. %s.";
 
     public String documentNotFound(String document, String compoundDocument) {
         return String.format(DOCUMENT_NOT_FOUND, document, compoundDocument);
@@ -20,6 +21,10 @@ public class DocumentMessage {
 
     public String documentNotGenerated(String offerId) {
         return String.format(DOCUMENTS_NOT_GENERATED, offerId);
+    }
+
+    public static String retriesFailed(String documentId, String message) {
+        return String.format(RETRIES_FAILED, documentId, message);
     }
 
 }
