@@ -15,6 +15,7 @@ public class FileMessage {
     private static final String ATTACHMENT_EXCEEDED = "The attachments: %s exceed the number of files required.";
     private static final String ATTACHMENTS_NOT_FOUND = "No uploaded attachments found for offer %s.";
     private static final String OFFER_FILES_NOT_FOUND = "Files not found for offer %s.";
+    private static final String FILE_NOT_FOUND_BY_NAME = "No file found by name: %s";
 
     public static String maxSize(Double size) {
         return String.format(MAX_SIZE, size);
@@ -42,6 +43,10 @@ public class FileMessage {
 
     public static String offerFilesNotFound(String offerId) {
         return String.format(OFFER_FILES_NOT_FOUND, offerId);
+    }
+
+    public static String notFoundByName(String name) {
+        return String.format(FILE_NOT_FOUND_BY_NAME, name);
     }
 
 

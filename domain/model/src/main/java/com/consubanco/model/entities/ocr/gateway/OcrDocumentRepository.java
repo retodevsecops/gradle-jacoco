@@ -9,7 +9,10 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 public interface OcrDocumentRepository {
+    Mono<OcrDocument> save(OcrDocumentSaveVO ocrDocumentSaveVO);
     Flux<OcrDocument> saveAll(List<OcrDocumentSaveVO> ocrDocumentSaveVOList);
     Mono<OcrDocument> update(OcrDocumentUpdateVO ocrDocumentUpdateVO);
     Flux<OcrDocument> findByProcessId(String processId);
+    Mono<OcrDocument> findByAnalysisId(String processId);
+    Mono<OcrDocument> findByStorageId(String storageId);
 }
