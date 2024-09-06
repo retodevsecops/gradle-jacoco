@@ -71,8 +71,8 @@
         "apellidoPaterno": "",
         "apellidoMaterno": "",
         "bpId": "",
-        "nombre1": "${promoter_data.name1}",
-        "nombre2": "",
+        "nombre1": "Canal",
+        "nombre2": "Digital",
         "rfc": ""
     },
     "employmentData": {
@@ -338,7 +338,7 @@
     },
     "vendedor": {
         "oficina": "",
-        "nombre": "${promoter_data.name1}",
+        "nombre": "Canal Digital",
         "persona": "",
         "claveImss": "",
         "rfc": "${promoter_data.name1}"
