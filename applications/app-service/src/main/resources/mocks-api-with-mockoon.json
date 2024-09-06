@@ -539,6 +539,35 @@
       ],
       "enabled": true,
       "responseMode": null
+    },
+    {
+      "uuid": "e72cde21-5520-4dc9-ab30-57cadac18b53",
+      "type": "http",
+      "documentation": "",
+      "method": "post",
+      "endpoint": "api/v1/loans-documents/ocr/process-id/comprobante-domicilio",
+      "responses": [
+        {
+          "uuid": "78c6b9b6-71af-48e2-a6d4-e993d86738db",
+          "body": "{\r\n    \"fileResDTO\": {\r\n        \"id\": \"csb-venta-digital/renewal/offer/123456789/attachments/comprobante-domicilio.pdf/1724806798903704\",\r\n        \"name\": \"comprobante-domicilio\",\r\n        \"url\": \"https://www.googleapis.com/storage/v1/b/csb-venta-digital/o/renewal%2Foffer%2F123456789%2Fattachments%2Fcomprobante-domicilio.pdf\",\r\n        \"directoryPath\": \"renewal/offer/123456789/attachments/\",\r\n        \"storageRoute\": \"gs://csb-venta-digital/renewal/offer/123456789/attachments/comprobante-domicilio.pdf\",\r\n        \"size\": \"188 KB\",\r\n        \"creationDate\": \"2024-08-28 00:59:59\"\r\n    },\r\n    \"ocrDocument\": {\r\n        \"id\": 557,\r\n        \"name\": \"comprobante-domicilio\",\r\n        \"storageId\": \"csb-venta-digital/renewal/offer/123456789/attachments/comprobante-domicilio.pdf/1724806798903704\",\r\n        \"storageRoute\": \"gs://csb-venta-digital/renewal/offer/123456789/attachments/comprobante-domicilio.pdf\",\r\n        \"processId\": \"adsaffgd-gfdsgfd-gdsfd\",\r\n        \"analysisId\": \"245508637817148483246982139250856887791\",\r\n        \"status\": \"SUCCESS\",\r\n        \"data\": [\r\n            {\r\n                \"name\": \"codigo-postal\",\r\n                \"confidence\": 0.9876296234130859,\r\n                \"value\": \"66052\"\r\n            },\r\n            {\r\n                \"name\": \"estado\",\r\n                \"confidence\": 0.9841675567626953,\r\n                \"value\": \"Nuevo LeÃ³n\"\r\n            },\r\n            {\r\n                \"name\": \"colonia\",\r\n                \"confidence\": 0.9774143981933594,\r\n                \"value\": \"Fernando Amilpa General Escobedo\"\r\n            },\r\n            {\r\n                \"name\": \"calle\",\r\n                \"confidence\": 0.9940769958496094,\r\n                \"value\": \"De las Frutas 504\"\r\n            }\r\n        ],\r\n        \"createdAt\": \"2024-08-27 20:00:00\",\r\n        \"updatedAt\": \"2024-08-27 20:00:40\"\r\n    }\r\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id"
+        }
+      ],
+      "enabled": true,
+      "responseMode": null
     }
   ],
   "rootChildren": [
@@ -613,6 +642,10 @@
     {
       "type": "route",
       "uuid": "3e182c5e-b0a3-456e-9184-62f5327504c7"
+    },
+    {
+      "type": "route",
+      "uuid": "e72cde21-5520-4dc9-ab30-57cadac18b53"
     }
   ],
   "proxyMode": false,

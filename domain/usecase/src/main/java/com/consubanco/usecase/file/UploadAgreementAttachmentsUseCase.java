@@ -6,16 +6,16 @@ import com.consubanco.model.entities.agreement.gateway.AgreementConfigRepository
 import com.consubanco.model.entities.agreement.gateway.AgreementGateway;
 import com.consubanco.model.entities.agreement.vo.AgreementConfigVO;
 import com.consubanco.model.entities.document.constant.DocumentNames;
-import com.consubanco.model.entities.document.gateway.PDFDocumentGateway;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.constant.FileConstants;
-import com.consubanco.model.entities.file.constant.FileExtensions;
 import com.consubanco.model.entities.file.gateway.FileRepository;
+import com.consubanco.model.entities.file.util.FileFactoryUtil;
 import com.consubanco.model.entities.file.vo.AttachmentFileVO;
 import com.consubanco.model.entities.file.vo.FileUploadVO;
 import com.consubanco.model.entities.file.vo.FileWithStorageRouteVO;
 import com.consubanco.model.entities.ocr.OcrDocument;
 import com.consubanco.model.entities.process.Process;
+import com.consubanco.usecase.file.helpers.PdfConvertHelper;
 import com.consubanco.usecase.ocr.usecase.ProcessOcrAttachmentsUseCase;
 import com.consubanco.usecase.process.GetProcessByIdUseCase;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ public class UploadAgreementAttachmentsUseCase {
     private final AgreementGateway agreementGateway;
     private final AgreementConfigRepository agreementConfigRepository;
     private final FileRepository fileRepository;
-    private final PDFDocumentGateway pdfDocumentGateway;
+    private final PdfConvertHelper pdfConvertHelper;
     private final GetProcessByIdUseCase getProcessByIdUseCase;
     private final ProcessOcrAttachmentsUseCase processOcrAttachments;
 
@@ -96,9 +96,9 @@ public class UploadAgreementAttachmentsUseCase {
 
     private Mono<File> buildMergedFile(String offerId, AttachmentFileVO attachmentFileVO) {
         return Flux.fromIterable(attachmentFileVO.getFiles())
-                .flatMap(this::convertAttachmentToPDF)
+                .flatMap(pdfConvertHelper::convertAttachmentToPDF)
                 .collectList()
-                .flatMap(pdfDocumentGateway::merge)
+                .flatMap(pdfConvertHelper::merge)
                 .map(mergedDocument -> buildFile(offerId, attachmentFileVO.getName(), mergedDocument));
     }
 
@@ -112,26 +112,13 @@ public class UploadAgreementAttachmentsUseCase {
     }
 
     private Mono<File> buildFile(FileUploadVO fileUploadVO, String offerId) {
-        return convertAttachmentToPDF(fileUploadVO)
+        return pdfConvertHelper.convertAttachmentToPDF(fileUploadVO)
                 .map(pdfContent -> buildFile(offerId, fileUploadVO.getName(), pdfContent));
     }
 
-    private Mono<String> convertAttachmentToPDF(FileUploadVO fileUploadVO) {
-        return Mono.just(fileUploadVO)
-                .filter(FileUploadVO::isNotPDF)
-                .map(FileUploadVO::getContent)
-                .map(List::of)
-                .flatMap(pdfDocumentGateway::generatePdfWithImages)
-                .defaultIfEmpty(fileUploadVO.getContent());
-    }
-
     private static File buildFile(String offerId, String name, String content) {
-        return File.builder()
-                .name(name)
-                .content(content)
-                .directoryPath(attachmentsDirectory(offerId))
-                .extension(FileExtensions.PDF)
-                .build();
+        String directory = attachmentsDirectory(offerId);
+        return FileFactoryUtil.buildPDF(name, content, directory);
     }
 
 }
