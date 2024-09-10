@@ -54,6 +54,16 @@
     </#list>
     <#return folioFiscal>
 </#function>
+<#function getOcrValue(name)>
+    <#return (ocr_documents_data[0].data?filter(it -> it.name == name)?first.value!"")>
+</#function>
+<#function getFieldFromDocument(documentName, fieldName)>
+    <#assign document = customer_data.preApplicationData.documents?filter(d -> d.technicalName == documentName)?first>
+    <#if document?has_content>
+        <#return document.fields?filter(f -> f.technicalName == fieldName)?first.value!"">
+    </#if>
+    <#return "">
+</#function>
 <#-- Template -->
 <#if company == "csb">
 {
@@ -76,7 +86,8 @@
         "rfc": ""
     },
     "employmentData": {
-        "numeroEmpleado": "${offer_data.offer.employeeNumber?string}"
+        "numeroEmpleado": "${offer_data.offer.employeeNumber?string}",
+        "publicServerKey": "${getOcrValue('numeroEmpleado')}"
     },
     "idDocumentData": {
        "ocr": "${(customer_data.customer.credentialData.ocr)!''}",
@@ -86,6 +97,11 @@
         "quoter": {
             "CAT": ${offer_data.offer.cat?replace(",", ".")},
             "agreemen": {
+                "dependencies": {
+                    "gemDependency": {
+                        "descripcion": "${getFieldFromDocument('carta-autorizacion-descuento', 'dependencia')}"
+                    }
+                },
                 "branch": {
                     "empresa": {
                         "businessName": "Consupago S.A. de C.V. SOFOM E.R."

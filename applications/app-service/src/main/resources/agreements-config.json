@@ -245,7 +245,6 @@
           { "name": "comprobante-domicilio" },
           { "name": "formato-unico-caratula" },
           { "name": "pagare" },
-          { "name": "formato-unico-contrato-credito"},
           { "name": "carta-autorizacion-descuento" }
         ]
       }
