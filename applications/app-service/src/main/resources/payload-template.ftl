@@ -87,7 +87,7 @@
     },
     "employmentData": {
         "numeroEmpleado": "${offer_data.offer.employeeNumber?string}",
-        "publicServerKey": "${getOcrValue('numeroEmpleado')}"
+        "publicServerKey": "${offer_data.offer.employeeNumber?string}"
     },
     "idDocumentData": {
        "ocr": "${(customer_data.customer.credentialData.ocr)!''}",
