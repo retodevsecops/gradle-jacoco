@@ -6,6 +6,7 @@ import com.consubanco.model.entities.process.Process;
 import com.consubanco.model.entities.process.gateway.ProcessGateway;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -26,6 +27,7 @@ public class ProcessAdapter implements ProcessGateway {
     }
 
     @Override
+    @CacheEvict(value = "process", key = "#processId")
     public Mono<String> finish(String processId) {
         return offerApiService.acceptOffer(processId);
     }

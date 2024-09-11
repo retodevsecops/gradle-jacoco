@@ -72,6 +72,7 @@ adapter:
           retry-delay: ${RETRY_DELAY_IN_SECONDS_NOM151:1}
 
       ocr:
+        confidence: ${OCR_CONFIDENCE:0.90}
         days-range-for-pay-stubs-validation: ${DAYS_RANGE_FOR_PAY_STUBS_VALIDATION_OCR:45}
         api-key: ${API_KEY_OCR:pending}
         initial-delay-time: ${INITIAL_DELAY_TIME_IN_SECONDS_OCR:5}
@@ -119,6 +120,7 @@ entry:
       file: /file
       loans: /loans
       management: /management
+      ocr: /ocr
 helpers:
   caffeine:
     expire-after-write: ${CACHE_EXPIRE_TIME_MINUTES:60}

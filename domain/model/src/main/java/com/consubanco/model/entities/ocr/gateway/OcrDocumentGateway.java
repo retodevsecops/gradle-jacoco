@@ -8,6 +8,7 @@ import java.time.Duration;
 import java.util.List;
 
 public interface OcrDocumentGateway {
+    Double getConfidence();
     Integer getDaysRangeForPayStubsValidation();
     Mono<Duration> getDelayTime();
     Mono<String> notifyDocumentForAnalysis(String storageRoute, OcrDocumentType ocrDocumentType);

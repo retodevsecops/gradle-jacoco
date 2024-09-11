@@ -30,6 +30,14 @@ public class OcrDocumentRepositoryAdapter implements OcrDocumentRepository {
     private final ObjectMapper mapper;
 
     @Override
+    public Mono<OcrDocument> save(OcrDocumentSaveVO ocrDocumentSaveVO) {
+        OcrDocumentData ocrDocumentData = new OcrDocumentData(ocrDocumentSaveVO);
+        return dataRepository.save(ocrDocumentData)
+                .flatMap(this::buildOcrDocument)
+                .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(SAVE_ERROR));
+    }
+
+    @Override
     public Flux<OcrDocument> saveAll(List<OcrDocumentSaveVO> ocrDocumentSaveVOList) {
         return Flux.fromIterable(ocrDocumentSaveVOList)
                 .map(OcrDocumentData::new)
@@ -37,7 +45,6 @@ public class OcrDocumentRepositoryAdapter implements OcrDocumentRepository {
                 .flatMapMany(dataRepository::saveAll)
                 .flatMap(this::buildOcrDocument)
                 .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(SAVE_ALL_ERROR));
-
     }
 
     @Override
@@ -45,7 +52,7 @@ public class OcrDocumentRepositoryAdapter implements OcrDocumentRepository {
         return dataRepository.findById(ocrDocumentUpdateVO.getId())
                 .flatMap(ocrData -> updateDataDB(ocrDocumentUpdateVO, ocrData))
                 .flatMap(dataRepository::save)
-                .map(OcrDocumentData::toEntity)
+                .flatMap(this::buildOcrDocument)
                 .doOnError(error -> logger.error(UPDATE_ERROR.getMessage(), error))
                 .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(UPDATE_ERROR));
     }
@@ -53,6 +60,20 @@ public class OcrDocumentRepositoryAdapter implements OcrDocumentRepository {
     @Override
     public Flux<OcrDocument> findByProcessId(String processId) {
         return dataRepository.findByProcessId(processId)
+                .flatMap(this::buildOcrDocument)
+                .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(FIND_ERROR));
+    }
+
+    @Override
+    public Mono<OcrDocument> findByAnalysisId(String analysisId) {
+        return dataRepository.findByAnalysisId(analysisId)
+                .flatMap(this::buildOcrDocument)
+                .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(FIND_ERROR));
+    }
+
+    @Override
+    public Mono<OcrDocument> findByStorageId(String storageId) {
+        return dataRepository.findByStorageId(storageId)
                 .flatMap(this::buildOcrDocument)
                 .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(FIND_ERROR));
     }

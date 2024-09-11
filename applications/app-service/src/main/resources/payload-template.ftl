@@ -1,6 +1,10 @@
 <#-- This is a freemarker template that is used to dynamically build the payload object to consume the developer api for document generation. -->
 <#-- Variables -->
 <#assign
+    months = {
+        "ENE": "01", "FEB": "02", "MAR": "03", "ABR": "04", "MAY": "05", "JUN": "06",
+        "JUL": "07", "AGO": "08", "SEP": "09", "OCT": "10", "NOV": "11", "DIC": "12"
+    }
     current_date_timestamp = .now?long
     amountTotalToPay = (offer_data.offer.discount?replace(",", "")?number * offer_data.offer.term)?replace(",", "")
     discount = offer_data.offer.discount?replace(",", "")?number?c
@@ -9,6 +13,7 @@
     maritalStatusDescription = (customer_data.customer.maritalStatus.description)!""
     company = agreement_data.company?lower_case
     branch = promoter_data.branches?filter(branch -> branch.branchID == agreement_configuration_data.branchId)?first?if_exists
+    folioFiscal = getFolioFiscal(ocr_documents_data)?replace("-", "")
 >
 <#-- Functions -->
 <#function getPreferredPhone address>
@@ -27,11 +32,37 @@
     </#if>
 </#function>
 <#function getStringFromBoolean value>
-  <#if value?exists && value == true>
-    <#return "Y">
-  <#else>
-    <#return "N">
-  </#if>
+    <#return (value?exists && value == true)?string("Y", "N")>
+</#function>
+<#function dateToNumberFormat(dateString)>
+    <#assign day = dateString?substring(0, 2)>
+    <#assign monthName = dateString?substring(3, 6)>
+    <#assign year = dateString?substring(7, 11)>
+    <#assign monthNumber = months[monthName]>
+    <#return year + "/" + monthNumber + "/" + day>
+</#function>
+<#function getFolioFiscal(ocrDocuments)>
+    <#assign latestDate = "1999/12/31"?date("yyyy/MM/dd")>
+    <#assign folioFiscal = "">
+    <#list ocrDocuments as document>
+        <#assign finalPayPeriod = document.data?filter(data -> data.name == "periodo-final-pago")?first.value>
+        <#assign finalDate = dateToNumberFormat(finalPayPeriod)?date("yyyy/MM/dd")>
+        <#if finalDate gt latestDate>
+            <#assign latestDate = finalDate>
+            <#assign folioFiscal = document.data?filter(data -> data.name == "folio-fiscal")?first.value>
+        </#if>
+    </#list>
+    <#return folioFiscal>
+</#function>
+<#function getOcrValue(name)>
+    <#return (ocr_documents_data[0].data?filter(it -> it.name == name)?first.value!"")>
+</#function>
+<#function getFieldFromDocument(documentName, fieldName)>
+    <#assign document = customer_data.preApplicationData.documents?filter(d -> d.technicalName == documentName)?first>
+    <#if document?has_content>
+        <#return document.fields?filter(f -> f.technicalName == fieldName)?first.value!"">
+    </#if>
+    <#return "">
 </#function>
 <#-- Template -->
 <#if company == "csb">
@@ -50,12 +81,13 @@
         "apellidoPaterno": "",
         "apellidoMaterno": "",
         "bpId": "",
-        "nombre1": "${promoter_data.name1}",
-        "nombre2": "",
+        "nombre1": "Canal",
+        "nombre2": "Digital",
         "rfc": ""
     },
     "employmentData": {
-        "numeroEmpleado": "${offer_data.offer.employeeNumber?string}"
+        "numeroEmpleado": "${offer_data.offer.employeeNumber?string}",
+        "publicServerKey": "${offer_data.offer.employeeNumber?string}"
     },
     "idDocumentData": {
        "ocr": "${(customer_data.customer.credentialData.ocr)!''}",
@@ -65,6 +97,11 @@
         "quoter": {
             "CAT": ${offer_data.offer.cat?replace(",", ".")},
             "agreemen": {
+                "dependencies": {
+                    "gemDependency": {
+                        "descripcion": "${getFieldFromDocument('carta-autorizacion-descuento', 'dependencia')}"
+                    }
+                },
                 "branch": {
                     "empresa": {
                         "businessName": "Consupago S.A. de C.V. SOFOM E.R."
@@ -85,7 +122,7 @@
         }
     },
     "person": {
-        "lastFolioFiscal": "${FunctionsUtil.getFolioFiscal(ocr_documents_data)}",
+        "lastFolioFiscal": "${folioFiscal}",
         "address": [
             <#list customer_data.customer.address as residence>
             {
@@ -247,7 +284,7 @@
     },
     "cliente": {
         "numeroEmpleadoEmp": "${offer_data.offer.employeeNumber?string}",
-        "ultimoFolioFiscal": "${FunctionsUtil.getFolioFiscal(ocr_documents_data)}",
+        "ultimoFolioFiscal": "${folioFiscal}",
         "funcionarioPublico": "${getStringFromBoolean(customer_data.preApplicationData.applicant.pep)}",
         "parienteFuncionarioPublico": "${getStringFromBoolean(customer_data.preApplicationData.applicant.familiarPep)}",
         "codigoPuestoOcupacion": "${(customer_data.preApplicationData.applicant.occupation.key)!''}",
@@ -317,7 +354,7 @@
     },
     "vendedor": {
         "oficina": "",
-        "nombre": "${promoter_data.name1}",
+        "nombre": "Canal Digital",
         "persona": "",
         "claveImss": "",
         "rfc": "${promoter_data.name1}"

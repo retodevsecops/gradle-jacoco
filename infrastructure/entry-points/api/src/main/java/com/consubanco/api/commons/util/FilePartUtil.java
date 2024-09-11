@@ -1,6 +1,5 @@
 package com.consubanco.api.commons.util;
 
-import com.consubanco.model.entities.file.vo.AttachmentFileVO;
 import com.consubanco.model.entities.file.vo.FileUploadVO;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.codec.binary.Base64;
@@ -47,10 +46,6 @@ public class FilePartUtil {
                         .content(tuple.getT1())
                         .sizeInMB(tuple.getT2())
                         .build());
-    }
-
-    public Mono<AttachmentFileVO> buildAttachmentFromFilePart(FilePart filePart) {
-        return Mono.empty();
     }
 
     public Mono<Double> getSizeFileInMB(FilePart filePart) {

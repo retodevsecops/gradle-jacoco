@@ -46,6 +46,11 @@ public class OcrDocumentConsumerAdapter implements OcrDocumentGateway {
     }
 
     @Override
+    public Double getConfidence() {
+        return apiProperties.getConfidence();
+    }
+
+    @Override
     public Mono<Duration> getDelayTime() {
         return Mono.just(apiProperties.initialDelayInSeconds());
     }
@@ -86,7 +91,7 @@ public class OcrDocumentConsumerAdapter implements OcrDocumentGateway {
                 .onErrorMap(error -> buildTechnical(retriesFailed(analysisId, error.getMessage()), METADATA_RETRIES));
     }
 
-    public Mono<GetMetadataResDTO> callApiToGetMetadata(String transactionId) {
+    private Mono<GetMetadataResDTO> callApiToGetMetadata(String transactionId) {
         GetMetadataReqDTO request = new GetMetadataReqDTO(apiProperties.getApplicationId(), transactionId);
         logger.info(apiProperties.getApiGetDataDocument() + ": body request to get ocr document data", request);
         return ocrClient.post()

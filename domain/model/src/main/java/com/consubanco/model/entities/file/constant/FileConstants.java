@@ -49,4 +49,10 @@ public class FileConstants {
         return pdfFormat(route);
     }
 
+    public static String attachmentRoute(String offerId, String attachmentName) {
+        String directory = attachmentsDirectory(offerId);
+        String baseRoute = directory.concat(attachmentName);
+        return pdfFormat(baseRoute);
+    }
+
 }
