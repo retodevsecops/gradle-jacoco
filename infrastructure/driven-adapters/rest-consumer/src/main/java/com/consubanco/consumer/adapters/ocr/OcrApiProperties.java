@@ -11,6 +11,7 @@ import java.time.Duration;
 @ConfigurationProperties(prefix = "adapter.rest-consumer.apis.ocr")
 public class OcrApiProperties {
 
+    private Double confidence;
     private String applicationId;
     private String apiNotifyDocument;
     private String apiGetDataDocument;
