@@ -81,8 +81,8 @@
         "apellidoPaterno": "",
         "apellidoMaterno": "",
         "bpId": "",
-        "nombre1": "Canal",
-        "nombre2": "Digital",
+        "nombre1": "${promoter_data.name1}",
+        "nombre2": "",
         "rfc": ""
     },
     "employmentData": {
