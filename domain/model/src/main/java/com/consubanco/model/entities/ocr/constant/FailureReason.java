@@ -17,7 +17,10 @@ public enum FailureReason {
     NOT_INDEX("the name of the document pay stub has no index, example: recibo-nomina-0 index 0."),
     INVALID_DATE("The pay stub is not within the valid date range."),
     UNKNOWN_ERROR("unknown error."),
-    INVALID_DATE_FORMAT("Invalid date format.");
+    INVALID_DATE_FORMAT("Invalid date format."),
+    ZIP_CODE_NOT_FOUND("The zip code was not found in the document."),
+    INVALID_CONFIDENCE("Confidence level not valid"),
+    DATA_NOT_FOUND("Data not found in the document.");
 
     private final String message;
 

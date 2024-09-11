@@ -430,5 +430,76 @@
       "contrato-cliente",
       "carta-de-liquidacion"
     ]
+  },
+  {
+    "agreementName": "INE - MN",
+    "agreementNumber": "10001103",
+    "promoterId": "0017123050",
+    "branchId": "51187520",
+    "attachmentsDocuments": [
+      {
+        "name": "Frente de la INE",
+        "technicalName": "frente-identificacion-oficial",
+        "maxFiles": 1,
+        "isOcr": false,
+        "isRecoverable": false,
+        "isRequired": true,
+        "requestToCustomer": true,
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
+      },
+      {
+        "name": "Reverso de la INE",
+        "technicalName": "reverso-identificacion-oficial",
+        "maxFiles": 1,
+        "isOcr": false,
+        "isRecoverable": false,
+        "isRequired": true,
+        "requestToCustomer": true,
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
+      },
+      {
+        "name": "Recibos de nomina",
+        "technicalName": "recibo-nomina",
+        "maxFiles": 2,
+        "isOcr": false,
+        "isRecoverable": false,
+        "namePreviousDocument": "RECIBO-NOMINA",
+        "isRequired": true,
+        "requestToCustomer": true,
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
+      },
+      {
+        "name": "Comprobante de domicilio",
+        "technicalName": "comprobante-domicilio",
+        "maxFiles": 1,
+        "isOcr": false,
+        "isRecoverable": true,
+        "namePreviousDocument": "COMPROBANTE-DOMICILIO",
+        "isRequired": true,
+        "requestToCustomer": true,
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
+      }
+    ],
+    "compoundDocuments": [
+      {
+        "name": "identificacion-oficial",
+        "documents": [
+          { "name": "frente-identificacion-oficial" },
+          { "name": "reverso-identificacion-oficial" }
+        ]
+      },
+      {
+        "name": "contrato-cliente",
+        "documents": [
+          { "name": "formato-unico-caratula" },
+          { "name": "formato-unico-contrato-credito" }
+        ]
+      }
+    ],
+    "customerVisibleDocuments": [
+      "formato-solicitud-gratuita",
+      "contrato-cliente",
+      "carta-de-liquidacion"
+    ]
   }
 ]
