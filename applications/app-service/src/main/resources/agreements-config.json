@@ -244,7 +244,7 @@
           { "name": "recibo-nomina" },
           { "name": "comprobante-domicilio" },
           { "name": "formato-unico-caratula" },
-          { "name": "mandato-irrevocable-de-autorizacion-para-pago-a-tercero" },
+          { "name": "mandato-de-autorizacion-de-descuento" },
           { "name": "pagare" },
           { "name": "formato-solicitud-gratuita" },
           { "name": "carta-autorizacion-descuento" }

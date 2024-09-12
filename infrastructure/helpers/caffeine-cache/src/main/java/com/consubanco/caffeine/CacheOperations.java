@@ -28,7 +28,10 @@ public class CacheOperations {
                 .flatMap(name -> {
                     CaffeineCache cache = (CaffeineCache) cacheManager.getCache(name);
                     if (Objects.isNull(cache)) return Mono.empty();
-                    if (cache.getNativeCache().asMap().isEmpty()) return Mono.empty();
+                    ConcurrentMap<Object, Object> cacheMap = cache.getNativeCache().asMap();
+                    if (cacheMap.isEmpty() || cacheMap.values().stream().allMatch(Objects::isNull)) {
+                        return Mono.empty();
+                    }
                     return Mono.just(name);
                 })
                 .collectList();
@@ -48,7 +51,13 @@ public class CacheOperations {
     public Mono<ConcurrentMap<Object, Object>> getObjectsByItem(String item) {
         CaffeineCache cache = (CaffeineCache) cacheManager.getCache(item);
         if (Objects.isNull(cache)) return Mono.empty();
-        return Mono.just(cache.getNativeCache().asMap());
+        ConcurrentMap<Object, Object> filteredMap = new ConcurrentHashMap<>();
+        cache.getNativeCache().asMap().forEach((key, value) -> {
+            if (Objects.nonNull(value)) {
+                filteredMap.put(key, value);
+            }
+        });
+        return Mono.just(filteredMap);
     }
 
     public Mono<ConcurrentMap<Object, Object>> cleanByItem(String item) {
