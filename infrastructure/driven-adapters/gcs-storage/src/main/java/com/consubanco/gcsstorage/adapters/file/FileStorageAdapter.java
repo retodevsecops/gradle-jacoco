@@ -141,7 +141,7 @@ public class FileStorageAdapter implements FileRepository {
     }
 
     @Override
-    @CacheEvict(cacheNames = "AgreementConfig", allEntries = true)
+    @CacheEvict(cacheNames = "agreements-configuration", allEntries = true)
     public Mono<File> uploadAgreementsConfigFile(File file) {
         return Mono.just(properties.getFilesPath().getAgreementsConfig())
                 .map(path -> file.toBuilder()
