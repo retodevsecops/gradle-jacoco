@@ -491,13 +491,13 @@
       {
         "name": "contrato-cliente",
         "documents": [
-          { "name": "formato-unico-caratula" },
-          { "name": "formato-unico-contrato-credito" }
+          { "name": "anexo_b" },
+          { "name": "contrato" }
         ]
       }
     ],
     "customerVisibleDocuments": [
-      "formato-solicitud-gratuita",
+      "solicitud_credito",
       "contrato-cliente",
       "carta-de-liquidacion"
     ]
