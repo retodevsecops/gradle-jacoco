@@ -102,7 +102,7 @@
         "name": "Recibos de nomina",
         "technicalName": "recibo-nomina",
         "maxFiles": 2,
-        "isOcr": false,
+        "isOcr": true,
         "isRecoverable": false,
         "namePreviousDocument": "RECIBO-NOMINA",
         "isRequired": true,
