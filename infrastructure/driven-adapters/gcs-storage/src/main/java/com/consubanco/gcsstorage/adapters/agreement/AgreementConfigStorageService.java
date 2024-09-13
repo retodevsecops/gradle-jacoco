@@ -33,7 +33,7 @@ public class AgreementConfigStorageService {
     private final GoogleStorageProperties properties;
     private final ObjectMapper objectMapper;
 
-    @Cacheable("AgreementConfig")
+    @Cacheable(cacheNames = "agreements-configuration", key = "'agreements-configuration'")
     public Mono<List<AgreementConfigVO>> getAgreementsConfig() {
         Mono<byte[]> localAgreementsConfig = uploadLocalAgreementsConfig();
         return getAgreementsConfigFromStorage()

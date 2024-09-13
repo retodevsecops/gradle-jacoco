@@ -6,6 +6,7 @@ import com.consubanco.logger.CustomLogger;
 import com.consubanco.model.commons.exception.TechnicalException;
 import com.consubanco.model.entities.loan.constant.OfferStatus;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
@@ -59,15 +60,7 @@ public class OfferApiService {
                 .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(API_ACTIVE_OFFER_ERROR));
     }
 
-    public Mono<String> getOfferHealth() {
-        return this.renexClient.get()
-                .uri(apis.getRenex().getApiHealthOffer())
-                .retrieve()
-                .bodyToMono(String.class)
-                .onErrorMap(WebClientRequestException.class, error -> requestError(error, API_REQUEST_ERROR))
-                .onErrorMap(throwTechnicalError(OFFER_HEALTH_ERROR));
-    }
-
+    @CacheEvict("offers")
     public Mono<String> acceptOffer(String processId) {
         return this.renexClient.post()
                 .uri(apis.getRenex().getApiAcceptOffer(), processId)
@@ -79,6 +72,15 @@ public class OfferApiService {
                 .doOnError(WebClientResponseException.class, error -> logger.error(new RestConsumerLogDTO(error)))
                 .doOnError(error -> !(error instanceof WebClientResponseException), logger::error)
                 .onErrorResume(e -> Mono.just(OfferStatus.ERROR.name()));
+    }
+
+    public Mono<String> getOfferHealth() {
+        return this.renexClient.get()
+                .uri(apis.getRenex().getApiHealthOffer())
+                .retrieve()
+                .bodyToMono(String.class)
+                .onErrorMap(WebClientRequestException.class, error -> requestError(error, API_REQUEST_ERROR))
+                .onErrorMap(throwTechnicalError(OFFER_HEALTH_ERROR));
     }
 
 }

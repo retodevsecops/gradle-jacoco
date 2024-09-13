@@ -5,6 +5,7 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
+import org.springframework.cache.support.NullValue;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -51,23 +52,28 @@ public class CacheOperations {
     public Mono<ConcurrentMap<Object, Object>> getObjectsByItem(String item) {
         CaffeineCache cache = (CaffeineCache) cacheManager.getCache(item);
         if (Objects.isNull(cache)) return Mono.empty();
-        ConcurrentMap<Object, Object> filteredMap = new ConcurrentHashMap<>();
-        cache.getNativeCache().asMap().forEach((key, value) -> {
-            if (Objects.nonNull(value)) {
-                filteredMap.put(key, value);
-            }
-        });
-        return Mono.just(filteredMap);
+        return Mono.just(cacheDataMap(cache));
     }
 
     public Mono<ConcurrentMap<Object, Object>> cleanByItem(String item) {
         return Mono.defer(() -> {
             CaffeineCache cache = (CaffeineCache) cacheManager.getCache(item);
             if (Objects.isNull(cache)) return Mono.empty();
-            ConcurrentMap<Object, Object> dataInCache = new ConcurrentHashMap<>(cache.getNativeCache().asMap());
+            ConcurrentMap<Object, Object> dataInCache = cacheDataMap(cache);
             cache.clear();
             return Mono.just(dataInCache);
         });
+    }
+
+    private static ConcurrentMap<Object, Object> cacheDataMap(CaffeineCache cache) {
+        ConcurrentMap<Object, Object> dataInCache = new ConcurrentHashMap<>();
+        cache.getNativeCache().asMap().forEach((key, value) -> {
+            if (Objects.nonNull(value)) {
+                Object valueObject = value instanceof NullValue ? "NULL_VALUE" : value;
+                dataInCache.put(key, valueObject);
+            }
+        });
+        return dataInCache;
     }
 
 }
