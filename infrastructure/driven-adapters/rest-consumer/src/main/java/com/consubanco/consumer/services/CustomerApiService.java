@@ -43,6 +43,7 @@ public class CustomerApiService {
                 .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(API_CUSTOMER_ERROR));
     }
 
+    @Cacheable("customers-biometrics")
     public Mono<Map<String, Object>> customerBiometricValidation(String processId) {
         return this.renexClient.get()
                 .uri(apis.getRenex().getApiCustomerBiometricValidation(), processId)
