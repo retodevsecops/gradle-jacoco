@@ -135,13 +135,13 @@ public class FileStorageAdapter implements FileRepository {
     }
 
     @Override
-    @CacheEvict("templates")
+    @CacheEvict(cacheNames = "templates", allEntries = true)
     public Mono<File> uploadPayloadTemplate(FileUploadVO fileUploadVO) {
         return uploadTemplate(fileUploadVO, properties.payloadTemplatePath());
     }
 
     @Override
-    @CacheEvict("AgreementConfig")
+    @CacheEvict(cacheNames = "AgreementConfig", allEntries = true)
     public Mono<File> uploadAgreementsConfigFile(File file) {
         return Mono.just(properties.getFilesPath().getAgreementsConfig())
                 .map(path -> file.toBuilder()
@@ -171,7 +171,7 @@ public class FileStorageAdapter implements FileRepository {
     }
 
     @Override
-    @CacheEvict("templates")
+    @CacheEvict(cacheNames = "templates", allEntries = true)
     public Mono<File> uploadCreateApplicationTemplate(FileUploadVO fileUploadVO) {
         return uploadTemplate(fileUploadVO, properties.getFilesPath().getCreateApplicationTemplate());
     }
