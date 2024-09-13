@@ -27,7 +27,7 @@ public class ProcessAdapter implements ProcessGateway {
     }
 
     @Override
-    @CacheEvict(value = "process", key = "#processId")
+    @CacheEvict(cacheNames = {"process", "customers", "customers-biometrics"})
     public Mono<String> finish(String processId) {
         return offerApiService.acceptOffer(processId);
     }

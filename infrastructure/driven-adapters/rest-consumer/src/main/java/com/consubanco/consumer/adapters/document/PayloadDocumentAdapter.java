@@ -6,7 +6,6 @@ import com.consubanco.consumer.services.promoter.PromoterApiService;
 import com.consubanco.freemarker.ITemplateOperations;
 import com.consubanco.model.entities.agreement.vo.AgreementConfigVO;
 import com.consubanco.model.entities.document.gateway.PayloadDocumentGateway;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -35,7 +34,6 @@ public class PayloadDocumentAdapter implements PayloadDocumentGateway {
     }
 
     @Override
-    @Cacheable("all-data")
     public Mono<Map<String, Object>> getAllData(String processId, AgreementConfigVO agreementConfigVO) {
         return Mono.zip(promoterApiService.getPromoterById(agreementConfigVO.getPromoterId()),
                         customerApiService.customerDataByProcess(processId),

@@ -105,14 +105,14 @@ public class FileStorageAdapter implements FileRepository {
     }
 
     @Override
-    @Cacheable("payloadTemplate")
+    @Cacheable(cacheNames = "templates", key = "'payload'")
     public Mono<File> getPayloadTemplate() {
         return getByNameWithSignedUrl(properties.getFilesPath().getPayloadTemplate())
                 .doOnNext(file -> logger.info("Payload template was consulted.", file));
     }
 
     @Override
-    @Cacheable("payloadTemplate")
+    @Cacheable(cacheNames = "templates", key = "'payload'")
     public Mono<File> getPayloadTemplateWithoutSignedUrl() {
         return getByNameWithoutSignedUrl(properties.getFilesPath().getPayloadTemplate())
                 .doOnNext(file -> logger.info("Payload template was consulted.", file));
@@ -135,13 +135,13 @@ public class FileStorageAdapter implements FileRepository {
     }
 
     @Override
-    @CacheEvict(cacheNames = "payloadTemplate", allEntries = true)
+    @CacheEvict("templates")
     public Mono<File> uploadPayloadTemplate(FileUploadVO fileUploadVO) {
         return uploadTemplate(fileUploadVO, properties.payloadTemplatePath());
     }
 
     @Override
-    @CacheEvict(cacheNames = "AgreementConfig", allEntries = true)
+    @CacheEvict("AgreementConfig")
     public Mono<File> uploadAgreementsConfigFile(File file) {
         return Mono.just(properties.getFilesPath().getAgreementsConfig())
                 .map(path -> file.toBuilder()
@@ -157,21 +157,21 @@ public class FileStorageAdapter implements FileRepository {
     }
 
     @Override
-    @Cacheable("createApplicationTemplate")
+    @Cacheable(cacheNames = "templates", key = "'create-application'")
     public Mono<File> getCreateApplicationTemplate() {
         return getByNameWithSignedUrl(properties.getFilesPath().getCreateApplicationTemplate())
                 .doOnNext(file -> logger.info("Create application template was consulted in to storage.", file));
     }
 
     @Override
-    @Cacheable("createApplicationTemplate")
+    @Cacheable(cacheNames = "templates", key = "'create-application'")
     public Mono<File> getCreateApplicationTemplateWithoutSignedUrl() {
         return getByNameWithoutSignedUrl(properties.getFilesPath().getCreateApplicationTemplate())
                 .doOnNext(file -> logger.info("Create application template was consulted in to storage.", file));
     }
 
     @Override
-    @CacheEvict(cacheNames = "createApplicationTemplate", allEntries = true)
+    @CacheEvict("templates")
     public Mono<File> uploadCreateApplicationTemplate(FileUploadVO fileUploadVO) {
         return uploadTemplate(fileUploadVO, properties.getFilesPath().getCreateApplicationTemplate());
     }

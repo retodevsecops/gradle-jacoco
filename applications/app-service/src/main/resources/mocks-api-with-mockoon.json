@@ -76,7 +76,7 @@
       "type": "http",
       "documentation": "",
       "method": "get",
-      "endpoint": "offers-api/offers/actuator/health",
+      "endpoint": "offers-api/actuator/health",
       "responses": [
         {
           "uuid": "8e1092c2-542f-43a7-92a9-d6b332862f9f",

@@ -48,9 +48,9 @@ adapter:
         client-id: ${API_CONNECT_CLIENT_ID}
         application-id: ${API_CONNECT_APPLICATION_ID:CSB-RENEX}
         api-get-cnca: ${API_GET_CNCA:https://apic.consubanco.com/csb/qa/puc-letter-generate-api/getLetterCNCA}
-        api-search-interlocutor: ${API_SEARCH_INTERLOCUTOR:https://apic.consubanco.com/csb/qa/common-crm-service/searchInterlocutor}
+        api-search-interlocutor: ${API_SEARCH_INTERLOCUTOR:http://localhost:3001/common-crm-service/searchInterlocutor}
         api-send-generic-email: ${API_SEND_GENERIC_EMAIL:http://localhost:3001/ebanking-notification-service/sendGenericMail}
-        api-branches-promoter: ${API_BRANCHES_BY_PROMOTER:https://apic.consubanco.com/csb/qa/opp-catalog-service/getBranchesByPromotor}
+        api-branches-promoter: ${API_BRANCHES_BY_PROMOTER:http://localhost:3001/opp-catalog-service/getBranchesByPromotor}
         api-docs-previous: ${API_DOCS_PREVIOUS:https://apic.consubanco.com/csb/qa/opp-service/findDocsPreviusApplication}
         api-create-application: ${API_CREATE_APPLICATION:http://localhost:3001/opp-service/createApplication}
       nom151:

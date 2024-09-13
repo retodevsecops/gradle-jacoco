@@ -108,6 +108,19 @@ public class Nom151ApiService {
     private Mono<String> getNom151(String user, String password, String documentId) {
         String requestBody = GetNom151Util.buildRequest(user, password, documentId);
         logger.info("Request get nom151", requestBody);
+        String messageFormat = "Retry #%s for get conservation certificate nom151 %s with error: %s";
+        return callApiGetNom151(requestBody)
+                .retryWhen(Retry.fixedDelay(properties.getRetryStrategy().getMaxRetries(), properties.retryDelay())
+                        .doBeforeRetry(signal -> {
+                            long retries = signal.totalRetriesInARow();
+                            String errorMessage = signal.failure().getMessage();
+                            String message = String.format(messageFormat, retries, documentId, errorMessage);
+                            logger.info(message);
+                        }))
+                .onErrorMap(e -> buildTechnical(retriesFailed(documentId, e.getMessage()), SIGNED_DOCUMENT_FAIL));
+    }
+
+    private Mono<String> callApiGetNom151(String requestBody) {
         return nom151Client.post()
                 .uri(properties.getEndpoint())
                 .header(SOAP_ACTION, properties.getActions().getGetNom151())
