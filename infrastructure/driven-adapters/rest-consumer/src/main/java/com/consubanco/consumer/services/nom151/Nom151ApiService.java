@@ -14,6 +14,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
+import reactor.util.retry.RetryBackoffSpec;
 
 import java.util.function.Function;
 
@@ -85,13 +86,7 @@ public class Nom151ApiService {
         logger.info("Request get signed document for nom151", requestBody);
         String messageFormat = "Retry #%s for get signed document %s with error: %s";
         return callApiGetSignedDocument(requestBody)
-                .retryWhen(Retry.fixedDelay(properties.getRetryStrategy().getMaxRetries(), properties.retryDelay())
-                        .doBeforeRetry(signal -> {
-                            long retries = signal.totalRetriesInARow();
-                            String errorMessage = signal.failure().getMessage();
-                            String message = String.format(messageFormat, retries, documentId, errorMessage);
-                            logger.info(message);
-                        }))
+                .retryWhen(retryStrategy(documentId, messageFormat))
                 .onErrorMap(e -> buildTechnical(retriesFailed(documentId, e.getMessage()), SIGNED_DOCUMENT_FAIL));
     }
 
@@ -108,6 +103,13 @@ public class Nom151ApiService {
     private Mono<String> getNom151(String user, String password, String documentId) {
         String requestBody = GetNom151Util.buildRequest(user, password, documentId);
         logger.info("Request get nom151", requestBody);
+        String messageFormat = "Retry #%s for get conservation certificate nom151 %s with error: %s";
+        return callApiGetNom151(requestBody)
+                .retryWhen(retryStrategy(documentId, messageFormat))
+                .onErrorMap(e -> buildTechnical(retriesFailed(documentId, e.getMessage()), SIGNED_DOCUMENT_FAIL));
+    }
+
+    private Mono<String> callApiGetNom151(String requestBody) {
         return nom151Client.post()
                 .uri(properties.getEndpoint())
                 .header(SOAP_ACTION, properties.getActions().getGetNom151())
@@ -123,6 +125,16 @@ public class Nom151ApiService {
                     if (response.statusCode().is2xxSuccessful()) return getSuccessResult.apply(responseAsString);
                     String errorDetail = ApiResponseNom151Util.getErrorDetail(responseAsString);
                     throw ExceptionFactory.buildTechnical(errorDetail, API_NOM151_RESPONSE_ERROR);
+                });
+    }
+
+    private RetryBackoffSpec retryStrategy(String documentId, String messageFormat) {
+        return Retry.fixedDelay(properties.getRetryStrategy().getMaxRetries(), properties.retryDelay())
+                .doBeforeRetry(signal -> {
+                    long retries = signal.totalRetriesInARow();
+                    String errorMessage = signal.failure().getMessage();
+                    String message = String.format(messageFormat, retries, documentId, errorMessage);
+                    logger.info(message);
                 });
     }
 
