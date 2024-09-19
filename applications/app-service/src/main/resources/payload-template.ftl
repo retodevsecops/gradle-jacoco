@@ -14,6 +14,7 @@
     company = agreement_data.company?lower_case
     branch = promoter_data.branches?filter(branch -> branch.branchID == agreement_configuration_data.branchId)?first?if_exists
     folioFiscal = getFolioFiscal(ocr_documents_data)?replace("-", "")
+    aggrementKey = offer_data.offer.agreement.key
 >
 <#-- Functions -->
 <#function getPreferredPhone address>
@@ -64,6 +65,12 @@
     </#if>
     <#return "">
 </#function>
+<#function getBusinessNameByAggrementKey(aggrementKeyValue)>
+    <#if aggrementKeyValue == "10000790">
+        <#return "HXTI S.A. de C.V. SOFOM E.N.R.">
+    </#if>
+    <#return "Consupago S.A. de C.V. SOFOM E.R.">
+</#function>
 <#-- Template -->
 <#if company == "csb">
 {
@@ -104,7 +111,7 @@
                 },
                 "branch": {
                     "empresa": {
-                        "businessName": "Consupago S.A. de C.V. SOFOM E.R."
+                        "businessName": "${getBusinessNameByAggrementKey(aggrementKey)}"
                     }
                 },
                 "convenioId": "${offer_data.offer.agreement.key}"
