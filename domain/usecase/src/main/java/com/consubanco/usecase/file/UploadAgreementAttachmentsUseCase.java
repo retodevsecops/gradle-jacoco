@@ -2,7 +2,6 @@ package com.consubanco.usecase.file;
 
 import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.consubanco.model.entities.agreement.Agreement;
-import com.consubanco.model.entities.agreement.gateway.AgreementConfigRepository;
 import com.consubanco.model.entities.agreement.gateway.AgreementGateway;
 import com.consubanco.model.entities.agreement.vo.AgreementConfigVO;
 import com.consubanco.model.entities.document.constant.DocumentNames;
@@ -15,6 +14,7 @@ import com.consubanco.model.entities.file.vo.FileUploadVO;
 import com.consubanco.model.entities.file.vo.FileWithStorageRouteVO;
 import com.consubanco.model.entities.ocr.OcrDocument;
 import com.consubanco.model.entities.process.Process;
+import com.consubanco.usecase.agreement.GetAgreementConfigUseCase;
 import com.consubanco.usecase.file.helpers.PdfConvertHelper;
 import com.consubanco.usecase.ocr.usecase.ProcessOcrAttachmentsUseCase;
 import com.consubanco.usecase.process.GetProcessByIdUseCase;
@@ -35,7 +35,7 @@ import static com.consubanco.model.entities.file.util.AttachmentValidatorUtil.ch
 public class UploadAgreementAttachmentsUseCase {
 
     private final AgreementGateway agreementGateway;
-    private final AgreementConfigRepository agreementConfigRepository;
+    private final GetAgreementConfigUseCase getAgreementConfigUseCase;
     private final FileRepository fileRepository;
     private final PdfConvertHelper pdfConvertHelper;
     private final GetProcessByIdUseCase getProcessByIdUseCase;
@@ -49,7 +49,7 @@ public class UploadAgreementAttachmentsUseCase {
 
     private Mono<List<OcrDocument>> startProcess(List<AttachmentFileVO> attachments, Process process) {
         Mono<Agreement> agreement = agreementGateway.findByNumber(process.getAgreementNumber());
-        Mono<AgreementConfigVO> agreementConfig = agreementConfigRepository.getConfigByAgreement(process.getAgreementNumber());
+        Mono<AgreementConfigVO> agreementConfig = getAgreementConfigUseCase.execute(process.getAgreementNumber());
         Mono<List<String>> filesInStorage = filesByOffer(process.getOfferId());
         return Mono.zip(agreement, agreementConfig, filesInStorage)
                 .flatMap(tuple -> Mono.fromCallable(() -> validateCncaLetter(tuple.getT3()))
