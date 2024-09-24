@@ -125,7 +125,8 @@
             "openingCommissionPercentage": ${offer_data.offer.commissions?replace(",", ".")},
             "plazo": ${offer_data.offer.term},
             "requestedAmount": ${offer_data.offer.amount?c},
-            "totalAmount": ${amountTotalToPay}
+            "totalAmount": ${amountTotalToPay},
+            "estimatedCommision": ${offer_data.offer.commissions?replace(",", ".")}
         }
     },
     "person": {
