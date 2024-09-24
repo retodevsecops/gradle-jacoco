@@ -308,6 +308,12 @@
     ],
     "compoundDocuments": [
       {
+        "name": "formato-unico-contrato-credito",
+        "documents": [
+          { "name": "clausulas_sjt_v2" }
+        ]
+      },
+      {
         "name": "identificacion-oficial",
         "documents": [
           { "name": "frente-identificacion-oficial" },
