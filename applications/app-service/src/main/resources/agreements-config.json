@@ -113,7 +113,7 @@
         "name": "Recibos de nomina",
         "technicalName": "recibo-nomina",
         "maxFiles": 2,
-        "isOcr": false,
+        "isOcr": true,
         "isRecoverable": false,
         "namePreviousDocument": "RECIBO-NOMINA",
         "isRequired": true,
@@ -177,7 +177,7 @@
     "agreementName": "GEM - CSB",
     "agreementNumber": "10000080",
     "promoterId": "0017123050",
-    "branchId": "51187510",
+    "branchId": "51187515",
     "attachmentsDocuments": [
       {
         "name": "Frente de la INE",
@@ -203,8 +203,8 @@
         "name": "Recibos de nomina",
         "technicalName": "recibo-nomina",
         "maxFiles": 2,
-        "isOcr": false,
-        "isRecoverable": false,
+        "isOcr": true,
+        "isRecoverable": true,
         "namePreviousDocument": "RECIBO-NOMINA",
         "isRequired": true,
         "requestToCustomer": true,
@@ -261,7 +261,7 @@
     "agreementName": "GEM - MN",
     "agreementNumber": "10001183",
     "promoterId": "0017123050",
-    "branchId": "51187515",
+    "branchId": "51187510",
     "attachmentsDocuments": [
       {
         "name": "Frente de la INE",
@@ -287,8 +287,8 @@
         "name": "Recibos de nomina",
         "technicalName": "recibo-nomina",
         "maxFiles": 2,
-        "isOcr": false,
-        "isRecoverable": false,
+        "isOcr": true,
+        "isRecoverable": true,
         "namePreviousDocument": "RECIBO-NOMINA",
         "isRequired": true,
         "requestToCustomer": true,
@@ -375,7 +375,7 @@
         "name": "Recibos de nomina",
         "technicalName": "recibo-nomina",
         "maxFiles": 2,
-        "isOcr": false,
+        "isOcr": true,
         "isRecoverable": false,
         "namePreviousDocument": "RECIBO-NOMINA",
         "isRequired": true,
@@ -461,7 +461,7 @@
         "name": "Recibos de nomina",
         "technicalName": "recibo-nomina",
         "maxFiles": 2,
-        "isOcr": false,
+        "isOcr": true,
         "isRecoverable": false,
         "namePreviousDocument": "RECIBO-NOMINA",
         "isRequired": true,
@@ -491,13 +491,13 @@
       {
         "name": "contrato-cliente",
         "documents": [
-          { "name": "formato-unico-caratula" },
-          { "name": "formato-unico-contrato-credito" }
+          { "name": "anexo_b" },
+          { "name": "contrato" }
         ]
       }
     ],
     "customerVisibleDocuments": [
-      "formato-solicitud-gratuita",
+      "solicitud_credito",
       "contrato-cliente",
       "carta-de-liquidacion"
     ]
