@@ -121,6 +121,7 @@ entry:
       loans: /loans
       management: /management
       ocr: /ocr
+      rpa: /rpa
 helpers:
   caffeine:
     expire-after-write: ${CACHE_EXPIRE_TIME_MINUTES:60}
