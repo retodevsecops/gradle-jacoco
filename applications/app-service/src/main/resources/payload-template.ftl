@@ -254,6 +254,9 @@
 {
     "origen": "ECSB",
     "destinoCredito": "",
+    "claveServidor": "${offer_data.offer.employeeNumber?string}",
+    "dependenciaGEM": "${getFieldFromDocument('carta-autorizacion-descuento', 'dependencia')}",
+    "cuenta": "",
     "empresa": "${(branch.empresa.enterpriseName)!''}",
     "solicitud": "${offer_data.offer.id}",
     "fechaSolicitud": ${current_date_timestamp?c},
@@ -291,6 +294,7 @@
         "distributorName": "${agreement_data.providerCapacity}"
     },
     "cliente": {
+       "ingresos": "0",
         "numeroEmpleadoEmp": "${offer_data.offer.employeeNumber?string}",
         "ultimoFolioFiscal": "${folioFiscal}",
         "funcionarioPublico": "${getStringFromBoolean(customer_data.preApplicationData.applicant.pep)}",
