@@ -1,6 +1,7 @@
 package com.consubanco.api.services.management;
 
 import com.consubanco.api.commons.util.HttpResponseUtil;
+import com.consubanco.api.services.management.constants.ManagementParams;
 import com.consubanco.caffeine.CacheOperations;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -29,13 +30,13 @@ public class ManagementHandler {
     }
 
     public Mono<ServerResponse> getObjectsByItem(ServerRequest request) {
-        String item = request.pathVariable("item");
+        String item = request.pathVariable(ManagementParams.ITEM);
         return cacheOperations.getObjectsByItem(item)
                 .flatMap(HttpResponseUtil::ok);
     }
 
     public Mono<ServerResponse> cleanCacheByItem(ServerRequest request) {
-        String item = request.pathVariable("item");
+        String item = request.pathVariable(ManagementParams.ITEM);
         return cacheOperations.cleanByItem(item)
                 .map(objects -> Map.of("objects_removed", objects))
                 .flatMap(HttpResponseUtil::ok);
