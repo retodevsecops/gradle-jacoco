@@ -108,17 +108,6 @@
         "isRequired": true,
         "requestToCustomer": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
-      },
-      {
-        "name": "Comprobante de domicilio",
-        "technicalName": "comprobante-domicilio",
-        "maxFiles": 1,
-        "isOcr": false,
-        "isRecoverable": true,
-        "namePreviousDocument": "COMPROBANTE-DOMICILIO",
-        "isRequired": false,
-        "requestToCustomer": true,
-        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       }
     ],
     "compoundDocuments": [
@@ -237,6 +226,92 @@
           { "name": "pagare" },
           { "name": "formato-solicitud-gratuita" },
           { "name": "carta-autorizacion-descuento" }
+        ]
+      }
+    ],
+    "customerVisibleDocuments": [
+      "formato-solicitud-gratuita",
+      "contrato-cliente",
+      "carta-de-liquidacion"
+    ]
+  },
+  {
+    "agreementName": "IEEPO - CSB",
+    "agreementNumber": "10000790",
+    "promoterId": "0017131199",
+    "branchId": "51221879",
+    "attachmentsDocuments": [
+      {
+        "name": "Frente de la INE",
+        "technicalName": "frente-identificacion-oficial",
+        "maxFiles": 1,
+        "isOcr": false,
+        "isRecoverable": false,
+        "isRequired": true,
+        "requestToCustomer": true,
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
+      },
+      {
+        "name": "Reverso de la INE",
+        "technicalName": "reverso-identificacion-oficial",
+        "maxFiles": 1,
+        "isOcr": false,
+        "isRecoverable": false,
+        "isRequired": true,
+        "requestToCustomer": true,
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
+      },
+      {
+        "name": "Recibos de nomina",
+        "technicalName": "recibo-nomina",
+        "maxFiles": 2,
+        "isOcr": false,
+        "isRecoverable": false,
+        "namePreviousDocument": "RECIBO-NOMINA",
+        "isRequired": true,
+        "requestToCustomer": true,
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
+      },
+      {
+        "name": "Comprobante de domicilio",
+        "technicalName": "comprobante-domicilio",
+        "maxFiles": 1,
+        "isOcr": false,
+        "isRecoverable": true,
+        "namePreviousDocument": "COMPROBANTE-DOMICILIO",
+        "isRequired": true,
+        "requestToCustomer": true,
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
+      }
+    ],
+    "compoundDocuments": [
+      {
+        "name": "identificacion-oficial",
+        "documents": [
+          { "name": "frente-identificacion-oficial" },
+          { "name": "reverso-identificacion-oficial" }
+        ]
+      },
+      {
+        "name": "formato-autorizacion",
+        "documents": [
+          { "name": "formato-autorizacion-nomipay" },
+          { "name": "aviso-de-privacidad" }
+        ]
+      },
+      {
+        "name": "contrato-cliente",
+        "documents": [
+          { "name": "formato-unico-caratula" },
+          { "name": "formato-unico-contrato-credito" }
+        ]
+      },
+      {
+        "name": "documentos-cobranza",
+        "documents": [
+          { "name": "formato-unico-caratula" },
+          { "name": "mandato-de-autorizacion-de-descuento" },
+          { "name": "identificacion-oficial" }
         ]
       }
     ],
