@@ -7,6 +7,7 @@ import com.consubanco.model.entities.document.gateway.DocumentGateway;
 import com.consubanco.model.entities.document.vo.PreviousDocumentVO;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.gateway.FileRepository;
+import com.consubanco.model.entities.file.util.MetadataUtil;
 import com.consubanco.model.entities.process.Process;
 import com.consubanco.usecase.document.usecase.BuildAllAgreementDocumentsUseCase;
 import com.consubanco.usecase.process.GetProcessByIdUseCase;
@@ -71,7 +72,8 @@ public class GetAttachmentsByAgreementUseCase {
     }
 
     private Flux<File> getAttachmentsFromStorage(Process process, List<AttachmentConfigVO> attachmentsToRetrieved) {
-        return fileRepository.listByFolderWithoutUrls(attachmentsDirectory(process.getOffer().getId()))
+        String directory = attachmentsDirectory(process.getOffer().getId());
+        return fileRepository.listByFolderWithoutUrls(directory)
                 .filter(file -> fileIsRecoverable(file, attachmentsToRetrieved));
     }
 
@@ -109,7 +111,13 @@ public class GetAttachmentsByAgreementUseCase {
 
     private File buildAttachment(Process process, List<AttachmentConfigVO> attachmentsToRetrieved, PreviousDocumentVO prevDocument) {
         Optional<AttachmentConfigVO> attachConfig = getAttachment(attachmentsToRetrieved, prevDocument.getName());
-        return buildFile(process, prevDocument, attachConfig.get());
+        return File.builder()
+                .name(attachConfig.get().getTechnicalName())
+                .content(prevDocument.getContent())
+                .extension(prevDocument.getExtension())
+                .directoryPath(attachmentsDirectory(process.getOffer().getId()))
+                .metadata(MetadataUtil.createMetadataForRetrievedFile())
+                .build();
     }
 
     private boolean isNotRecoveredFile(List<File> recoveredFiles, String nameFile) {
@@ -121,15 +129,6 @@ public class GetAttachmentsByAgreementUseCase {
         return attachments.stream()
                 .filter(attachment -> attachment.getNamePreviousDocument().equalsIgnoreCase(previousDocument))
                 .findFirst();
-    }
-
-    private File buildFile(Process process, PreviousDocumentVO prevDocument, AttachmentConfigVO attachConfig) {
-        return File.builder()
-                .name(attachConfig.getTechnicalName())
-                .content(prevDocument.getContent())
-                .extension(prevDocument.getExtension())
-                .directoryPath(attachmentsDirectory(process.getOffer().getId()))
-                .build();
     }
 
 }

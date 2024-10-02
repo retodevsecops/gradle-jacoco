@@ -38,6 +38,7 @@ public class FileFactoryUtil {
                 .size(FileUtil.getSize(blob))
                 .storageRoute(String.format(URI_GS, blob.getBucket(), blob.getName()))
                 .creationDate(blob.getCreateTimeOffsetDateTime().toLocalDateTime())
+                .metadata(blob.getMetadata())
                 .build();
     }
 
@@ -52,6 +53,7 @@ public class FileFactoryUtil {
                 .size(FileUtil.getSize(blob))
                 .storageRoute(String.format(URI_GS, blob.getBucket(), blob.getName()))
                 .creationDate(zonedDateTime.toLocalDateTime())
+                .metadata(blob.getMetadata())
                 .build();
     }
 

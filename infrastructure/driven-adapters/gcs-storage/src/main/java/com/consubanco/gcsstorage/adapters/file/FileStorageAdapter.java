@@ -1,7 +1,6 @@
 package com.consubanco.gcsstorage.adapters.file;
 
 import com.consubanco.freemarker.ITemplateOperations;
-import com.consubanco.gcsstorage.commons.ContentTypeResolver;
 import com.consubanco.gcsstorage.commons.FileFactoryUtil;
 import com.consubanco.gcsstorage.commons.FileUtil;
 import com.consubanco.gcsstorage.config.GoogleStorageProperties;
@@ -56,8 +55,7 @@ public class FileStorageAdapter implements FileRepository {
     }
 
     private Mono<Blob> saveInStorage(File file) {
-        String contentType = ContentTypeResolver.getFromFileExtension(file.getExtension());
-        Mono<BlobInfo> blob = FileUtil.buildBlob(properties.getBucketName(), file.fullPath(), contentType);
+        Mono<BlobInfo> blob = FileUtil.buildBlobFromFile(file, properties.getBucketName());
         Mono<byte[]> contentFile = FileUtil.base64ToBytes(file.getContent());
         return Mono.zip(blob, contentFile)
                 .map(tuple -> storage.create(tuple.getT1(), tuple.getT2()))

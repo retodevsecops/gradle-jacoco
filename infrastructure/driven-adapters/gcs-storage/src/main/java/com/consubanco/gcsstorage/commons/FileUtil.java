@@ -1,7 +1,7 @@
 package com.consubanco.gcsstorage.commons;
 
+import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.vo.FileUploadVO;
-import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import lombok.experimental.UtilityClass;
@@ -78,9 +78,18 @@ public class FileUtil {
         return "/";
     }
 
-    public Mono<BlobInfo> buildBlob(String bucketName, String nameFile, String contentType) {
-        return Mono.just(BlobId.of(bucketName, nameFile))
-                .map(blobId -> Blob.newBuilder(blobId)
+    public Mono<BlobInfo> buildBlob(String bucketName, String name, String contentType) {
+        return Mono.just(BlobId.of(bucketName, name))
+                .map(blobId -> BlobInfo.newBuilder(blobId)
+                        .setContentType(contentType)
+                        .build());
+    }
+
+    public Mono<BlobInfo> buildBlobFromFile(File file, String bucketName) {
+        String contentType = ContentTypeResolver.getFromFileExtension(file.getExtension());
+        return Mono.just(BlobId.of(bucketName, file.fullPath()))
+                .map(blobId -> BlobInfo.newBuilder(blobId)
+                        .setMetadata(file.getMetadata())
                         .setContentType(contentType)
                         .build());
     }
