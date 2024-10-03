@@ -10,6 +10,7 @@ import java.util.Map;
 
 public interface FileRepository {
     Mono<File> save(File file);
+    Mono<Void> delete(File file);
 
     Mono<File> saveWithSignedUrl(File file);
 
