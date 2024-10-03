@@ -5,6 +5,7 @@ import com.consubanco.model.entities.agreement.vo.AgreementConfigVO;
 import com.consubanco.model.entities.agreement.vo.AttachmentConfigVO;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.util.FilterListUtil;
+import com.consubanco.model.entities.file.util.MetadataUtil;
 import com.consubanco.model.entities.file.vo.AttachmentStatus;
 import com.consubanco.model.entities.ocr.OcrDocument;
 import com.consubanco.model.entities.ocr.constant.OcrStatus;
@@ -33,12 +34,18 @@ public class GetStatusAttachmentUseCase {
     public Mono<AttachmentStatus> execute(String processId) {
         return getProcessByIdUseCase.execute(processId)
                 .flatMap(process -> {
-                    Flux<File> attachments = getAttachmentsByOfferHelper.execute(process.getOfferId());
+                    Mono<List<File>> attachments = this.getNonRetrievedFilesByOfferId(process.getOfferId());
                     Flux<OcrDocument> ocrDocuments = ocrDocumentRepository.findByProcessId(processId);
                     Mono<AgreementConfigVO> agreementConfig = getAgreementConfigUseCase.execute(process.getAgreementNumber());
-                    return Mono.zip(attachments.collectList(), ocrDocuments.collectList(), agreementConfig)
+                    return Mono.zip(attachments, ocrDocuments.collectList(), agreementConfig)
                             .map(TupleUtils.function(this::verify));
                 });
+    }
+
+    private Mono<List<File>> getNonRetrievedFilesByOfferId(String offerId) {
+        return getAttachmentsByOfferHelper.execute(offerId)
+                .filter(file -> !MetadataUtil.isRetrievedFile(file.getMetadata()))
+                .collectList();
     }
 
     private AttachmentStatus verify(List<File> attachments, List<OcrDocument> ocrDocuments, AgreementConfigVO agreementConfig) {

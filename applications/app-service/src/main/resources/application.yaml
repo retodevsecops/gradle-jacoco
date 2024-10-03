@@ -23,6 +23,8 @@ spring:
     sql-migration-suffixes: ".sql"
     baseline-on-migrate: true
 
+config:
+    max-memory-size: ${MAX_MEMORY_SIZE_IN_MB:10}
 adapter:
   rest-consumer:
     timeout: ${REST_TIMEOUT:30000}

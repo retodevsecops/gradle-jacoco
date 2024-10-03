@@ -12,7 +12,6 @@ public enum OcrBusinessMessage implements IExceptionMessage {
     OCR_NOT_FOUND("BE_OCR_0002", "No ocr document associated with attachment was found."),
     OCR_INVALID("BE_OCR_0003", "Ocr document is in invalid status."),
     INVALID_MONTH("BE_OCR_0004", "Not recognized as a valid month"),
-
     OCR_DOCUMENT_NOT_FOUND("BE_OCR_0005", "No ocr document found with this id."),
     ID_ANALYSIS_REQUIRED("BE_OCR_0006", "The analysis identifier is required."),
     DOCUMENT_NAME_REQUIRED("BE_OCR_0007", "The document technical name is required."),

@@ -1,7 +1,7 @@
 package com.consubanco.gcsstorage.adapters.agreement;
 
 import com.consubanco.gcsstorage.commons.ContentTypeResolver;
-import com.consubanco.gcsstorage.commons.FileUtil;
+import com.consubanco.gcsstorage.commons.FileStorageUtil;
 import com.consubanco.gcsstorage.config.GoogleStorageProperties;
 import com.consubanco.logger.CustomLogger;
 import com.consubanco.model.entities.agreement.vo.AgreementConfigVO;
@@ -49,16 +49,16 @@ public class AgreementConfigStorageService {
 
     private Mono<byte[]> getAgreementsConfigFromLocal() {
         return Mono.just(properties.getFilesPath().getAgreementsConfig())
-                .map(FileUtil::getFileNameWithExtension)
+                .map(FileStorageUtil::getFileNameWithExtension)
                 .map(ClassPathResource::new)
-                .map(FileUtil::getContentFromResource)
+                .map(FileStorageUtil::getContentFromResource)
                 .doOnNext(e -> logger.info("The Agreements configuration was get from local source."))
                 .onErrorMap(throwTechnicalError(FAIL_GET_CONFIG_LOCAL));
     }
 
     private Mono<Blob> uploadToStorage(byte[] contentFile) {
         String contentType = ContentTypeResolver.getFromFileExtension(FileExtensions.JSON);
-        return FileUtil.buildBlob(properties.getBucketName(), properties.agreementsConfigPath(), contentType)
+        return FileStorageUtil.buildBlob(properties.getBucketName(), properties.agreementsConfigPath(), contentType)
                 .map(blobInfo -> storage.create(blobInfo, contentFile))
                 .onErrorMap(throwTechnicalError(FAIL_UPLOAD_CONFIG))
                 .doOnTerminate(() -> logger.info("The local agreements configuration file was upload to google storage."));
