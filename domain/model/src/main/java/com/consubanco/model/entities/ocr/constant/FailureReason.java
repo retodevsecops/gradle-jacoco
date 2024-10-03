@@ -20,6 +20,8 @@ public enum FailureReason {
     INVALID_DATE_FORMAT("Invalid date format."),
     ZIP_CODE_NOT_FOUND("The zip code was not found in the document."),
     INVALID_CONFIDENCE("Confidence level not valid"),
+    ADDRESS_VALIDITY_NOT_FOUND("vigencia field not found in ocr"),
+    ADDRESS_VALIDITY_EXPIRED("Address validity must be from the last three months"),
     DATA_NOT_FOUND("Data not found in the document.");
 
     private final String message;
