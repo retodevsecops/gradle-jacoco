@@ -20,6 +20,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Objects;
 
 import static com.consubanco.model.entities.file.constant.FileConstants.attachmentsDirectory;
 import static reactor.core.publisher.Mono.just;
@@ -47,7 +48,7 @@ public class ValidateOcrDocumentUseCase {
                 .flatMap(validateOcrDocuments::execute)
                 .flatMapMany(Flux::fromIterable)
                 .next()
-                .map(ocrDocument -> new OcrResulSetVO(file, ocrDocument));
+                .flatMap(ocrDocument -> buildResponseAndDeleteOnFailure(file, ocrDocument));
     }
 
     private Mono<File> buildFile(FileUploadVO fileUploadVO, String offerId) {
@@ -73,6 +74,13 @@ public class ValidateOcrDocumentUseCase {
                 .analysisId(analysisId)
                 .status(OcrStatus.PENDING)
                 .build();
+    }
+
+    private Mono<OcrResulSetVO> buildResponseAndDeleteOnFailure(File file, OcrDocument ocrDocument) {
+        return Mono.just(ocrDocument)
+                .filter(ocr -> Objects.isNull(ocr.getFailureCode()))
+                .switchIfEmpty(fileHelper.delete(file).then(Mono.empty()))
+                .thenReturn(new OcrResulSetVO(file, ocrDocument));
     }
 
 }

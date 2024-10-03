@@ -28,6 +28,7 @@ import java.util.Base64;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.consubanco.model.commons.exception.factory.ExceptionFactory.monoTechnicalError;
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
 import static com.consubanco.model.entities.file.message.FileTechnicalMessage.*;
 import static com.google.cloud.storage.Storage.SignUrlOption.withV4Signature;
@@ -47,6 +48,27 @@ public class FileStorageAdapter implements FileRepository {
     public Mono<File> save(File file) {
         return saveInStorage(file)
                 .map(blobInfo -> FileFactoryUtil.completeFileFromBlob(file, blobInfo));
+    }
+
+    @Override
+    public Mono<Void> delete(File file) {
+        return deleteInStorage(file)
+                .doOnSuccess(deletedFile -> logger.info("Archivo eliminado exitosamente: " + file.getName()))
+                .onErrorMap(error -> {
+                    logger.error("Error al eliminar el archivo: " + file.getName(), error);
+                    return throwTechnicalError(DELETE_FILE_ERROR).apply(error);
+                });
+    }
+    private Mono<Void> deleteInStorage(File file) {
+        BlobId blobId = BlobId.of(properties.getBucketName(), file.fullPath());
+        return Mono.fromCallable(() -> storage.delete(blobId))
+                .flatMap(deleted -> {
+                    if (deleted) {
+                        return Mono.empty();
+                    } else {
+                        return monoTechnicalError("Archivo no encontrado: " + file.fullPath(), DELETE_FILE_ERROR);
+                    }
+                });
     }
 
     @Override
