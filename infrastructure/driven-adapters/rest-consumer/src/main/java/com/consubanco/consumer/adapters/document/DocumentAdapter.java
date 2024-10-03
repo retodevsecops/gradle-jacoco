@@ -10,8 +10,6 @@ import com.consubanco.model.entities.document.vo.GenerateDocumentVO;
 import com.consubanco.model.entities.document.vo.PreviousDocumentVO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.handler.timeout.TimeoutException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
@@ -37,7 +35,6 @@ import static com.consubanco.model.entities.file.message.FileTechnicalMessage.*;
 @Service
 public class DocumentAdapter implements DocumentGateway {
 
-    private static final Log log = LogFactory.getLog(DocumentAdapter.class);
     private final CustomLogger logger;
     private final WebClient apiConnectClient;
     private final WebClient apiPromoterClient;
@@ -139,7 +136,8 @@ public class DocumentAdapter implements DocumentGateway {
                     return buildTechnical(error.getCause(), API_DOCS_PREVIOUS_ERROR);
                 })
                 .onErrorResume(error -> {
-                    this.logger.error(error);
+                    String message = "Error get documents from previous application " + previousApplicationId;
+                    this.logger.error(message, error);
                     return Flux.empty();
                 });
     }

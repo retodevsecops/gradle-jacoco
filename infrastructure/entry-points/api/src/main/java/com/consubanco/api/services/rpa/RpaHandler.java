@@ -5,6 +5,8 @@ import com.consubanco.api.services.rpa.dto.UploadCartaLibranzaReqDTO;
 import com.consubanco.api.services.rpa.dto.UploadCartaLibranzaResDTO;
 import com.consubanco.api.services.rpa.dto.UploadSipreSimulationReqDTO;
 import com.consubanco.api.services.rpa.dto.UploadSipreSimulationResDTO;
+import com.consubanco.usecase.rpa.UploadCartaLibranzaUseCase;
+import com.consubanco.usecase.rpa.UploadSipreSimulationUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -15,15 +17,22 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class RpaHandler {
 
+    private final UploadCartaLibranzaUseCase uploadCartaLibranzaUseCase;
+    private final UploadSipreSimulationUseCase uploadSipreSimulationUseCase;
+
     public Mono<ServerResponse> uploadCartaLibranza(ServerRequest request) {
         return request.bodyToMono(UploadCartaLibranzaReqDTO.class)
-                .map(dto -> new UploadCartaLibranzaResDTO())
+                .map(UploadCartaLibranzaReqDTO::toModel)
+                .flatMap(uploadCartaLibranzaUseCase::execute)
+                .thenReturn(new UploadCartaLibranzaResDTO())
                 .flatMap(HttpResponseUtil::ok);
     }
 
     public Mono<ServerResponse> uploadSipreSimulation(ServerRequest request) {
         return request.bodyToMono(UploadSipreSimulationReqDTO.class)
-                .map(dto -> new UploadSipreSimulationResDTO())
+                .map(UploadSipreSimulationReqDTO::toModel)
+                .flatMap(uploadSipreSimulationUseCase::execute)
+                .thenReturn(new UploadSipreSimulationResDTO())
                 .flatMap(HttpResponseUtil::ok);
     }
 

@@ -25,8 +25,8 @@ public class FileFactoryUtil {
 
     public static FileWithStorageRouteVO buildFileWithStorageRouteVO(Blob blob) {
         return FileWithStorageRouteVO.builder()
-                .name(FileUtil.getFileName(blob.getName()))
-                .size(FileUtil.getSize(blob))
+                .name(FileStorageUtil.getFileName(blob.getName()))
+                .size(FileStorageUtil.getSize(blob))
                 .storageRoute(String.format(URI_GS, blob.getBucket(), blob.getName()))
                 .build();
     }
@@ -35,9 +35,10 @@ public class FileFactoryUtil {
         return file.toBuilder()
                 .id(blob.getGeneratedId())
                 .url(blob.getSelfLink())
-                .size(FileUtil.getSize(blob))
+                .size(FileStorageUtil.getSize(blob))
                 .storageRoute(String.format(URI_GS, blob.getBucket(), blob.getName()))
                 .creationDate(blob.getCreateTimeOffsetDateTime().toLocalDateTime())
+                .metadata(blob.getMetadata())
                 .build();
     }
 
@@ -46,12 +47,13 @@ public class FileFactoryUtil {
         return File.builder()
                 .id(blob.getGeneratedId())
                 .url(url)
-                .name(FileUtil.getFileName(blob.getName()))
+                .name(FileStorageUtil.getFileName(blob.getName()))
                 .content(Base64.encodeBase64String(blob.getContent()))
-                .directoryPath(FileUtil.getDirectory(blob.getName()))
-                .size(FileUtil.getSize(blob))
+                .directoryPath(FileStorageUtil.getDirectory(blob.getName()))
+                .size(FileStorageUtil.getSize(blob))
                 .storageRoute(String.format(URI_GS, blob.getBucket(), blob.getName()))
                 .creationDate(zonedDateTime.toLocalDateTime())
+                .metadata(blob.getMetadata())
                 .build();
     }
 

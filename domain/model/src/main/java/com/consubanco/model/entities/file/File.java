@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,6 +21,7 @@ public class File {
     private String id;
     private String name;
     private String content;
+    private Map<String, String> metadata;
     private String url;
     private String directoryPath;
     private String size;

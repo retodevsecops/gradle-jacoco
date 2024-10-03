@@ -1,5 +1,8 @@
 package com.consubanco.api.services.rpa.dto;
 
+import com.consubanco.model.entities.file.util.FileUtil;
+import com.consubanco.model.entities.file.vo.FileUploadVO;
+import com.consubanco.model.entities.rpa.CartaLibranza;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -116,11 +119,42 @@ public class UploadCartaLibranzaReqDTO {
 
         @Schema(description = "Abbreviation of the enterprise.", example = "CSB", requiredMode = REQUIRED)
         @JsonProperty("sigla")
-        private String sigla;
+        private String acronym;
 
         @Schema(description = "Name of the enterprise.", example = "Consubanco", requiredMode = REQUIRED)
         @JsonProperty("name")
         private String name;
+    }
+
+    public CartaLibranza toModel() {
+        return CartaLibranza.builder()
+                .applicationId(this.data.applicationId)
+                .channel(this.data.channel)
+                .letterIsValidate(this.data.letterIsValidate)
+                .motive(this.data.motive)
+                .promoterBp(this.data.promoterBp)
+                .customerBp(this.data.customerBp)
+                .offerId(this.data.folio)
+                .enterprise(CartaLibranza.Enterprise.builder()
+                        .acronym(this.data.enterprise.acronym)
+                        .name(this.data.enterprise.name)
+                        .build())
+                .letter(CartaLibranza.Letter.builder()
+                        .folio(this.data.letter.folio)
+                        .date(this.data.letter.date)
+                        .discountAmount(this.data.letter.discountAmount)
+                        .totalAmount(this.data.letter.totalAmount)
+                        .validity(this.data.letter.validity)
+                        .build())
+                .files(this.data.files.stream()
+                        .map(fileDTO -> FileUploadVO.builder()
+                                .name(FileUtil.nameWithoutExtension(fileDTO.getName()))
+                                .content(fileDTO.getBase64Content())
+                                .extension(FileUtil.extensionFromFileName(fileDTO.getName()))
+                                .sizeInMB(FileUtil.sizeInMBFromBase64(fileDTO.getBase64Content()))
+                                .build())
+                        .toList())
+                .build();
     }
 
 }
