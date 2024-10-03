@@ -5,6 +5,7 @@ import com.consubanco.model.entities.agreement.vo.AgreementConfigVO;
 import com.consubanco.model.entities.agreement.vo.AttachmentConfigVO;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.util.FilterListUtil;
+import com.consubanco.model.entities.file.util.MetadataUtil;
 import com.consubanco.model.entities.ocr.OcrDocument;
 import com.consubanco.model.entities.ocr.gateway.OcrDocumentRepository;
 import com.consubanco.model.entities.process.Process;
@@ -25,10 +26,16 @@ public class GetOcrAttachmentsHelper {
     private final OcrDocumentRepository ocrDocumentRepository;
 
     public Mono<List<OcrDocument>> execute(Process process, AgreementConfigVO agreementConfigVO) {
-        Flux<File> attachments = getAttachmentsByOfferHelper.execute(process.getOfferId());
+        Mono<List<File>> attachments = this.getNonRetrievedFilesByOfferId(process.getOfferId());
         Flux<OcrDocument> ocrDocuments = ocrDocumentRepository.findByProcessId(process.getId());
-        return Mono.zip(attachments.collectList(), ocrDocuments.collectList(), Mono.just(agreementConfigVO))
+        return Mono.zip(attachments, ocrDocuments.collectList(), Mono.just(agreementConfigVO))
                 .map(TupleUtils.function(this::filter));
+    }
+
+    private Mono<List<File>> getNonRetrievedFilesByOfferId(String offerId) {
+        return getAttachmentsByOfferHelper.execute(offerId)
+                .filter(file -> !MetadataUtil.isRetrievedFile(file.getMetadata()))
+                .collectList();
     }
 
     private List<OcrDocument> filter(List<File> attachments, List<OcrDocument> ocrDocuments, AgreementConfigVO agreementConfig) {
