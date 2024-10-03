@@ -1,5 +1,8 @@
 package com.consubanco.api.services.rpa.dto;
 
+import com.consubanco.model.entities.file.util.FileUtil;
+import com.consubanco.model.entities.file.vo.FileUploadVO;
+import com.consubanco.model.entities.rpa.SipreSimulation;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -7,6 +10,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
@@ -47,7 +52,7 @@ public class UploadSipreSimulationReqDTO {
         private String folioBusiness;
 
         @Schema(description = "List of files.", requiredMode = REQUIRED)
-        private File files;
+        private List<File> files;
     }
 
     @Data
@@ -64,6 +69,24 @@ public class UploadSipreSimulationReqDTO {
         @JsonProperty("base64")
         @Schema(description = "Base64 encoded content of the document.", example = "RXN0byBlcyB1biBlamVtcGxvIGRlIHVuYSBjb2RpZmljYWNpb24gZW4gYmFzZTY0", requiredMode = REQUIRED)
         private String base64Content;
+    }
+
+    public SipreSimulation toModel() {
+        return SipreSimulation.builder()
+                .applicationId(this.data.applicationId)
+                .channel(this.data.channel)
+                .offerId(this.data.offerId)
+                .customerBp(this.data.customerBp)
+                .folioBusiness(this.data.folioBusiness)
+                .files(this.data.files.stream()
+                        .map(fileDTO -> FileUploadVO.builder()
+                                .name(FileUtil.nameWithoutExtension(fileDTO.getName()))
+                                .content(fileDTO.getBase64Content())
+                                .extension(FileUtil.extensionFromFileName(fileDTO.getName()))
+                                .sizeInMB(FileUtil.sizeInMBFromBase64(fileDTO.getBase64Content()))
+                                .build())
+                        .toList())
+                .build();
     }
 
 }

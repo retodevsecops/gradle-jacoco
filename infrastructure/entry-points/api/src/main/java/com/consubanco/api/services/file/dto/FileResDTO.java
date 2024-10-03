@@ -7,7 +7,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.NOT_REQUIRED;
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
 @Data
@@ -36,6 +38,9 @@ public class FileResDTO {
     @Schema(description = "Creation date of the file.", example = "yyyy-MM-dd HH:mm:ss", requiredMode = REQUIRED)
     private LocalDateTime creationDate;
 
+    @Schema(description = "Metadata of the file.", requiredMode = NOT_REQUIRED)
+    private Map<String, String> metadata;
+
     public FileResDTO(File file) {
         this.id = file.getId();
         this.url = file.getUrl();
@@ -44,6 +49,7 @@ public class FileResDTO {
         this.name = file.getName();
         this.storageRoute = file.getStorageRoute();
         this.creationDate = file.getCreationDate();
+        this.metadata = file.getMetadata();
     }
 
 }

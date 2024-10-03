@@ -21,7 +21,9 @@ public enum FileBusinessMessage implements IExceptionMessage {
     MIN_INVALID_SIZE("BE_FILE_0011", "Minimum file size is invalid."),
     INCOMPLETE_DATA("BE_FILE_0012", "The file data is incomplete"),
     ATTACHMENT_EXCEEDED("BE_FILE_0013", "The number of files for the attachment exceeds the allowed."),
-    ATTACHMENTS_NOT_FOUND("BE_FILE_0014", "No attachments found uploaded for the offer.");
+    ATTACHMENTS_NOT_FOUND("BE_FILE_0014", "No attachments found uploaded for the offer."),
+    NAME_NULL("BE_FILE_0015", "File name cannot be null or empty"),
+    INVALID_NAME_FORMAT("BE_FILE_0016", "File name format is invalid: missing or incorrect extension");
 
     private final String code;
     private final String message;
