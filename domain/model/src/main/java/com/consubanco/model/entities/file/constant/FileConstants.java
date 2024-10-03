@@ -10,8 +10,8 @@ public class FileConstants {
     private static final String PDF_FORMAT = "%s.pdf";
     private static final String ATTACHMENTS_DIRECTORY_PATH = OFFER_DIRECTORY_PATH.concat("attachments/");
     private static final String DOCUMENTS_DIRECTORY_PATH = OFFER_DIRECTORY_PATH.concat("documents/");
-
     private static final String CNCA_LETTERS_DIRECTORY_PATH = OFFER_DIRECTORY_PATH.concat("cnca/");
+    private static final String RPA_DIRECTORY_PATH = OFFER_DIRECTORY_PATH.concat("rpa-documents/");
     public static final String MANAGEMENT_DIRECTORY_PATH = "management/vd-loans-documents-ms";
 
     public static String pdfFormat(String fileName) {
@@ -28,6 +28,10 @@ public class FileConstants {
 
     public static String documentsDirectory(String offerId) {
         return String.format(DOCUMENTS_DIRECTORY_PATH, offerId);
+    }
+
+    public static String rpaDirectory(String offerId) {
+        return String.format(RPA_DIRECTORY_PATH, offerId);
     }
 
     public static String offerDirectory(String offerId) {

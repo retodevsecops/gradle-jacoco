@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.Base64;
 
 @UtilityClass
-public class FileUtil {
+public class FileStorageUtil {
 
     public String getSize(BlobInfo blobInfo) {
         DataSize dataSize = DataSize.ofBytes(blobInfo.getSize());
@@ -48,7 +48,7 @@ public class FileUtil {
 
     public Mono<String> getContentInBase64FromResource(ClassPathResource resource) {
         return Mono.just(resource)
-                .map(FileUtil::getContentFromResource)
+                .map(FileStorageUtil::getContentFromResource)
                 .map(Base64.getEncoder()::encodeToString);
     }
 
