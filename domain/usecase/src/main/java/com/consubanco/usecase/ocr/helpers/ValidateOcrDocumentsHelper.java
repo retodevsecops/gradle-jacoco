@@ -19,9 +19,11 @@ import java.util.Optional;
 
 import static com.consubanco.model.entities.ocr.constant.FailureReason.*;
 import static com.consubanco.model.entities.ocr.constant.PayStubProperties.*;
+import static com.consubanco.model.entities.ocr.constant.ProofAddressProperties.VALIDITY;
 import static com.consubanco.model.entities.ocr.constant.ProofAddressProperties.ZIP_CDE;
 import static com.consubanco.model.entities.ocr.message.OcrMessage.dataNotFound;
 import static com.consubanco.model.entities.ocr.message.OcrMessage.invalidConfidence;
+import static com.consubanco.model.entities.ocr.util.PeriodicityValidatorUtil.validateAddressValidity;
 import static com.consubanco.model.entities.ocr.util.PeriodicityValidatorUtil.validatePeriodicity;
 
 @RequiredArgsConstructor
@@ -29,6 +31,7 @@ public class ValidateOcrDocumentsHelper {
 
     private final OcrDocumentGateway ocrGateway;
     private final OcrDocumentRepository ocrRepository;
+    private final int addressValidityMonths = 3;
 
     public Mono<List<OcrDocument>> execute(List<OcrDocument> ocrDocuments) {
         return ocrGateway.getDelayTime()
@@ -88,7 +91,12 @@ public class ValidateOcrDocumentsHelper {
 
     private OcrDocumentUpdateVO checkProofAddress(OcrDocument ocrDocument, List<OcrDataVO> ocrData) {
         Optional<OcrDocumentUpdateVO> updateVO = checkSingleData(ZIP_CDE.getKey(), ocrData, ocrDocument.getId());
-        return updateVO.orElseGet(() -> new OcrDocumentUpdateVO(ocrDocument.getId(), ocrData));
+        if(updateVO.isPresent()) return updateVO.get();
+        Optional<OcrDocumentUpdateVO> validityConfidence = checkSingleData(ZIP_CDE.getKey(), ocrData, ocrDocument.getId());
+        if(validityConfidence.isPresent()) return validityConfidence.get();
+        Optional<OcrDataVO> validity = OcrDataUtil.getByName(ocrData, VALIDITY.getKey());
+        if (validity.isEmpty()) return new OcrDocumentUpdateVO(ocrDocument.getId(), ocrData, ADDRESS_VALIDITY_NOT_FOUND);
+        return validateAddressValidity(ocrDocument, ocrData, validity.get(), 3);
     }
 
     private OcrDocumentUpdateVO checkIne(OcrDocument ocrDocument, List<OcrDataVO> ocrData) {

@@ -11,14 +11,14 @@ import static com.consubanco.model.entities.ocr.message.OcrBusinessMessage.INVAL
 
 @UtilityClass
 public class DateUtil {
-
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
 
     public static LocalDate stringToDate(String date) {
         try {
-            return LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE);
+            return LocalDate.parse(date, formatter);
         } catch (Exception e) {
-            throw ExceptionFactory.buildBusiness(String.format(" date: %s doesnt match with ISO format", date), INVALID_DATE_FORMAT);
+            throw ExceptionFactory.buildBusiness(String.format(" date: %s does not match with expected dd/MM/yyyy format", date), INVALID_DATE_FORMAT);
         }
     }
 

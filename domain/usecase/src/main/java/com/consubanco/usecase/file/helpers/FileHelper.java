@@ -42,6 +42,10 @@ public class FileHelper {
                 .sequential();
     }
 
+    public Mono<Void> delete(File file) {
+        return fileRepository.delete(file);
+    }
+
     public Mono<File> findByName(String name) {
         return fileRepository.getByNameWithoutSignedUrl(name)
                 .switchIfEmpty(monoBusiness(FILES_NOT_FOUND, FileMessage.notFoundByName(name)));

@@ -12,8 +12,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-import static com.consubanco.model.entities.ocr.constant.FailureReason.INVALID_DATE;
-import static com.consubanco.model.entities.ocr.constant.FailureReason.UNKNOWN_PERIODICITY;
+import static com.consubanco.model.entities.ocr.constant.FailureReason.*;
 import static com.consubanco.model.entities.ocr.message.OcrMessage.*;
 
 @UtilityClass
@@ -31,8 +30,21 @@ public class PeriodicityValidatorUtil {
         String reason = unknownPeriodicity(initialDate, finalDate, daysBetween);
         return new OcrDocumentUpdateVO(ocrDocument.getId(), ocrDataList, UNKNOWN_PERIODICITY, reason);
     }
+    public OcrDocumentUpdateVO validateAddressValidity(OcrDocument ocrDocument, List<OcrDataVO> ocrDataList, OcrDataVO validityDate, int validityMonths) {
+        LocalDate validity = DateUtil.stringToDate(validityDate.getValue());
+        LocalDate now = LocalDate.now();
+        LocalDate xMonthsAgo = now.minus(validityMonths, ChronoUnit.MONTHS);
 
-    private static OcrDocumentUpdateVO monthlyValidation(OcrDocument ocrDocument, List<OcrDataVO> ocrDataList, LocalDate initialDate, LocalDate finalDate) {
+        if ((validity.isAfter(xMonthsAgo) || validity.isEqual(xMonthsAgo)) && validity.isBefore(now)) {
+            return new OcrDocumentUpdateVO(ocrDocument.getId(), ocrDataList);
+        } else {
+            String reason = expiredAddressValidity(validity, validityMonths);
+            return new OcrDocumentUpdateVO(ocrDocument.getId(), ocrDataList, ADDRESS_VALIDITY_EXPIRED, reason);
+        }
+
+    }
+
+        private static OcrDocumentUpdateVO monthlyValidation(OcrDocument ocrDocument, List<OcrDataVO> ocrDataList, LocalDate initialDate, LocalDate finalDate) {
         LocalDate[] monthlyDates = MonthlyDates.getDatesFromIndex(ocrDocument.getDocumentIndex());
         if (isDateWithinPeriod(monthlyDates, initialDate, finalDate)) {
             return new OcrDocumentUpdateVO(ocrDocument.getId(), ocrDataList);
