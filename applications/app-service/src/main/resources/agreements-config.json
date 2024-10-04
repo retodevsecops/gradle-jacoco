@@ -178,6 +178,16 @@
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       },
       {
+        "name": "Captura una selfie con tu INE visible de frente, colocándolo junto a tu rostro.",
+        "technicalName": "selfie",
+        "maxFiles": 1,
+        "isOcr": false,
+        "isRecoverable": false,
+        "isRequired": true,
+        "requestToCustomer": true,
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
+      },
+      {
         "name": "Recibos de nomina",
         "technicalName": "recibo-nomina",
         "maxFiles": 2,
@@ -254,6 +264,16 @@
       {
         "name": "Reverso de la INE",
         "technicalName": "reverso-identificacion-oficial",
+        "maxFiles": 1,
+        "isOcr": false,
+        "isRecoverable": false,
+        "isRequired": true,
+        "requestToCustomer": true,
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
+      },
+      {
+        "name": "Captura una selfie con tu INE visible de frente, colocándolo junto a tu rostro.",
+        "technicalName": "selfie",
         "maxFiles": 1,
         "isOcr": false,
         "isRecoverable": false,
