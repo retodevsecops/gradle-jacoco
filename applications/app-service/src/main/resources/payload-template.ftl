@@ -93,6 +93,7 @@
         "rfc": ""
     },
     "employmentData": {
+        "employeeNumber": "${offer_data.offer.employeeNumber?string}",
         "numeroEmpleado": "${offer_data.offer.employeeNumber?string}",
         "publicServerKey": "${offer_data.offer.employeeNumber?string}"
     },
