@@ -197,17 +197,6 @@
         "isRequired": true,
         "requestToCustomer": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
-      },
-      {
-        "name": "Comprobante de domicilio",
-        "technicalName": "comprobante-domicilio",
-        "maxFiles": 1,
-        "isOcr": false,
-        "isRecoverable": true,
-        "namePreviousDocument": "COMPROBANTE-DOMICILIO",
-        "isRequired": true,
-        "requestToCustomer": true,
-        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       }
     ],
     "compoundDocuments": [
@@ -230,7 +219,6 @@
         "documents": [
           { "name": "identificacion-oficial" },
           { "name": "recibo-nomina" },
-          { "name": "comprobante-domicilio" },
           { "name": "formato-unico-caratula" },
           { "name": "mandato-de-autorizacion-de-descuento" },
           { "name": "pagare" },
@@ -291,17 +279,6 @@
         "isRequired": true,
         "requestToCustomer": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
-      },
-      {
-        "name": "Comprobante de domicilio",
-        "technicalName": "comprobante-domicilio",
-        "maxFiles": 1,
-        "isOcr": false,
-        "isRecoverable": true,
-        "namePreviousDocument": "COMPROBANTE-DOMICILIO",
-        "isRequired": true,
-        "requestToCustomer": true,
-        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       }
     ],
     "compoundDocuments": [
@@ -336,7 +313,6 @@
         "documents": [
           { "name": "identificacion-oficial" },
           { "name": "recibo-nomina" },
-          { "name": "comprobante-domicilio" },
           { "name": "caratula_credito_sjt_v2" },
           { "name": "solicitud_credito_sjt_v2" },
           { "name": "carta-autorizacion-descuento" }
