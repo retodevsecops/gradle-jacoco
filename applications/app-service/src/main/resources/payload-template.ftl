@@ -324,7 +324,7 @@
         "correo": "${(customer_data.customer.email)!''}",
         "estadoCivil": "${(customer_data.customer.maritalStatus.description)!''}",
         "telefonos": {
-            "movil": "3138920033",
+            "movil": "${getPreferredPhone(defaultAddress)}",
             "trabajo": ""
         },
         "domicilio": {
