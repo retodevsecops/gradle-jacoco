@@ -262,7 +262,7 @@
     "solicitud": "${offer_data.offer.id}",
     "fechaSolicitud": ${current_date_timestamp?c},
     "banco": "${customer_data.preApplicationData.paymentData.bankDesc! ''}",
-    "imssAgrement": false,
+    "imssAgrement": true,
     "tipoCredito": "NUEVO",
     "tipoDisposicion": "T",
     "clabe": "${(customer_data.preApplicationData.paymentData.clabe)! ''}",
@@ -324,7 +324,7 @@
         "correo": "${(customer_data.customer.email)!''}",
         "estadoCivil": "${(customer_data.customer.maritalStatus.description)!''}",
         "telefonos": {
-            "movil": "3138920033",
+            "movil": "${getPreferredPhone(defaultAddress)}",
             "trabajo": ""
         },
         "domicilio": {
@@ -355,7 +355,7 @@
             "personal": {
                 "apellidoMaterno": "${reference.lastName2!''}",
                 "apellidoPaterno": "${reference.lastName1!''}",
-                "codigoRelacion": "05",
+                "codigoRelacion": "${reference.relationship?has_content?then(reference.relationship.key, '')}",
                 "clientId": "${reference.clientId!''}",
                 "nombre": "${reference.name1!''}",
                 "segundoNombre": "${reference.name2!''}",
