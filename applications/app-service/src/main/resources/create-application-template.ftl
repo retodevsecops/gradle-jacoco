@@ -51,8 +51,16 @@
         <#if finalDate gt latestDate>
             <#assign latestDate = finalDate>
             <#assign folioFiscal = document.data?filter(data -> data.name == "folio-fiscal")?first.value>
+        <#elseif finalDate == latestDate>
+            <#assign possibleFolioFiscal = document.data?filter(data -> data.name == "folio-fiscal")?first.value>
+            <#if possibleFolioFiscal?length == 36>
+                <#assign folioFiscal = possibleFolioFiscal>
+            </#if>
         </#if>
     </#list>
+    <#if folioFiscal?length != 36>
+        <#stop "The fiscal folio " + folioFiscal + " must have exactly 36 chars, but it has " + folioFiscal?length>
+    </#if>
     <#return folioFiscal>
 </#function>
 <#-- Macros -->
