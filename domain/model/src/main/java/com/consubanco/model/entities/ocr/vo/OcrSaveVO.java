@@ -9,7 +9,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class OcrDocumentSaveVO {
+public class OcrSaveVO {
     private String name;
     private String storageId;
     private String storageRoute;
