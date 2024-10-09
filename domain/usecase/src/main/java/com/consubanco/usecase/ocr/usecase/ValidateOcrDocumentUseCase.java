@@ -8,8 +8,8 @@ import com.consubanco.model.entities.ocr.constant.OcrDocumentType;
 import com.consubanco.model.entities.ocr.constant.OcrStatus;
 import com.consubanco.model.entities.ocr.gateway.OcrDocumentGateway;
 import com.consubanco.model.entities.ocr.gateway.OcrDocumentRepository;
-import com.consubanco.model.entities.ocr.vo.OcrDocumentSaveVO;
 import com.consubanco.model.entities.ocr.vo.OcrResulSetVO;
+import com.consubanco.model.entities.ocr.vo.OcrSaveVO;
 import com.consubanco.model.entities.process.Process;
 import com.consubanco.usecase.file.helpers.FileHelper;
 import com.consubanco.usecase.file.helpers.PdfConvertHelper;
@@ -65,8 +65,8 @@ public class ValidateOcrDocumentUseCase {
 
     }
 
-    private OcrDocumentSaveVO buildOcrDocumentSave(Process process, File file, String analysisId) {
-        return OcrDocumentSaveVO.builder()
+    private OcrSaveVO buildOcrDocumentSave(Process process, File file, String analysisId) {
+        return OcrSaveVO.builder()
                 .name(file.getName())
                 .storageId(file.getId())
                 .storageRoute(file.getStorageRoute())

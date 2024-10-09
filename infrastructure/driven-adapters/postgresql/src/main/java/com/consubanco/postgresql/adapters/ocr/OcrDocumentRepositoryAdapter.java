@@ -5,8 +5,8 @@ import com.consubanco.model.commons.exception.TechnicalException;
 import com.consubanco.model.entities.ocr.OcrDocument;
 import com.consubanco.model.entities.ocr.gateway.OcrDocumentRepository;
 import com.consubanco.model.entities.ocr.vo.OcrDataVO;
-import com.consubanco.model.entities.ocr.vo.OcrDocumentSaveVO;
-import com.consubanco.model.entities.ocr.vo.OcrDocumentUpdateVO;
+import com.consubanco.model.entities.ocr.vo.OcrSaveVO;
+import com.consubanco.model.entities.ocr.vo.OcrUpdateVO;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.r2dbc.postgresql.codec.Json;
@@ -30,16 +30,16 @@ public class OcrDocumentRepositoryAdapter implements OcrDocumentRepository {
     private final ObjectMapper mapper;
 
     @Override
-    public Mono<OcrDocument> save(OcrDocumentSaveVO ocrDocumentSaveVO) {
-        OcrDocumentData ocrDocumentData = new OcrDocumentData(ocrDocumentSaveVO);
+    public Mono<OcrDocument> save(OcrSaveVO ocrSaveVO) {
+        OcrDocumentData ocrDocumentData = new OcrDocumentData(ocrSaveVO);
         return dataRepository.save(ocrDocumentData)
                 .flatMap(this::buildOcrDocument)
                 .onErrorMap(error -> !(error instanceof TechnicalException), throwTechnicalError(SAVE_ERROR));
     }
 
     @Override
-    public Flux<OcrDocument> saveAll(List<OcrDocumentSaveVO> ocrDocumentSaveVOList) {
-        return Flux.fromIterable(ocrDocumentSaveVOList)
+    public Flux<OcrDocument> saveAll(List<OcrSaveVO> ocrSaveVOList) {
+        return Flux.fromIterable(ocrSaveVOList)
                 .map(OcrDocumentData::new)
                 .collectList()
                 .flatMapMany(dataRepository::saveAll)
@@ -48,9 +48,9 @@ public class OcrDocumentRepositoryAdapter implements OcrDocumentRepository {
     }
 
     @Override
-    public Mono<OcrDocument> update(OcrDocumentUpdateVO ocrDocumentUpdateVO) {
-        return dataRepository.findById(ocrDocumentUpdateVO.getId())
-                .flatMap(ocrData -> updateDataDB(ocrDocumentUpdateVO, ocrData))
+    public Mono<OcrDocument> update(OcrUpdateVO ocrUpdateVO) {
+        return dataRepository.findById(ocrUpdateVO.getId())
+                .flatMap(ocrData -> updateDataDB(ocrUpdateVO, ocrData))
                 .flatMap(dataRepository::save)
                 .flatMap(this::buildOcrDocument)
                 .doOnError(error -> logger.error(UPDATE_ERROR.getMessage(), error))
@@ -89,11 +89,11 @@ public class OcrDocumentRepositoryAdapter implements OcrDocumentRepository {
                 .onErrorMap(throwTechnicalError(CONVERT_MAP_ERROR));
     }
 
-    private Mono<OcrDocumentData> updateDataDB(OcrDocumentUpdateVO ocrDocumentUpdateVO, OcrDocumentData ocrData) {
-        List<OcrDataVO> data = ocrDocumentUpdateVO.getData();
-        if(Objects.isNull(data) || data.isEmpty()) return Mono.just(ocrData.update(ocrDocumentUpdateVO));
-        return valueToJson(ocrDocumentUpdateVO.getData())
-                .map(json -> ocrData.update(ocrDocumentUpdateVO, json));
+    private Mono<OcrDocumentData> updateDataDB(OcrUpdateVO ocrUpdateVO, OcrDocumentData ocrData) {
+        List<OcrDataVO> data = ocrUpdateVO.getData();
+        if(Objects.isNull(data) || data.isEmpty()) return Mono.just(ocrData.update(ocrUpdateVO));
+        return valueToJson(ocrUpdateVO.getData())
+                .map(json -> ocrData.update(ocrUpdateVO, json));
     }
 
     private <T> Mono<Json> valueToJson(T value) {

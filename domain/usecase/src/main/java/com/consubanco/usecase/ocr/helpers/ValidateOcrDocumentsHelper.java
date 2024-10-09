@@ -7,7 +7,7 @@ import com.consubanco.model.entities.ocr.gateway.OcrDocumentGateway;
 import com.consubanco.model.entities.ocr.gateway.OcrDocumentRepository;
 import com.consubanco.model.entities.ocr.util.OcrDataUtil;
 import com.consubanco.model.entities.ocr.vo.OcrDataVO;
-import com.consubanco.model.entities.ocr.vo.OcrDocumentUpdateVO;
+import com.consubanco.model.entities.ocr.vo.OcrUpdateVO;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -17,12 +17,11 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 
-import static com.consubanco.model.entities.ocr.constant.FailureReason.*;
+import static com.consubanco.model.entities.ocr.constant.OcrFailureReason.*;
 import static com.consubanco.model.entities.ocr.constant.PayStubProperties.*;
 import static com.consubanco.model.entities.ocr.constant.ProofAddressProperties.VALIDITY;
 import static com.consubanco.model.entities.ocr.constant.ProofAddressProperties.ZIP_CDE;
-import static com.consubanco.model.entities.ocr.message.OcrMessage.dataNotFound;
-import static com.consubanco.model.entities.ocr.message.OcrMessage.invalidConfidence;
+import static com.consubanco.model.entities.ocr.message.OcrMessage.*;
 import static com.consubanco.model.entities.ocr.util.PeriodicityValidatorUtil.validateAddressValidity;
 import static com.consubanco.model.entities.ocr.util.PeriodicityValidatorUtil.validatePeriodicity;
 
@@ -31,7 +30,6 @@ public class ValidateOcrDocumentsHelper {
 
     private final OcrDocumentGateway ocrGateway;
     private final OcrDocumentRepository ocrRepository;
-    private final int addressValidityMonths = 3;
 
     public Mono<List<OcrDocument>> execute(List<OcrDocument> ocrDocuments) {
         return ocrGateway.getDelayTime()
@@ -43,24 +41,20 @@ public class ValidateOcrDocumentsHelper {
         return Flux.fromIterable(ocrDocuments)
                 .parallel()
                 .runOn(Schedulers.parallel())
-                .flatMap(this::updateOcrDocument)
+                .flatMap(this::getOcrDocumentStatus)
+                .flatMap(ocrRepository::update)
                 .sequential()
                 .collectList();
     }
 
-    private Mono<OcrDocument> updateOcrDocument(OcrDocument ocrDocument) {
-        return getOcrDocumentStatus(ocrDocument)
-                .flatMap(ocrRepository::update);
-    }
-
-    private Mono<OcrDocumentUpdateVO> getOcrDocumentStatus(OcrDocument ocrDocument) {
+    private Mono<OcrUpdateVO> getOcrDocumentStatus(OcrDocument ocrDocument) {
         return ocrGateway.getAnalysisData(ocrDocument.getAnalysisId())
                 .map(data -> validateOcrDocument(ocrDocument, data))
-                .defaultIfEmpty(new OcrDocumentUpdateVO(ocrDocument.getId(), NOT_DATA_EXTRACTED))
-                .onErrorResume(error -> Mono.just(new OcrDocumentUpdateVO(ocrDocument.getId(), FAILED_GET_METADATA, error.getMessage())));
+                .defaultIfEmpty(new OcrUpdateVO(ocrDocument.getId(), NOT_DATA_EXTRACTED))
+                .onErrorResume(error -> handleError(ocrDocument, error));
     }
 
-    private OcrDocumentUpdateVO validateOcrDocument(OcrDocument ocr, List<OcrDataVO> ocrData) {
+    private OcrUpdateVO validateOcrDocument(OcrDocument ocr, List<OcrDataVO> ocrData) {
         try {
             OcrDocumentType documentType = OcrDocumentType.getTypeFromName(ocr.getBaseName());
             return switch (documentType) {
@@ -69,48 +63,74 @@ public class ValidateOcrDocumentsHelper {
                 case INE -> checkIne(ocr, ocrData);
             };
         } catch (TechnicalException exception) {
-            return new OcrDocumentUpdateVO(ocr.getId(), ocrData, NOT_PROCESS);
+            return new OcrUpdateVO(ocr.getId(), ocrData, NOT_PROCESS);
         } catch (DateTimeParseException exception) {
-            return new OcrDocumentUpdateVO(ocr.getId(), ocrData, INVALID_DATE_FORMAT, exception.getMessage());
+            return new OcrUpdateVO(ocr.getId(), ocrData, INVALID_DATE_FORMAT, exception.getMessage());
         } catch (Exception exception) {
-            return new OcrDocumentUpdateVO(ocr.getId(), ocrData, UNKNOWN_ERROR, exception.getMessage());
+            return new OcrUpdateVO(ocr.getId(), ocrData, UNKNOWN_ERROR, exception.getMessage());
         }
     }
 
-    private OcrDocumentUpdateVO checkPayStubs(OcrDocument ocrDocument, List<OcrDataVO> ocrData) {
+    private OcrUpdateVO checkPayStubs(OcrDocument ocrDocument, List<OcrDataVO> ocrData) {
         Integer ocrId = ocrDocument.getId();
-        Optional<OcrDocumentUpdateVO> fiscalFolio = checkSingleData(FISCAL_FOLIO.getKey(), ocrData, ocrId);
+        Optional<OcrUpdateVO> fiscalFolio = checkFiscalFolio(ocrData, ocrId);
         if (fiscalFolio.isPresent()) return fiscalFolio.get();
         Optional<OcrDataVO> initialPeriod = OcrDataUtil.getByName(ocrData, INITIAL_PERIOD_PAYMENT.getKey());
         Optional<OcrDataVO> finalPeriod = OcrDataUtil.getByName(ocrData, FINAL_PERIOD_PAYMENT.getKey());
-        if (initialPeriod.isEmpty()) return new OcrDocumentUpdateVO(ocrId, ocrData, INITIAL_PAY_NOT_FOUND);
-        if (finalPeriod.isEmpty()) return new OcrDocumentUpdateVO(ocrId, ocrData, FINAL_PAY_NOT_FOUND);
-        if (ocrDocument.getDocumentIndex() == -1) return new OcrDocumentUpdateVO(ocrId, ocrData, NOT_INDEX);
+        if (initialPeriod.isEmpty()) return new OcrUpdateVO(ocrId, ocrData, INITIAL_PAY_NOT_FOUND);
+        if (finalPeriod.isEmpty()) return new OcrUpdateVO(ocrId, ocrData, FINAL_PAY_NOT_FOUND);
+        if (ocrDocument.getDocumentIndex() == -1) return new OcrUpdateVO(ocrId, ocrData, NOT_INDEX);
         return validatePeriodicity(ocrDocument, ocrData, initialPeriod.get(), finalPeriod.get(), ocrGateway.getDaysRangeForPayStubsValidation());
     }
 
-    private OcrDocumentUpdateVO checkProofAddress(OcrDocument ocrDocument, List<OcrDataVO> ocrData) {
-        Optional<OcrDocumentUpdateVO> updateVO = checkSingleData(ZIP_CDE.getKey(), ocrData, ocrDocument.getId());
+    private OcrUpdateVO checkProofAddress(OcrDocument ocrDocument, List<OcrDataVO> ocrData) {
+        Optional<OcrUpdateVO> updateVO = checkSingleData(ZIP_CDE.getKey(), ocrData, ocrDocument.getId());
         if(updateVO.isPresent()) return updateVO.get();
-        Optional<OcrDocumentUpdateVO> validityConfidence = checkSingleData(ZIP_CDE.getKey(), ocrData, ocrDocument.getId());
+        Optional<OcrUpdateVO> validityConfidence = checkSingleData(VALIDITY.getKey(), ocrData, ocrDocument.getId());
         if(validityConfidence.isPresent()) return validityConfidence.get();
         Optional<OcrDataVO> validity = OcrDataUtil.getByName(ocrData, VALIDITY.getKey());
-        if (validity.isEmpty()) return new OcrDocumentUpdateVO(ocrDocument.getId(), ocrData, ADDRESS_VALIDITY_NOT_FOUND);
+        if (validity.isEmpty()) return new OcrUpdateVO(ocrDocument.getId(), ocrData, ADDRESS_VALIDITY_NOT_FOUND);
         return validateAddressValidity(ocrDocument, ocrData, validity.get(), 3);
     }
 
-    private OcrDocumentUpdateVO checkIne(OcrDocument ocrDocument, List<OcrDataVO> ocrData) {
-        return new OcrDocumentUpdateVO(ocrDocument.getId(), ocrData);
+    private OcrUpdateVO checkIne(OcrDocument ocrDocument, List<OcrDataVO> ocrData) {
+        return new OcrUpdateVO(ocrDocument.getId(), ocrData);
     }
 
-    private Optional<OcrDocumentUpdateVO> checkSingleData(String dataName, List<OcrDataVO> ocrData, int ocrId) {
-        Optional<OcrDataVO> data = OcrDataUtil.getByName(ocrData, dataName);
-        if (data.isEmpty()) return Optional.of(new OcrDocumentUpdateVO(ocrId, ocrData, DATA_NOT_FOUND, dataNotFound(dataName)));
-        if (data.get().getConfidence() < ocrGateway.getConfidence()) {
-            String reason = invalidConfidence(dataName, data.get().getConfidence(), ocrGateway.getConfidence());
-            return Optional.of(new OcrDocumentUpdateVO(ocrId, ocrData, INVALID_CONFIDENCE, reason));
+    private Optional<OcrUpdateVO> checkFiscalFolio(List<OcrDataVO> ocrData, int ocrId) {
+        Optional<OcrUpdateVO> ocrDocumentUpdate = checkSingleData(FISCAL_FOLIO.getKey(), ocrData, ocrId);
+        if (ocrDocumentUpdate.isPresent()) return ocrDocumentUpdate;
+        String fiscalFolio = extractFiscalFolio(ocrData);
+        if (fiscalFolio.length() != 36) {
+            String reason = invalidFiscalFolio(fiscalFolio);
+            return Optional.of(new OcrUpdateVO(ocrId, ocrData, INVALID_FISCAL_FOLIO, reason));
         }
         return Optional.empty();
+    }
+
+    private Optional<OcrUpdateVO> checkSingleData(String dataName, List<OcrDataVO> ocrData, int ocrId) {
+        Optional<OcrDataVO> data = OcrDataUtil.getByName(ocrData, dataName);
+        if (data.isEmpty()) {
+            var ocrUpdate = new OcrUpdateVO(ocrId, ocrData, DATA_NOT_FOUND, dataNotFound(dataName));
+            return Optional.of(ocrUpdate);
+        }
+        if (data.get().getConfidence() < ocrGateway.getConfidence()) {
+            String reason = invalidConfidence(dataName, data.get().getConfidence(), ocrGateway.getConfidence());
+            var ocrUpdate = new OcrUpdateVO(ocrId, ocrData, INVALID_CONFIDENCE, reason);
+            return Optional.of(ocrUpdate);
+        }
+        return Optional.empty();
+    }
+
+    private String extractFiscalFolio(List<OcrDataVO> ocrData) {
+        return OcrDataUtil.getByName(ocrData, FISCAL_FOLIO.getKey())
+                .map(dataVO -> dataVO.getValue().trim())
+                .orElse("");
+    }
+
+    private Mono<OcrUpdateVO> handleError(OcrDocument ocrDocument, Throwable error) {
+        var ocrUpdate = new OcrUpdateVO(ocrDocument.getId(), FAILED_GET_METADATA, error.getMessage());
+        return Mono.just(ocrUpdate);
     }
 
 }
