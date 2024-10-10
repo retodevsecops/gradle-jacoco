@@ -73,53 +73,8 @@ class ValidateOcrDocumentsHelperTest {
     }
 
     @Test
-    void shouldDocumentsWithFailStatusWhenFiscalFolioOfPayStubsIsInvalid() {
-        List<OcrDocument> ocrDocuments = payStubs();
-        when(ocrGateway.getAnalysisData(ocrDocuments.get(0).getAnalysisId())).thenReturn(invalidFiscalFolioPayStub());
-        when(ocrGateway.getAnalysisData(ocrDocuments.get(1).getAnalysisId())).thenReturn(invalidFiscalFolioPayStub());
-        StepVerifier.create(validateOcrDocumentsHelper.execute(ocrDocuments))
-                .expectNextMatches(docs -> docs.stream()
-                        .allMatch(doc -> {
-                            var checkStatus = doc.getStatus().equals(OcrStatus.FAILED);
-                            var checkCode = doc.getFailureCode().equals(OcrFailureReason.INVALID_FISCAL_FOLIO.name());
-                            return checkStatus && checkCode;
-                        }))
-                .verifyComplete();
-    }
-
-    @Test
-    void shouldDocumentsWithFailStatusWhenFiscalFolioOfPayStubsIsInvalidConfidence() {
-        List<OcrDocument> ocrDocuments = payStubs();
-        when(ocrGateway.getAnalysisData(ocrDocuments.get(0).getAnalysisId())).thenReturn(invalidConfidencePayStub());
-        when(ocrGateway.getAnalysisData(ocrDocuments.get(1).getAnalysisId())).thenReturn(invalidConfidencePayStub());
-        StepVerifier.create(validateOcrDocumentsHelper.execute(ocrDocuments))
-                .expectNextMatches(docs -> docs.stream()
-                        .allMatch(doc -> {
-                            var checkStatus = doc.getStatus().equals(OcrStatus.FAILED);
-                            var checkCode = doc.getFailureCode().equals(OcrFailureReason.INVALID_CONFIDENCE.name());
-                            return checkStatus && checkCode;
-                        }))
-                .verifyComplete();
-    }
-
-    @Test
-    void shouldDocumentsWithFailStatusWhenPayStubsDataNotFound() {
-        List<OcrDocument> ocrDocuments = payStubs();
-        when(ocrGateway.getAnalysisData(ocrDocuments.get(0).getAnalysisId())).thenReturn(dataNotFound());
-        when(ocrGateway.getAnalysisData(ocrDocuments.get(1).getAnalysisId())).thenReturn(dataNotFound());
-        StepVerifier.create(validateOcrDocumentsHelper.execute(ocrDocuments))
-                .expectNextMatches(docs -> docs.stream()
-                        .allMatch(doc -> {
-                            var checkStatus = doc.getStatus().equals(OcrStatus.FAILED);
-                            var checkCode = doc.getFailureCode().equals(OcrFailureReason.DATA_NOT_FOUND.name());
-                            return checkStatus && checkCode;
-                        }))
-                .verifyComplete();
-    }
-
-    @Test
     void shouldDocumentsWithSuccessStatusWhenValidProofAddress() {
-        List<OcrDocument> ocrDocuments = ocrDocumenstsWithPayStubsAndProofAddress();
+        List<OcrDocument> ocrDocuments = ocrDocumentsWithPayStubsAndProofAddress();
         when(ocrGateway.getAnalysisData(ocrDocuments.get(0).getAnalysisId())).thenReturn(validDataLastPayStub());
         when(ocrGateway.getAnalysisData(ocrDocuments.get(1).getAnalysisId())).thenReturn(validDataPenultimatePayStub());
         when(ocrGateway.getAnalysisData(ocrDocuments.get(2).getAnalysisId())).thenReturn(validDataProofAddress());
@@ -131,7 +86,7 @@ class ValidateOcrDocumentsHelperTest {
 
     @Test
     void shouldDocumentsWithSuccessStatusWhenValidIne() {
-        List<OcrDocument> ocrDocuments = ocrDocumenstsWithPayStubsProofAddressIne();
+        List<OcrDocument> ocrDocuments = ocrDocumentsWithPayStubsProofAddressIne();
         when(ocrGateway.getAnalysisData(ocrDocuments.get(0).getAnalysisId())).thenReturn(validDataLastPayStub());
         when(ocrGateway.getAnalysisData(ocrDocuments.get(1).getAnalysisId())).thenReturn(validDataPenultimatePayStub());
         when(ocrGateway.getAnalysisData(ocrDocuments.get(2).getAnalysisId())).thenReturn(validDataProofAddress());
@@ -164,11 +119,11 @@ class ValidateOcrDocumentsHelperTest {
                 .build());
     }
 
-    private List<OcrDocument> ocrDocumenstsWithPayStubsAndProofAddress() {
+    private List<OcrDocument> ocrDocumentsWithPayStubsAndProofAddress() {
         return List.of(lastPayStub(), penultimatePayStub(), proofAddress());
     }
 
-    private List<OcrDocument> ocrDocumenstsWithPayStubsProofAddressIne() {
+    private List<OcrDocument> ocrDocumentsWithPayStubsProofAddressIne() {
         return List.of(lastPayStub(), penultimatePayStub(), proofAddress(), ine());
     }
 
@@ -264,26 +219,6 @@ class ValidateOcrDocumentsHelperTest {
                 OcrDataVO.builder()
                         .name("periodo-final-pago")
                         .value("30/04/2023")
-                        .confidence(0.9973002624511719)
-                        .build()));
-    }
-
-    private Mono<List<OcrDataVO>> invalidFiscalFolioPayStub() {
-        LocalDate[] fortnightDates = FortnightDates.getDatesFromIndex(0, 15);
-        return Mono.just(List.of(
-                OcrDataVO.builder()
-                        .name("folio-fiscal")
-                        .value("720DE2D0-4403-4")
-                        .confidence(0.95)
-                        .build(),
-                OcrDataVO.builder()
-                        .name("periodo-inicial-pago")
-                        .value(formatDate(fortnightDates[0]))
-                        .confidence(0.9978657531738281)
-                        .build(),
-                OcrDataVO.builder()
-                        .name("periodo-final-pago")
-                        .value(formatDate(fortnightDates[1]))
                         .confidence(0.9973002624511719)
                         .build()));
     }

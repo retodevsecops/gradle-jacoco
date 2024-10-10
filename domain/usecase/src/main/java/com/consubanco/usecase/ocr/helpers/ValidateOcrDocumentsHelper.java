@@ -18,10 +18,12 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.consubanco.model.entities.ocr.constant.OcrFailureReason.*;
-import static com.consubanco.model.entities.ocr.constant.PayStubProperties.*;
+import static com.consubanco.model.entities.ocr.constant.PayStubProperties.FINAL_PERIOD_PAYMENT;
+import static com.consubanco.model.entities.ocr.constant.PayStubProperties.INITIAL_PERIOD_PAYMENT;
 import static com.consubanco.model.entities.ocr.constant.ProofAddressProperties.VALIDITY;
 import static com.consubanco.model.entities.ocr.constant.ProofAddressProperties.ZIP_CDE;
-import static com.consubanco.model.entities.ocr.message.OcrMessage.*;
+import static com.consubanco.model.entities.ocr.message.OcrMessage.dataNotFound;
+import static com.consubanco.model.entities.ocr.message.OcrMessage.invalidConfidence;
 import static com.consubanco.model.entities.ocr.util.PeriodicityValidatorUtil.validateAddressValidity;
 import static com.consubanco.model.entities.ocr.util.PeriodicityValidatorUtil.validatePeriodicity;
 
@@ -73,8 +75,6 @@ public class ValidateOcrDocumentsHelper {
 
     private OcrUpdateVO checkPayStubs(OcrDocument ocrDocument, List<OcrDataVO> ocrData) {
         Integer ocrId = ocrDocument.getId();
-        Optional<OcrUpdateVO> checkFiscalFolio = checkFiscalFolio(ocrData, ocrId);
-        if (checkFiscalFolio.isPresent()) return checkFiscalFolio.get();
         Optional<OcrDataVO> initialPeriod = OcrDataUtil.getByName(ocrData, INITIAL_PERIOD_PAYMENT.getKey());
         Optional<OcrDataVO> finalPeriod = OcrDataUtil.getByName(ocrData, FINAL_PERIOD_PAYMENT.getKey());
         if (initialPeriod.isEmpty()) return new OcrUpdateVO(ocrId, ocrData, INITIAL_PAY_NOT_FOUND);
@@ -97,17 +97,6 @@ public class ValidateOcrDocumentsHelper {
         return new OcrUpdateVO(ocrDocument.getId(), ocrData);
     }
 
-    private Optional<OcrUpdateVO> checkFiscalFolio(List<OcrDataVO> ocrData, int ocrId) {
-        Optional<OcrUpdateVO> ocrDocumentUpdate = checkSingleData(FISCAL_FOLIO.getKey(), ocrData, ocrId);
-        if (ocrDocumentUpdate.isPresent()) return ocrDocumentUpdate;
-        String fiscalFolio = extractFiscalFolio(ocrData);
-        if (fiscalFolio.length() != 36) {
-            String reason = invalidFiscalFolio(fiscalFolio);
-            return Optional.of(new OcrUpdateVO(ocrId, ocrData, INVALID_FISCAL_FOLIO, reason));
-        }
-        return Optional.empty();
-    }
-
     private Optional<OcrUpdateVO> checkSingleData(String dataName, List<OcrDataVO> ocrData, int ocrId) {
         Optional<OcrDataVO> data = OcrDataUtil.getByName(ocrData, dataName);
         if (data.isEmpty()) {
@@ -120,12 +109,6 @@ public class ValidateOcrDocumentsHelper {
             return Optional.of(ocrUpdate);
         }
         return Optional.empty();
-    }
-
-    private String extractFiscalFolio(List<OcrDataVO> ocrData) {
-        return OcrDataUtil.getByName(ocrData, FISCAL_FOLIO.getKey())
-                .map(dataVO -> dataVO.getValue().trim())
-                .orElse("");
     }
 
     private Mono<OcrUpdateVO> handleError(OcrDocument ocrDocument, Throwable error) {
