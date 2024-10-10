@@ -18,6 +18,8 @@ import reactor.core.scheduler.Schedulers;
 import java.util.List;
 import java.util.Optional;
 
+import static com.consubanco.model.commons.exception.factory.ExceptionFactory.business;
+import static com.consubanco.model.entities.agreement.message.AgreementBusinessMessage.AGREEMENT_CONFIG_NOT_FOUND;
 import static com.consubanco.model.entities.file.constant.FileConstants.attachmentsDirectory;
 
 @RequiredArgsConstructor
@@ -111,8 +113,9 @@ public class GetAttachmentsByAgreementUseCase {
 
     private File buildAttachment(Process process, List<AttachmentConfigVO> attachmentsToRetrieved, PreviousDocumentVO prevDocument) {
         Optional<AttachmentConfigVO> attachConfig = getAttachment(attachmentsToRetrieved, prevDocument.getName());
+        AttachmentConfigVO attachment = attachConfig.orElseThrow(() -> business(AGREEMENT_CONFIG_NOT_FOUND));
         return File.builder()
-                .name(attachConfig.get().getTechnicalName())
+                .name(attachment.getTechnicalName())
                 .content(prevDocument.getContent())
                 .extension(prevDocument.getExtension())
                 .directoryPath(attachmentsDirectory(process.getOffer().getId()))
