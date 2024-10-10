@@ -9,6 +9,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.util.unit.DataSize;
+import org.springframework.web.client.ResourceAccessException;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
@@ -42,7 +43,7 @@ public class FileStorageUtil {
         try {
             return FileCopyUtils.copyToByteArray(resource.getInputStream());
         } catch (IOException exception) {
-            throw new RuntimeException("Error getting resource content.", exception);
+            throw new ResourceAccessException("Error getting resource content.", exception);
         }
     }
 
@@ -67,7 +68,7 @@ public class FileStorageUtil {
             double megabytes = resource.contentLength() / 1048576.0;
             return Math.round(megabytes * 100.0) / 100.0;
         } catch (IOException exception) {
-            throw new RuntimeException("Error obtaining resource size: ", exception);
+            throw new ResourceAccessException("Error obtaining resource size: ", exception);
         }
 
     }
