@@ -58,9 +58,6 @@
             </#if>
         </#if>
     </#list>
-    <#if folioFiscal?length != 36>
-        <#stop "The fiscal folio " + folioFiscal + " must have exactly 36 chars, but it has " + folioFiscal?length>
-    </#if>
     <#return folioFiscal>
 </#function>
 <#function getOcrValue(name)>
