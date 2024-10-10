@@ -73,8 +73,8 @@ public class ValidateOcrDocumentsHelper {
 
     private OcrUpdateVO checkPayStubs(OcrDocument ocrDocument, List<OcrDataVO> ocrData) {
         Integer ocrId = ocrDocument.getId();
-        Optional<OcrUpdateVO> fiscalFolio = checkFiscalFolio(ocrData, ocrId);
-        if (fiscalFolio.isPresent()) return fiscalFolio.get();
+        Optional<OcrUpdateVO> checkFiscalFolio = checkFiscalFolio(ocrData, ocrId);
+        if (checkFiscalFolio.isPresent()) return checkFiscalFolio.get();
         Optional<OcrDataVO> initialPeriod = OcrDataUtil.getByName(ocrData, INITIAL_PERIOD_PAYMENT.getKey());
         Optional<OcrDataVO> finalPeriod = OcrDataUtil.getByName(ocrData, FINAL_PERIOD_PAYMENT.getKey());
         if (initialPeriod.isEmpty()) return new OcrUpdateVO(ocrId, ocrData, INITIAL_PAY_NOT_FOUND);
