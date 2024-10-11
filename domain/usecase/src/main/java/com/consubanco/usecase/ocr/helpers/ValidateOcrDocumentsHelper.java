@@ -74,9 +74,7 @@ public class ValidateOcrDocumentsHelper {
     }
 
     private OcrUpdateVO validateAndUpdateDocument(OcrDocument ocrDocument, List<OcrDocument> ocrDocuments) {
-        if (ocrDocument.getAnalysisResult() != null) {
-            return OcrUpdateVOFactory.buildFromOcrDocument(ocrDocument);
-        }
+        if (ocrDocument.isAlreadyValidated()) return OcrUpdateVOFactory.buildFromOcrDocument(ocrDocument);
         OcrAnalysisResult analysisResult = validateOcrDocumentType(ocrDocument, ocrDocuments);
         return OcrUpdateVOFactory.buildFromOcrDocument(ocrDocument.toBuilder()
                 .analysisResult(analysisResult)

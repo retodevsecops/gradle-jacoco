@@ -11,12 +11,12 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.NOT_REQUIRED;
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class UploadAttachmentsResDTO {
-
 
     @Schema(description = "list of validated documents.", requiredMode = REQUIRED)
     private List<OcrDocumentDTO> documentsPendingValidation;
@@ -43,6 +43,12 @@ public class UploadAttachmentsResDTO {
         @Schema(description = "Ocr document validation status.", requiredMode = REQUIRED)
         private OcrStatus validationStatus;
 
+        @Schema(description = "Ocr document validation failure code.", requiredMode = NOT_REQUIRED)
+        private String failureCode;
+
+        @Schema(description = "Ocr document validation failure reason.", requiredMode = NOT_REQUIRED)
+        private String failureReason;
+
     }
 
     public UploadAttachmentsResDTO(List<OcrDocument> ocrDocuments) {
@@ -57,6 +63,8 @@ public class UploadAttachmentsResDTO {
                         .storageId(ocrDocument.getStorageId())
                         .analysisId(ocrDocument.getAnalysisId())
                         .validationStatus(ocrDocument.getAnalysisResult().getStatus())
+                        .failureCode(ocrDocument.getAnalysisResult().getFailureCode())
+                        .failureReason(ocrDocument.getAnalysisResult().getFailureReason())
                         .build())
                 .toList();
     }

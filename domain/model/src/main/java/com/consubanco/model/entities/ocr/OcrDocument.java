@@ -58,4 +58,8 @@ public class OcrDocument {
         return this.getBaseName().equalsIgnoreCase(PAY_STUBS.getRelatedDocument());
     }
 
+    public boolean isAlreadyValidated() {
+        return this.analysisResult != null && !OcrStatus.PENDING.equals(this.analysisResult.getStatus());
+    }
+
 }
