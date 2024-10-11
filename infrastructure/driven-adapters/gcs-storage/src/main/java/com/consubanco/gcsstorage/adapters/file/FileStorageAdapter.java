@@ -62,10 +62,10 @@ public class FileStorageAdapter implements FileRepository {
         BlobId blobId = BlobId.of(properties.getBucketName(), file.fullPath());
         return Mono.fromCallable(() -> storage.delete(blobId))
                 .flatMap(deleted -> {
-                    if (deleted) {
+                    if (Boolean.TRUE.equals(deleted)) {
                         return Mono.empty();
                     } else {
-                        return monoTechnicalError("Archivo no encontrado: " + file.fullPath(), DELETE_FILE_ERROR);
+                        return monoTechnicalError("File not found: " + file.fullPath(), DELETE_FILE_ERROR);
                     }
                 });
     }

@@ -78,7 +78,7 @@ public class ValidateOcrDocumentUseCase {
 
     private Mono<OcrResulSetVO> buildResponseAndDeleteOnFailure(File file, OcrDocument ocrDocument) {
         return Mono.just(ocrDocument)
-                .filter(ocr -> Objects.isNull(ocr.getFailureCode()))
+                .filter(ocr -> Objects.isNull(ocr.getAnalysisResult().getFailureCode()))
                 .switchIfEmpty(fileHelper.delete(file).then(Mono.empty()))
                 .thenReturn(new OcrResulSetVO(file, ocrDocument));
     }
