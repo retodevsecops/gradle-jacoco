@@ -1,5 +1,6 @@
 package com.consubanco.postgresql.adapters.ocr;
 
+import com.consubanco.model.entities.ocr.OcrAnalysisResult;
 import com.consubanco.model.entities.ocr.OcrDocument;
 import com.consubanco.model.entities.ocr.constant.OcrStatus;
 import com.consubanco.model.entities.ocr.vo.OcrDataVO;
@@ -71,9 +72,11 @@ public class OcrDocumentData {
                 .storageRoute(this.storageRoute)
                 .processId(this.processId)
                 .analysisId(this.analysisId)
-                .status(this.status)
-                .failureCode(this.failureCode)
-                .failureReason(this.failureReason)
+                .analysisResult(OcrAnalysisResult.builder()
+                        .status(this.status)
+                        .failureCode(this.failureCode)
+                        .failureReason(this.failureReason)
+                        .build())
                 .createdAt(this.createdAt)
                 .updatedAt(this.updatedAt)
                 .data(data)

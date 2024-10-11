@@ -7,13 +7,15 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
+import static com.consubanco.model.entities.ocr.constant.OcrDocumentType.PAY_STUBS;
 import static com.consubanco.model.entities.ocr.message.OcrBusinessMessage.OCR_INVALID;
 import static com.consubanco.model.entities.ocr.message.OcrMessage.ocrInvalid;
 
 @Getter
 @Setter
-@Builder
+@Builder(toBuilder = true)
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,10 +27,8 @@ public class OcrDocument {
     private String storageRoute;
     private String processId;
     private String analysisId;
-    private OcrStatus status;
     private List<OcrDataVO> data;
-    private String failureCode;
-    private String failureReason;
+    private OcrAnalysisResult analysisResult;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -43,9 +43,23 @@ public class OcrDocument {
     }
 
     public OcrDocument checkSuccessStatus() {
-        if (status.equals(OcrStatus.SUCCESS)) return this;
-        String cause = ocrInvalid(name, analysisId, status);
+        if (this.analysisResult.getStatus().equals(OcrStatus.SUCCESS)) return this;
+        String cause = ocrInvalid(name, analysisId, this.analysisResult.getStatus());
         throw ExceptionFactory.buildBusiness(cause, OCR_INVALID);
+    }
+
+    public Optional<OcrDataVO> getDataByName(String name) {
+        return this.getData().stream()
+                .filter(ocrDataVO -> ocrDataVO.getName().equalsIgnoreCase(name))
+                .findFirst();
+    }
+
+    public boolean isPayStub() {
+        return this.getBaseName().equalsIgnoreCase(PAY_STUBS.getRelatedDocument());
+    }
+
+    public boolean isAlreadyValidated() {
+        return this.analysisResult != null && !OcrStatus.PENDING.equals(this.analysisResult.getStatus());
     }
 
 }

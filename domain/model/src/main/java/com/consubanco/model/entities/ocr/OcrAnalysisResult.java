@@ -1,9 +1,7 @@
-package com.consubanco.model.entities.ocr.vo;
+package com.consubanco.model.entities.ocr;
 
 import com.consubanco.model.entities.ocr.constant.OcrStatus;
 import lombok.*;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -11,10 +9,8 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class OcrUpdateVO {
-    private Integer id;
+public class OcrAnalysisResult {
     private OcrStatus status;
-    private List<OcrDataVO> data;
     private String failureCode;
     private String failureReason;
 }
