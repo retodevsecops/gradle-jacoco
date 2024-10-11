@@ -65,7 +65,7 @@ public class GetStatusAttachmentUseCase {
     private List<OcrDocument> getInvalidOcrDocuments(List<OcrDocument> ocrDocuments, List<File> ocrAttachments) {
         return ocrAttachments.stream()
                 .map(attachment -> getOcrDocumentByStorageId(ocrDocuments, attachment))
-                .filter(ocrDocument -> !ocrDocument.getStatus().equals(OcrStatus.SUCCESS))
+                .filter(ocrDocument -> !ocrDocument.getAnalysisResult().getStatus().equals(OcrStatus.SUCCESS))
                 .toList();
     }
 

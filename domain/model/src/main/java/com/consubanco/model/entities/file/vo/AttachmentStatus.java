@@ -45,16 +45,16 @@ public class AttachmentStatus {
 
     private static boolean areAnyFailed(List<OcrDocument> ocrDocuments) {
         return ocrDocuments.stream()
-                .anyMatch(ocrDocument -> ocrDocument.getStatus().equals(OcrStatus.FAILED));
+                .anyMatch(ocrDocument -> ocrDocument.getAnalysisResult().getStatus().equals(OcrStatus.FAILED));
     }
 
     private List<InvalidAttachment> getListInvalidDocuments(List<OcrDocument> ocrDocuments) {
         return ocrDocuments.stream()
-                .filter(ocrDocument -> ocrDocument.getStatus().equals(OcrStatus.FAILED))
+                .filter(ocrDocument -> ocrDocument.getAnalysisResult().getStatus().equals(OcrStatus.FAILED))
                 .map(ocrDocument -> InvalidAttachment.builder()
                         .name(ocrDocument.getName())
-                        .code(ocrDocument.getFailureCode())
-                        .reason(ocrDocument.getFailureReason())
+                        .code(ocrDocument.getAnalysisResult().getFailureCode())
+                        .reason(ocrDocument.getAnalysisResult().getFailureReason())
                         .storageId(ocrDocument.getStorageId())
                         .analysisId(ocrDocument.getAnalysisId())
                         .build())

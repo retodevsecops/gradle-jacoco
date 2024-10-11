@@ -24,7 +24,6 @@ public class OcrMessage {
     private static final String INVALID_CONFIDENCE = "The confidence level of the %s data is %s and must be equal to or higher than %s.";
     private static final String EXPIRED_ADDRESS_VALIDITY = "Address validity: %s its more than %s months ago";
     private static final String DATA_NOT_FOUND = "From the extracted data of the document, the following data was not found: %s.";
-    private static final String INVALID_FISCAL_FOLIO = "The fiscal folio %s must have exactly 36 chars, but it has %s chars.";
 
     public static String typeNotFound(final String documentName) {
         return String.format(TYPE_NOT_FOUND, documentName);
@@ -80,10 +79,6 @@ public class OcrMessage {
 
     public static String invalidConfidence(String dataName, double confidence, double confidenceAllow) {
         return String.format(INVALID_CONFIDENCE, dataName, confidence, confidenceAllow);
-    }
-
-    public static String invalidFiscalFolio(String fiscalFolioInvalid) {
-        return String.format(INVALID_FISCAL_FOLIO, fiscalFolioInvalid, fiscalFolioInvalid.length());
     }
 
     public static String dataNotFound(String dataName) {

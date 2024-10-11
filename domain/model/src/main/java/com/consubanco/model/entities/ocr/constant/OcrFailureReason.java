@@ -22,7 +22,8 @@ public enum OcrFailureReason {
     INVALID_CONFIDENCE("Confidence level not valid"),
     ADDRESS_VALIDITY_NOT_FOUND("vigencia field not found in ocr"),
     ADDRESS_VALIDITY_EXPIRED("Address validity must be from the last three months"),
-    DATA_NOT_FOUND("Data not found in the document.");
+    DATA_NOT_FOUND("Data not found in the document."),
+    DUPLICATE_PAY_STUB("Duplicate pay stubs");
 
     private final String message;
 

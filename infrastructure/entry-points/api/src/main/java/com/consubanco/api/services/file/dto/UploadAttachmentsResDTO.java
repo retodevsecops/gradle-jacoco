@@ -56,7 +56,7 @@ public class UploadAttachmentsResDTO {
                         .name(ocrDocument.getName())
                         .storageId(ocrDocument.getStorageId())
                         .analysisId(ocrDocument.getAnalysisId())
-                        .validationStatus(ocrDocument.getStatus())
+                        .validationStatus(ocrDocument.getAnalysisResult().getStatus())
                         .build())
                 .toList();
     }
