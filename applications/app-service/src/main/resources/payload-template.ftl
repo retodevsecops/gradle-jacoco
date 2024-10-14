@@ -258,6 +258,7 @@
 <#elseif company == "mn">
 <#-- This is a freemarker template for Masnomina aggrements. -->
 {
+    "applicationId" : "RENEX",
     "origen": "ECSB",
     "destinoCredito": "",
     "claveServidor": "${offer_data.offer.employeeNumber?string}",
