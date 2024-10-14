@@ -361,7 +361,7 @@
             "personal": {
                 "apellidoMaterno": "${reference.lastName2!''}",
                 "apellidoPaterno": "${reference.lastName1!''}",
-                "codigoRelacion": "${reference.relationship?has_content?then(reference.relationship.key, '')}",
+                "codigoRelacion": "05",
                 "clientId": "${reference.clientId!''}",
                 "nombre": "${reference.name1!''}",
                 "segundoNombre": "${reference.name2!''}",
