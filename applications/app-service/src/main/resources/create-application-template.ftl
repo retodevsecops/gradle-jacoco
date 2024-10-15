@@ -201,7 +201,7 @@
                 "paymentMethodDesc": "${customer_data.preApplicationData.paymentData.paymentMethodDesc}"
             },
             "probankNumber": "${offer_data.offer.id}",
-            "rate": ${offer_data.offer.monthlyTI?c},
+            "rate": ${(offer_data.offer.monthlyTI / 100)?string("0.######")},
             "discountamount": ${offer_data.offer.discount?c},
             "promotorNFOFlag": true,
             "reprocessNumber": 0,
