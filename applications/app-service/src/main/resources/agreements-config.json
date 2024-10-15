@@ -298,14 +298,14 @@
       {
         "name": "formato-solicitud-gratuita",
         "documents": [
-          { "name": "caratula_credito_sjt_v2" }
+          { "name": "solicitud_credito_sjt_v2" }
         ]
       },
       {
         "name": "contrato-cliente",
         "documents": [
           { "name": "caratula_credito_sjt_v2" },
-          { "name": "solicitud_credito_sjt_v2" }
+          { "name": "clausulas_sjt_v2" }
         ]
       },
       {
