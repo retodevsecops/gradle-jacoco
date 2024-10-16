@@ -99,9 +99,13 @@ public class ValidateOcrDocumentsHelper {
     }
 
     private OcrAnalysisResult validatePayStubDocument(OcrDocument ocrDocument, List<OcrDocument> allDocuments) {
+        Optional<OcrAnalysisResult> initialResult = validateDataPresence(INITIAL_PERIOD_PAYMENT.getKey(), ocrDocument);
+        if (initialResult.isPresent()) return initialResult.get();
+        Optional<OcrAnalysisResult> finalResult = validateDataPresence(FINAL_PERIOD_PAYMENT.getKey(), ocrDocument);
+        if (finalResult.isPresent()) return finalResult.get();
         Optional<OcrDataVO> initialPeriod = ocrDocument.getDataByName(INITIAL_PERIOD_PAYMENT.getKey());
-        Optional<OcrDataVO> finalPeriod = ocrDocument.getDataByName(FINAL_PERIOD_PAYMENT.getKey());
         if (initialPeriod.isEmpty()) return analysisFailed(INITIAL_PAY_NOT_FOUND);
+        Optional<OcrDataVO> finalPeriod = ocrDocument.getDataByName(FINAL_PERIOD_PAYMENT.getKey());
         if (finalPeriod.isEmpty()) return analysisFailed(FINAL_PAY_NOT_FOUND);
         if (ocrDocument.getDocumentIndex() == -1) return analysisFailed(NOT_INDEX);
         if(isDuplicatePayStub(ocrDocument, allDocuments)) return analysisFailed(DUPLICATE_PAY_STUB);
