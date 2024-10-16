@@ -167,7 +167,7 @@ class ValidateOcrDocumentsHelperTest {
     }
 
     private Mono<List<OcrDataVO>> validDataLastPayStub() {
-        LocalDate[] fortnightDates = FortnightDates.getDatesFromIndex(0, 15);
+        LocalDate[] fortnightDates = FortnightDates.getDatesFromIndex(1, 15);
         return Mono.just(List.of(
                 OcrDataVO.builder()
                         .name("numeroEmpleado")
@@ -206,12 +206,12 @@ class ValidateOcrDocumentsHelperTest {
                         .build(),
                 OcrDataVO.builder()
                         .name("periodo-inicial-pago")
-                        .value(formatDate(fortnightDates[0]))
+                        .value(formatDate(fortnightDates[0].minusMonths(1)))
                         .confidence(0.9978657531738281)
                         .build(),
                 OcrDataVO.builder()
                         .name("periodo-final-pago")
-                        .value(formatDate(fortnightDates[1]))
+                        .value(formatDate(fortnightDates[1].minusMonths(1)))
                         .confidence(0.9973002624511719)
                         .build()));
     }
