@@ -315,7 +315,10 @@
           { "name": "recibo-nomina" },
           { "name": "caratula_credito_sjt_v2" },
           { "name": "solicitud_credito_sjt_v2" },
-          { "name": "carta-autorizacion-descuento" }
+          { "name": "carta-autorizacion-descuento" },
+          { "name": "anexo_c_sjt_v3" },
+          { "name": "anexo_d_sjt_v2" },
+          { "name": "anexo_d_sjt_v3" }
         ]
       }
     ],
