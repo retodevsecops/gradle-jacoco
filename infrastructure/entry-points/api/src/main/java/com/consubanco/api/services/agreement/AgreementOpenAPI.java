@@ -38,4 +38,15 @@ public class AgreementOpenAPI {
                 .response(responseInternalError());
     }
 
+    public static Consumer<Builder> generateDocuments() {
+        return ops -> ops.tag(TAG)
+                .operationId("generateDocuments")
+                .description("Generate all documents of an agreement.")
+                .summary("Generate documents.")
+                .parameter(ParamsOpenAPI.path(AgreementPathParams.PROCESS_ID, "Process identifier"))
+                .response(responseOk(String.class))
+                .response(responseBusinessException())
+                .response(responseInternalError());
+    }
+
 }

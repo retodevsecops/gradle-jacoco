@@ -9,8 +9,8 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
-import static com.consubanco.api.services.agreement.constants.AgreementPaths.AGREEMENT_NUMBER_PATH_PARAM;
-import static com.consubanco.api.services.agreement.constants.AgreementPaths.ATTACHMENTS_PATH;
+import static com.consubanco.api.services.agreement.AgreementOpenAPI.*;
+import static com.consubanco.api.services.agreement.constants.AgreementPaths.*;
 import static org.springdoc.webflux.core.fn.SpringdocRouteBuilder.route;
 import static org.springframework.web.reactive.function.server.RequestPredicates.path;
 
@@ -25,8 +25,9 @@ public class AgreementRouter {
         return RouterFunctions.nest(
                 path(agreementServicesPath).and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                 route()
-                        .GET(AGREEMENT_NUMBER_PATH_PARAM, handler::findByNumber, AgreementOpenAPI.findByNumber())
-                        .GET(ATTACHMENTS_PATH, handler::getAttachments, AgreementOpenAPI.getAttachments())
+                        .GET(AGREEMENT_NUMBER_PATH_PARAM, handler::findByNumber, findByNumber())
+                        .GET(ATTACHMENTS_PATH, handler::getAttachments, getAttachments())
+                        .POST(GENERATE_DOCUMENTS_PATH, handler::generateDocuments, generateDocuments())
                         .build()
         );
     }
