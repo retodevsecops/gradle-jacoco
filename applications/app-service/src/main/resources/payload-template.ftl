@@ -5,6 +5,9 @@
         "ENE": "01", "FEB": "02", "MAR": "03", "ABR": "04", "MAY": "05", "JUN": "06",
         "JUL": "07", "AGO": "08", "SEP": "09", "OCT": "10", "NOV": "11", "DIC": "12"
     }
+    maritalStatusValues = {
+            "1": "S", "2": "C", "3": "V", "4": "D", "5": "S", "6": "U", "7": "Otros"
+    }
     current_date_timestamp = .now?long
     amountTotalToPay = (offer_data.offer.discount?replace(",", "")?number * offer_data.offer.term)?replace(",", "")
     discount = offer_data.offer.discount?replace(",", "")?number?c
@@ -75,6 +78,13 @@
         <#return "HXTI S.A. de C.V. SOFOM E.N.R.">
     </#if>
     <#return "Consupago S.A. de C.V. SOFOM E.R.">
+</#function>
+<#function getMaritalStatusValue(value)>
+    <#if maritalStatusValues[value]??>
+        <#return maritalStatusValues[value]>
+    <#else>
+        <#return value>
+    </#if>
 </#function>
 <#-- Template -->
 <#if company == "csb">
@@ -289,7 +299,6 @@
     "convenio": {
         "agreement": "${offer_data.offer.agreement.key}",
         "agreementCRM": "${offer_data.offer.agreement.key}",
-        "agreementCRM": "${offer_data.offer.agreement.key}",
         "codigoBaseCalculo": "${agreement_data.calculationBaseCode}",
         "tipoAmortizacion": "${agreement_data.amortizationType}",
         "razonSocial": "${offer_data.offer.agreement.description}",
@@ -328,7 +337,7 @@
         "codigoEstadoNacimiento": "${(customer_data.customer.placeBirth)!''}",
         "nacionalidad": "${(customer_data.customer.nationality.description)!''}",
         "correo": "${(customer_data.customer.email)!''}",
-        "estadoCivil": "${(customer_data.customer.maritalStatus.description)!''}",
+        "estadoCivil": "${getMaritalStatusValue((customer_data.customer.maritalStatus.key)!'')}",
         "telefonos": {
             "movil": "${getPreferredPhone(defaultAddress)}",
             "trabajo": ""
