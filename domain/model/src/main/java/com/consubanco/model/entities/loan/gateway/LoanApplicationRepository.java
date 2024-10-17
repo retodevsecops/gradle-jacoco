@@ -6,8 +6,6 @@ import reactor.core.publisher.Mono;
 
 public interface LoanApplicationRepository {
     Mono<LoanApplication> saveApplication(LoanApplication loanApplication);
-
     Mono<Void> updateOfferAndEmailStatus(Integer applicationId, String offerStatus, String emailStatus);
-
     Flux<LoanApplication> listByProcess(String processId);
 }

@@ -1,11 +1,13 @@
 package com.consubanco.api.services.health;
 
+import lombok.experimental.UtilityClass;
 import org.springdoc.core.fn.builders.operation.Builder;
 
 import java.util.function.Consumer;
 
 import static com.consubanco.api.commons.swagger.ResponsesOpenAPI.*;
 
+@UtilityClass
 public class HealthOpenAPI {
 
     private static final String TAG = "Health";

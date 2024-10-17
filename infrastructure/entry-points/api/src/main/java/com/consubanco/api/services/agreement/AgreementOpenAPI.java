@@ -4,12 +4,14 @@ import com.consubanco.api.commons.swagger.ParamsOpenAPI;
 import com.consubanco.api.services.agreement.constants.AgreementPathParams;
 import com.consubanco.api.services.agreement.dto.AttachmentResDTO;
 import com.consubanco.api.services.agreement.dto.GetAgreementResponseDTO;
+import lombok.experimental.UtilityClass;
 import org.springdoc.core.fn.builders.operation.Builder;
 
 import java.util.function.Consumer;
 
 import static com.consubanco.api.commons.swagger.ResponsesOpenAPI.*;
 
+@UtilityClass
 public class AgreementOpenAPI {
 
     private static final String TAG = "Agreement";

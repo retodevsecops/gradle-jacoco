@@ -8,8 +8,8 @@ import com.consubanco.logger.CustomLogger;
 import com.consubanco.model.commons.exception.TechnicalException;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.gateway.FileRepository;
+import com.consubanco.model.entities.file.vo.FileStorageVO;
 import com.consubanco.model.entities.file.vo.FileUploadVO;
-import com.consubanco.model.entities.file.vo.FileWithStorageRouteVO;
 import com.google.api.gax.paging.Page;
 import com.google.cloud.storage.*;
 import lombok.RequiredArgsConstructor;
@@ -101,7 +101,7 @@ public class FileStorageAdapter implements FileRepository {
     }
 
     @Override
-    public Flux<FileWithStorageRouteVO> listByFolder(String folderPath) {
+    public Flux<FileStorageVO> listByFolder(String folderPath) {
         return listByPrefix(folderPath)
                 .map(FileFactoryUtil::buildFileWithStorageRouteVO);
     }

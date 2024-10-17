@@ -4,6 +4,7 @@ import com.consubanco.api.commons.swagger.ParamsOpenAPI;
 import com.consubanco.api.commons.swagger.RequestsOpenAPI;
 import com.consubanco.api.services.file.constants.FileParams;
 import com.consubanco.api.services.file.dto.*;
+import lombok.experimental.UtilityClass;
 import org.springdoc.core.fn.builders.operation.Builder;
 
 import java.util.Map;
@@ -11,6 +12,7 @@ import java.util.function.Consumer;
 
 import static com.consubanco.api.commons.swagger.ResponsesOpenAPI.*;
 
+@UtilityClass
 public class FileOpenAPI {
 
     private static final String TAG = "File";

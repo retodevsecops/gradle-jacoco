@@ -8,7 +8,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class FileWithStorageRouteVO {
+public class FileStorageVO {
     private String name;
     private String storageRoute;
     private String size;

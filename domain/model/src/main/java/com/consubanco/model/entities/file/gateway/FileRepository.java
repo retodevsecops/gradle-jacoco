@@ -1,8 +1,8 @@
 package com.consubanco.model.entities.file.gateway;
 
 import com.consubanco.model.entities.file.File;
+import com.consubanco.model.entities.file.vo.FileStorageVO;
 import com.consubanco.model.entities.file.vo.FileUploadVO;
-import com.consubanco.model.entities.file.vo.FileWithStorageRouteVO;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -18,7 +18,7 @@ public interface FileRepository {
 
     Flux<File> listByFolderWithoutUrls(String folderPath);
 
-    Flux<FileWithStorageRouteVO> listByFolder(String folderPath);
+    Flux<FileStorageVO> listByFolder(String folderPath);
 
     Mono<File> getByNameWithSignedUrl(String name);
 
