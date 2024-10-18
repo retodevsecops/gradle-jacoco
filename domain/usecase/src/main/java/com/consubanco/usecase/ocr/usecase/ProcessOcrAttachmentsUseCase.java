@@ -36,7 +36,7 @@ public class ProcessOcrAttachmentsUseCase {
 
     private boolean docsAreValid(List<OcrDocument> ocrDocuments) {
         return ocrDocuments.stream()
-                .allMatch(ocrDocument -> ocrDocument.getStatus().equals(OcrStatus.SUCCESS));
+                .allMatch(ocrDocument -> ocrDocument.getAnalysisResult().getStatus().equals(OcrStatus.SUCCESS));
     }
 
     private Mono<Void> buildDocuments(Process process) {

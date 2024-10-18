@@ -8,5 +8,4 @@ public class DocumentNames {
     public static final String APPLICANT_RECORD = "expediente-solicitante";
     public static final String UNSIGNED_APPLICANT_RECORD = "unsigned-expediente-solicitante";
     public static final String CNCA_LETTER = "carta-de-liquidacion";
-    public static final String COLLECTION_DOCUMENTS = "documentos-cobranza";
 }

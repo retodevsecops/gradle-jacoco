@@ -134,6 +134,11 @@ public class DocumentAdapter implements DocumentGateway {
                     if (error.getCause() instanceof TimeoutException)
                         return buildTechnical(error.getCause(), API_DOCS_PREVIOUS_TIMEOUT);
                     return buildTechnical(error.getCause(), API_DOCS_PREVIOUS_ERROR);
+                })
+                .onErrorResume(error -> {
+                    String message = "Error get documents from previous application " + previousApplicationId;
+                    this.logger.error(message, error);
+                    return Flux.empty();
                 });
     }
 

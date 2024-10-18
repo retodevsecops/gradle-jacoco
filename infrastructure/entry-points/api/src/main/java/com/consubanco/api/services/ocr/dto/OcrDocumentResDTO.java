@@ -86,9 +86,9 @@ public class OcrDocumentResDTO {
         this.storageId = ocrDocument.getStorageId();
         this.storageRoute = ocrDocument.getStorageRoute();
         this.processId = ocrDocument.getProcessId();
-        this.status = ocrDocument.getStatus();
-        this.failureCode = ocrDocument.getFailureCode();
-        this.failureReason = ocrDocument.getFailureReason();
+        this.status = ocrDocument.getAnalysisResult().getStatus();
+        this.failureCode = ocrDocument.getAnalysisResult().getFailureCode();
+        this.failureReason = ocrDocument.getAnalysisResult().getFailureReason();
         this.createdAt = ocrDocument.getCreatedAt();
         this.updatedAt = ocrDocument.getUpdatedAt();
         this.analysisId = ocrDocument.getAnalysisId();

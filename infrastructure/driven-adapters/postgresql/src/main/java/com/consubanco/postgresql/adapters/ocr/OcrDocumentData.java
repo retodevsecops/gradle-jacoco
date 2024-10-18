@@ -1,10 +1,11 @@
 package com.consubanco.postgresql.adapters.ocr;
 
+import com.consubanco.model.entities.ocr.OcrAnalysisResult;
 import com.consubanco.model.entities.ocr.OcrDocument;
 import com.consubanco.model.entities.ocr.constant.OcrStatus;
 import com.consubanco.model.entities.ocr.vo.OcrDataVO;
-import com.consubanco.model.entities.ocr.vo.OcrDocumentSaveVO;
-import com.consubanco.model.entities.ocr.vo.OcrDocumentUpdateVO;
+import com.consubanco.model.entities.ocr.vo.OcrSaveVO;
+import com.consubanco.model.entities.ocr.vo.OcrUpdateVO;
 import io.r2dbc.postgresql.codec.Json;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -54,13 +55,13 @@ public class OcrDocumentData {
     @Column("updated_at")
     private LocalDateTime updatedAt;
 
-    public OcrDocumentData(OcrDocumentSaveVO ocrDocumentSaveVO) {
-        this.name = ocrDocumentSaveVO.getName();
-        this.storageId = ocrDocumentSaveVO.getStorageId();
-        this.storageRoute = ocrDocumentSaveVO.getStorageRoute();
-        this.processId = ocrDocumentSaveVO.getProcessId();
-        this.analysisId = ocrDocumentSaveVO.getAnalysisId();
-        this.status = ocrDocumentSaveVO.getStatus();
+    public OcrDocumentData(OcrSaveVO ocrSaveVO) {
+        this.name = ocrSaveVO.getName();
+        this.storageId = ocrSaveVO.getStorageId();
+        this.storageRoute = ocrSaveVO.getStorageRoute();
+        this.processId = ocrSaveVO.getProcessId();
+        this.analysisId = ocrSaveVO.getAnalysisId();
+        this.status = ocrSaveVO.getStatus();
     }
 
     public OcrDocument toEntity(List<OcrDataVO> data) {
@@ -71,9 +72,11 @@ public class OcrDocumentData {
                 .storageRoute(this.storageRoute)
                 .processId(this.processId)
                 .analysisId(this.analysisId)
-                .status(this.status)
-                .failureCode(this.failureCode)
-                .failureReason(this.failureReason)
+                .analysisResult(OcrAnalysisResult.builder()
+                        .status(this.status)
+                        .failureCode(this.failureCode)
+                        .failureReason(this.failureReason)
+                        .build())
                 .createdAt(this.createdAt)
                 .updatedAt(this.updatedAt)
                 .data(data)
@@ -84,15 +87,15 @@ public class OcrDocumentData {
         return this.toEntity(null);
     }
 
-    public OcrDocumentData update(OcrDocumentUpdateVO ocrDocumentUpdateVO, Json data) {
+    public OcrDocumentData update(OcrUpdateVO ocrUpdateVO, Json data) {
         this.data = data;
-        return update(ocrDocumentUpdateVO);
+        return update(ocrUpdateVO);
     }
 
-    public OcrDocumentData update(OcrDocumentUpdateVO ocrDocumentUpdateVO) {
-        this.status = ocrDocumentUpdateVO.getStatus();
-        this.failureCode = ocrDocumentUpdateVO.getFailureCode();
-        this.failureReason = ocrDocumentUpdateVO.getFailureReason();
+    public OcrDocumentData update(OcrUpdateVO ocrUpdateVO) {
+        this.status = ocrUpdateVO.getStatus();
+        this.failureCode = ocrUpdateVO.getFailureCode();
+        this.failureReason = ocrUpdateVO.getFailureReason();
         this.updatedAt = LocalDateTime.now();
         return this;
     }

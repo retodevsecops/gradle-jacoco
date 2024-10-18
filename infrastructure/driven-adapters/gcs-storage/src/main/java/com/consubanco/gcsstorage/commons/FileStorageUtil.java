@@ -1,7 +1,7 @@
 package com.consubanco.gcsstorage.commons;
 
+import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.vo.FileUploadVO;
-import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import lombok.experimental.UtilityClass;
@@ -9,13 +9,14 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.util.unit.DataSize;
+import org.springframework.web.client.ResourceAccessException;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.util.Base64;
 
 @UtilityClass
-public class FileUtil {
+public class FileStorageUtil {
 
     public String getSize(BlobInfo blobInfo) {
         DataSize dataSize = DataSize.ofBytes(blobInfo.getSize());
@@ -42,13 +43,13 @@ public class FileUtil {
         try {
             return FileCopyUtils.copyToByteArray(resource.getInputStream());
         } catch (IOException exception) {
-            throw new RuntimeException("Error getting resource content.", exception);
+            throw new ResourceAccessException("Error getting resource content.", exception);
         }
     }
 
     public Mono<String> getContentInBase64FromResource(ClassPathResource resource) {
         return Mono.just(resource)
-                .map(FileUtil::getContentFromResource)
+                .map(FileStorageUtil::getContentFromResource)
                 .map(Base64.getEncoder()::encodeToString);
     }
 
@@ -67,7 +68,7 @@ public class FileUtil {
             double megabytes = resource.contentLength() / 1048576.0;
             return Math.round(megabytes * 100.0) / 100.0;
         } catch (IOException exception) {
-            throw new RuntimeException("Error obtaining resource size: ", exception);
+            throw new ResourceAccessException("Error obtaining resource size: ", exception);
         }
 
     }
@@ -78,9 +79,18 @@ public class FileUtil {
         return "/";
     }
 
-    public Mono<BlobInfo> buildBlob(String bucketName, String nameFile, String contentType) {
-        return Mono.just(BlobId.of(bucketName, nameFile))
-                .map(blobId -> Blob.newBuilder(blobId)
+    public Mono<BlobInfo> buildBlob(String bucketName, String name, String contentType) {
+        return Mono.just(BlobId.of(bucketName, name))
+                .map(blobId -> BlobInfo.newBuilder(blobId)
+                        .setContentType(contentType)
+                        .build());
+    }
+
+    public Mono<BlobInfo> buildBlobFromFile(File file, String bucketName) {
+        String contentType = ContentTypeResolver.getFromFileExtension(file.getExtension());
+        return Mono.just(BlobId.of(bucketName, file.fullPath()))
+                .map(blobId -> BlobInfo.newBuilder(blobId)
+                        .setMetadata(file.getMetadata())
                         .setContentType(contentType)
                         .build());
     }

@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum FailureReason {
+public enum OcrFailureReason {
 
     NOT_DATA_EXTRACTED("Analysis of the document did not data extracted."),
     FAILED_GET_METADATA("Failure to get document metadata."),
@@ -20,7 +20,10 @@ public enum FailureReason {
     INVALID_DATE_FORMAT("Invalid date format."),
     ZIP_CODE_NOT_FOUND("The zip code was not found in the document."),
     INVALID_CONFIDENCE("Confidence level not valid"),
-    DATA_NOT_FOUND("Data not found in the document.");
+    ADDRESS_VALIDITY_NOT_FOUND("validity field not found in ocr"),
+    ADDRESS_VALIDITY_EXPIRED("Address validity must be from the last three months"),
+    DATA_NOT_FOUND("Data not found in the document."),
+    DUPLICATE_PAY_STUB("Duplicate pay stubs");
 
     private final String message;
 

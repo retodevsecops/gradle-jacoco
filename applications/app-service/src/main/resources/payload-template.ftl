@@ -5,6 +5,9 @@
         "ENE": "01", "FEB": "02", "MAR": "03", "ABR": "04", "MAY": "05", "JUN": "06",
         "JUL": "07", "AGO": "08", "SEP": "09", "OCT": "10", "NOV": "11", "DIC": "12"
     }
+    maritalStatusValues = {
+            "1": "S", "2": "C", "3": "V", "4": "D", "5": "S", "6": "U", "7": "Otros"
+    }
     current_date_timestamp = .now?long
     amountTotalToPay = (offer_data.offer.discount?replace(",", "")?number * offer_data.offer.term)?replace(",", "")
     discount = offer_data.offer.discount?replace(",", "")?number?c
@@ -14,6 +17,7 @@
     company = agreement_data.company?lower_case
     branch = promoter_data.branches?filter(branch -> branch.branchID == agreement_configuration_data.branchId)?first?if_exists
     folioFiscal = getFolioFiscal(ocr_documents_data)?replace("-", "")
+    aggrementKey = offer_data.offer.agreement.key
 >
 <#-- Functions -->
 <#function getPreferredPhone address>
@@ -50,6 +54,11 @@
         <#if finalDate gt latestDate>
             <#assign latestDate = finalDate>
             <#assign folioFiscal = document.data?filter(data -> data.name == "folio-fiscal")?first.value>
+        <#elseif finalDate == latestDate>
+            <#assign possibleFolioFiscal = document.data?filter(data -> data.name == "folio-fiscal")?first.value>
+            <#if possibleFolioFiscal?length == 36>
+                <#assign folioFiscal = possibleFolioFiscal>
+            </#if>
         </#if>
     </#list>
     <#return folioFiscal>
@@ -63,6 +72,19 @@
         <#return document.fields?filter(f -> f.technicalName == fieldName)?first.value!"">
     </#if>
     <#return "">
+</#function>
+<#function getBusinessNameByAggrementKey(aggrementKeyValue)>
+    <#if aggrementKeyValue == "10000790">
+        <#return "HXTI S.A. de C.V. SOFOM E.N.R.">
+    </#if>
+    <#return "Consupago S.A. de C.V. SOFOM E.R.">
+</#function>
+<#function getMaritalStatusValue(value)>
+    <#if maritalStatusValues[value]??>
+        <#return maritalStatusValues[value]>
+    <#else>
+        <#return value>
+    </#if>
 </#function>
 <#-- Template -->
 <#if company == "csb">
@@ -86,6 +108,7 @@
         "rfc": ""
     },
     "employmentData": {
+        "employeeNumber": "${offer_data.offer.employeeNumber?string}",
         "numeroEmpleado": "${offer_data.offer.employeeNumber?string}",
         "publicServerKey": "${offer_data.offer.employeeNumber?string}"
     },
@@ -104,7 +127,7 @@
                 },
                 "branch": {
                     "empresa": {
-                        "businessName": "Consupago S.A. de C.V. SOFOM E.R."
+                        "businessName": "${getBusinessNameByAggrementKey(aggrementKey)}"
                     }
                 },
                 "convenioId": "${offer_data.offer.agreement.key}"
@@ -118,7 +141,8 @@
             "openingCommissionPercentage": ${offer_data.offer.commissions?replace(",", ".")},
             "plazo": ${offer_data.offer.term},
             "requestedAmount": ${offer_data.offer.amount?c},
-            "totalAmount": ${amountTotalToPay}
+            "totalAmount": ${amountTotalToPay},
+            "estimatedCommision": ${offer_data.offer.commissions?replace(",", ".")}
         }
     },
     "person": {
@@ -244,13 +268,17 @@
 <#elseif company == "mn">
 <#-- This is a freemarker template for Masnomina aggrements. -->
 {
+    "applicationId" : "RENEX",
     "origen": "ECSB",
     "destinoCredito": "",
+    "claveServidor": "${offer_data.offer.employeeNumber?string}",
+    "dependenciaGEM": "${getFieldFromDocument('carta-autorizacion-descuento', 'dependencia')}",
+    "cuenta": "",
     "empresa": "${(branch.empresa.enterpriseName)!''}",
     "solicitud": "${offer_data.offer.id}",
     "fechaSolicitud": ${current_date_timestamp?c},
     "banco": "${customer_data.preApplicationData.paymentData.bankDesc! ''}",
-    "imssAgrement": false,
+    "imssAgrement": true,
     "tipoCredito": "NUEVO",
     "tipoDisposicion": "T",
     "clabe": "${(customer_data.preApplicationData.paymentData.clabe)! ''}",
@@ -271,7 +299,6 @@
     "convenio": {
         "agreement": "${offer_data.offer.agreement.key}",
         "agreementCRM": "${offer_data.offer.agreement.key}",
-        "agreementCRM": "${offer_data.offer.agreement.key}",
         "codigoBaseCalculo": "${agreement_data.calculationBaseCode}",
         "tipoAmortizacion": "${agreement_data.amortizationType}",
         "razonSocial": "${offer_data.offer.agreement.description}",
@@ -283,6 +310,7 @@
         "distributorName": "${agreement_data.providerCapacity}"
     },
     "cliente": {
+       "ingresos": "0",
         "numeroEmpleadoEmp": "${offer_data.offer.employeeNumber?string}",
         "ultimoFolioFiscal": "${folioFiscal}",
         "funcionarioPublico": "${getStringFromBoolean(customer_data.preApplicationData.applicant.pep)}",
@@ -309,9 +337,9 @@
         "codigoEstadoNacimiento": "${(customer_data.customer.placeBirth)!''}",
         "nacionalidad": "${(customer_data.customer.nationality.description)!''}",
         "correo": "${(customer_data.customer.email)!''}",
-        "estadoCivil": "${(customer_data.customer.maritalStatus.description)!''}",
+        "estadoCivil": "${getMaritalStatusValue((customer_data.customer.maritalStatus.key)!'')}",
         "telefonos": {
-            "movil": "3138920033",
+            "movil": "${getPreferredPhone(defaultAddress)}",
             "trabajo": ""
         },
         "domicilio": {

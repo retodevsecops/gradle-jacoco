@@ -16,7 +16,8 @@ public enum OcrBusinessMessage implements IExceptionMessage {
     ID_ANALYSIS_REQUIRED("BE_OCR_0006", "The analysis identifier is required."),
     DOCUMENT_NAME_REQUIRED("BE_OCR_0007", "The document technical name is required."),
     STORAGE_ID_REQUIRED("BE_OCR_0008", "The storage id of document is required."),
-    PROCESS_ID_REQUIRED("BE_OCR_0009", "The process identifier is required.");
+    PROCESS_ID_REQUIRED("BE_OCR_0009", "The process identifier is required."),
+    INVALID_DATE_FORMAT("BE_OCR_0009", "Invalid Date format in OCR meta-data response");
 
     private final String code;
     private final String message;

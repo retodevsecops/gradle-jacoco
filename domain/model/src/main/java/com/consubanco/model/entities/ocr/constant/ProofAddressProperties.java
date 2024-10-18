@@ -7,7 +7,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ProofAddressProperties {
 
-    ZIP_CDE("codigo-postal");
+    ZIP_CDE("codigo-postal"),
+    VALIDITY("vigencia");
 
     private final String key;
 }

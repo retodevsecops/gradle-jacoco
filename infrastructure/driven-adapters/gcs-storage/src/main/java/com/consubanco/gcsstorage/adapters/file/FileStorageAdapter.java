@@ -1,9 +1,8 @@
 package com.consubanco.gcsstorage.adapters.file;
 
 import com.consubanco.freemarker.ITemplateOperations;
-import com.consubanco.gcsstorage.commons.ContentTypeResolver;
 import com.consubanco.gcsstorage.commons.FileFactoryUtil;
-import com.consubanco.gcsstorage.commons.FileUtil;
+import com.consubanco.gcsstorage.commons.FileStorageUtil;
 import com.consubanco.gcsstorage.config.GoogleStorageProperties;
 import com.consubanco.logger.CustomLogger;
 import com.consubanco.model.commons.exception.TechnicalException;
@@ -28,6 +27,7 @@ import java.util.Base64;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.consubanco.model.commons.exception.factory.ExceptionFactory.monoTechnicalError;
 import static com.consubanco.model.commons.exception.factory.ExceptionFactory.throwTechnicalError;
 import static com.consubanco.model.entities.file.message.FileTechnicalMessage.*;
 import static com.google.cloud.storage.Storage.SignUrlOption.withV4Signature;
@@ -50,15 +50,35 @@ public class FileStorageAdapter implements FileRepository {
     }
 
     @Override
+    public Mono<Void> delete(File file) {
+        return deleteInStorage(file)
+                .doOnSuccess(deletedFile -> logger.info("Archivo eliminado exitosamente: " + file.getName()))
+                .onErrorMap(error -> {
+                    logger.error("Error al eliminar el archivo: " + file.getName(), error);
+                    return throwTechnicalError(DELETE_FILE_ERROR).apply(error);
+                });
+    }
+    private Mono<Void> deleteInStorage(File file) {
+        BlobId blobId = BlobId.of(properties.getBucketName(), file.fullPath());
+        return Mono.fromCallable(() -> storage.delete(blobId))
+                .flatMap(deleted -> {
+                    if (Boolean.TRUE.equals(deleted)) {
+                        return Mono.empty();
+                    } else {
+                        return monoTechnicalError("File not found: " + file.fullPath(), DELETE_FILE_ERROR);
+                    }
+                });
+    }
+
+    @Override
     public Mono<File> saveWithSignedUrl(File file) {
         return saveInStorage(file)
                 .flatMap(this::buildFileEntityFromBlob);
     }
 
     private Mono<Blob> saveInStorage(File file) {
-        String contentType = ContentTypeResolver.getFromFileExtension(file.getExtension());
-        Mono<BlobInfo> blob = FileUtil.buildBlob(properties.getBucketName(), file.fullPath(), contentType);
-        Mono<byte[]> contentFile = FileUtil.base64ToBytes(file.getContent());
+        Mono<BlobInfo> blob = FileStorageUtil.buildBlobFromFile(file, properties.getBucketName());
+        Mono<byte[]> contentFile = FileStorageUtil.base64ToBytes(file.getContent());
         return Mono.zip(blob, contentFile)
                 .map(tuple -> storage.create(tuple.getT1(), tuple.getT2()))
                 .onErrorMap(throwTechnicalError(STORAGE_ERROR));
@@ -126,9 +146,9 @@ public class FileStorageAdapter implements FileRepository {
 
     public Mono<File> uploadLocalPayloadTemplate() {
         return Mono.just(properties.payloadTemplatePath())
-                .map(FileUtil::getFileNameWithExtension)
+                .map(FileStorageUtil::getFileNameWithExtension)
                 .map(ClassPathResource::new)
-                .flatMap(FileUtil::buildFileUploadVOFromResource)
+                .flatMap(FileStorageUtil::buildFileUploadVOFromResource)
                 .onErrorMap(throwTechnicalError(LOCAL_TEMPLATE_ERROR))
                 .doOnNext(e -> logger.info("Payload template was get from local source."))
                 .flatMap(this::uploadPayloadTemplate);
@@ -145,8 +165,8 @@ public class FileStorageAdapter implements FileRepository {
     public Mono<File> uploadAgreementsConfigFile(File file) {
         return Mono.just(properties.getFilesPath().getAgreementsConfig())
                 .map(path -> file.toBuilder()
-                        .name(FileUtil.getFileName(path))
-                        .directoryPath(FileUtil.getDirectory(path))
+                        .name(FileStorageUtil.getFileName(path))
+                        .directoryPath(FileStorageUtil.getDirectory(path))
                         .build())
                 .flatMap(this::saveWithSignedUrl);
     }
@@ -190,9 +210,9 @@ public class FileStorageAdapter implements FileRepository {
 
     private Mono<File> uploadLocalCreateApplicationTemplate() {
         return Mono.just(properties.getFilesPath().getCreateApplicationTemplate())
-                .map(FileUtil::getFileNameWithExtension)
+                .map(FileStorageUtil::getFileNameWithExtension)
                 .map(ClassPathResource::new)
-                .flatMap(FileUtil::buildFileUploadVOFromResource)
+                .flatMap(FileStorageUtil::buildFileUploadVOFromResource)
                 .flatMap(this::uploadCreateApplicationTemplate)
                 .doOnNext(e -> logger.info("The create application template was get from local source."))
                 .onErrorMap(throwTechnicalError(LOCAL_TEMPLATE_ERROR));
@@ -200,11 +220,11 @@ public class FileStorageAdapter implements FileRepository {
 
     private Mono<File> uploadTemplate(FileUploadVO fileUploadVO, String path) {
         return Mono.just(fileUploadVO.getContent())
-                .map(FileUtil::decodeBase64)
+                .map(FileStorageUtil::decodeBase64)
                 .filter(templateOperations::validate)
                 .map(isValid -> File.builder()
-                        .name(FileUtil.getFileName(path))
-                        .directoryPath(FileUtil.getDirectory(path))
+                        .name(FileStorageUtil.getFileName(path))
+                        .directoryPath(FileStorageUtil.getDirectory(path))
                         .content(fileUploadVO.getContent())
                         .extension(fileUploadVO.getExtension())
                         .build())
@@ -226,7 +246,7 @@ public class FileStorageAdapter implements FileRepository {
     }
 
     private Mono<String> signUrl(Blob blob) {
-        return FileUtil.buildBlob(properties.getBucketName(), blob.getName(), blob.getContentType())
+        return FileStorageUtil.buildBlob(properties.getBucketName(), blob.getName(), blob.getContentType())
                 .map(blobInfo -> storage.signUrl(blobInfo, properties.getSignUrlDays(), DAYS, withV4Signature()))
                 .map(URL::toString)
                 .onErrorMap(throwTechnicalError(SIGN_URL_ERROR));

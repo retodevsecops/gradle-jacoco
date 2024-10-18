@@ -1,5 +1,7 @@
 package com.consubanco.api.services.management;
 
+import com.consubanco.api.commons.swagger.ParamsOpenAPI;
+import com.consubanco.api.services.management.constants.ManagementParams;
 import lombok.experimental.UtilityClass;
 import org.springdoc.core.fn.builders.operation.Builder;
 
@@ -38,6 +40,7 @@ public class ManagementOpenAPI {
                 .operationId("objectsByItem")
                 .description("Get all objects by item.")
                 .summary("Get objects by item.")
+                .parameter(ParamsOpenAPI.path(ManagementParams.ITEM, "item"))
                 .response(responseOkWithList(String.class))
                 .response(responseBusinessException())
                 .response(responseInternalError());
@@ -48,6 +51,7 @@ public class ManagementOpenAPI {
                 .operationId("cleanByItem")
                 .description("Clean microservice cache by item.")
                 .summary("Clean microservice cache by item.")
+                .parameter(ParamsOpenAPI.path(ManagementParams.ITEM, "item"))
                 .response(responseOk(Map.class))
                 .response(responseBusinessException())
                 .response(responseInternalError());

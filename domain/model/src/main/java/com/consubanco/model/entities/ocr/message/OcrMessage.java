@@ -22,6 +22,7 @@ public class OcrMessage {
     private static final String NOT_FOUND_BY_STORAGE_ID = "No ocr document was found with the storage id %s.";
     private static final String NOT_FOUND_BY_PROCESS = "No ocr documents was found with the process id %s.";
     private static final String INVALID_CONFIDENCE = "The confidence level of the %s data is %s and must be equal to or higher than %s.";
+    private static final String EXPIRED_ADDRESS_VALIDITY = "Address validity: %s its more than %s months ago";
     private static final String DATA_NOT_FOUND = "From the extracted data of the document, the following data was not found: %s.";
 
     public static String typeNotFound(final String documentName) {
@@ -66,6 +67,10 @@ public class OcrMessage {
 
     public static String invalidMonthlyPayStub(LocalDate startDate, LocalDate endDate, LocalDate initialPay, LocalDate finalPay) {
         return String.format(INVALID_MONTHLY_PAY_STUB, startDate, endDate, initialPay, finalPay);
+    }
+
+    public static String expiredAddressValidity(LocalDate validity, int validityMonths) {
+        return String.format(EXPIRED_ADDRESS_VALIDITY, validity.toString(), validityMonths);
     }
 
     public static String invalidFortnightPayStub(LocalDate startDate, LocalDate endDate, LocalDate initialPay, LocalDate finalPay) {

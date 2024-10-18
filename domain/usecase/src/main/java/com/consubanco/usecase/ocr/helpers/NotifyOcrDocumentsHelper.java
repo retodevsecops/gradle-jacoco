@@ -8,7 +8,7 @@ import com.consubanco.model.entities.ocr.constant.OcrDocumentType;
 import com.consubanco.model.entities.ocr.constant.OcrStatus;
 import com.consubanco.model.entities.ocr.gateway.OcrDocumentGateway;
 import com.consubanco.model.entities.ocr.gateway.OcrDocumentRepository;
-import com.consubanco.model.entities.ocr.vo.OcrDocumentSaveVO;
+import com.consubanco.model.entities.ocr.vo.OcrSaveVO;
 import com.consubanco.model.entities.process.Process;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
@@ -41,15 +41,15 @@ public class NotifyOcrDocumentsHelper {
                 .filter(file -> ocrAttachments.contains(file.baseFileName()));
     }
 
-    private Mono<OcrDocumentSaveVO> notifyDocument(Process process, File file) {
+    private Mono<OcrSaveVO> notifyDocument(Process process, File file) {
         OcrDocumentType ocrDocumentType = OcrDocumentType.getTypeFromName(file.getName());
         return ocrDocumentGateway.notifyDocumentForAnalysis(file.getStorageRoute(), ocrDocumentType)
                 .map(analysisId -> buildOcrDocumentSave(process, file, analysisId));
 
     }
 
-    private OcrDocumentSaveVO buildOcrDocumentSave(Process process, File file, String analysisId) {
-        return OcrDocumentSaveVO.builder()
+    private OcrSaveVO buildOcrDocumentSave(Process process, File file, String analysisId) {
+        return OcrSaveVO.builder()
                 .name(file.getName())
                 .storageId(file.getId())
                 .storageRoute(file.getStorageRoute())
