@@ -24,17 +24,6 @@
         "isRequired": true,
         "requestToCustomer": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
-      },
-      {
-        "name": "Recibos de nomina",
-        "technicalName": "recibo-nomina",
-        "maxFiles": 2,
-        "isOcr": false,
-        "isRecoverable": false,
-        "namePreviousDocument": "RECIBO-NOMINA",
-        "isRequired": true,
-        "requestToCustomer": true,
-        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       }
     ],
     "compoundDocuments": [
@@ -94,17 +83,6 @@
         "maxFiles": 1,
         "isOcr": false,
         "isRecoverable": false,
-        "isRequired": true,
-        "requestToCustomer": true,
-        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
-      },
-      {
-        "name": "Recibos de nomina",
-        "technicalName": "recibo-nomina",
-        "maxFiles": 2,
-        "isOcr": false,
-        "isRecoverable": false,
-        "namePreviousDocument": "RECIBO-NOMINA",
         "isRequired": true,
         "requestToCustomer": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
