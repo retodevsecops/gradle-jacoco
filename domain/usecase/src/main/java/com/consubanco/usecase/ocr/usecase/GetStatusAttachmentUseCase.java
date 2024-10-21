@@ -11,7 +11,7 @@ import com.consubanco.model.entities.ocr.OcrDocument;
 import com.consubanco.model.entities.ocr.constant.OcrStatus;
 import com.consubanco.model.entities.ocr.gateway.OcrDocumentRepository;
 import com.consubanco.usecase.agreement.GetAgreementConfigUseCase;
-import com.consubanco.usecase.file.helpers.GetAttachmentsByOfferHelper;
+import com.consubanco.usecase.file.helpers.FileHelper;
 import com.consubanco.usecase.process.GetProcessByIdUseCase;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
@@ -27,7 +27,7 @@ import static com.consubanco.model.entities.ocr.message.OcrMessage.ocrNotAssocia
 public class GetStatusAttachmentUseCase {
 
     private final GetProcessByIdUseCase getProcessByIdUseCase;
-    private final GetAttachmentsByOfferHelper getAttachmentsByOfferHelper;
+    private final FileHelper fileHelper;
     private final GetAgreementConfigUseCase getAgreementConfigUseCase;
     private final OcrDocumentRepository ocrDocumentRepository;
 
@@ -43,7 +43,7 @@ public class GetStatusAttachmentUseCase {
     }
 
     private Mono<List<File>> getNonRetrievedFilesByOfferId(String offerId) {
-        return getAttachmentsByOfferHelper.execute(offerId)
+        return fileHelper.getOfferAttachmentsWithoutUrls(offerId)
                 .filter(file -> !MetadataUtil.isRetrievedFile(file.getMetadata()))
                 .collectList();
     }

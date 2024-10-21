@@ -86,6 +86,13 @@
         <#return value>
     </#if>
 </#function>
+<#function getCustomerSignatureUrl()>
+    <#assign signature = attachment_data?filter(at -> at.name == "customer-signature")?first>
+    <#if signature??>
+        <#return signature.storageRoute>
+    </#if>
+    <#return "https://storage.googleapis.com/csb_puc_statics_prod/unsigned.png">
+</#function>
 <#-- Template -->
 <#if company == "csb">
 {
@@ -255,7 +262,7 @@
     "signature": [
         {
             "name": "cliente",
-            "file_url": "https://storage.googleapis.com/csb_puc_statics_prod/unsigned.png"
+            "file_url": "${getCustomerSignatureUrl()}"
         },
         {
             "name": "promotor",
@@ -393,7 +400,7 @@
         "longitude": ""
     },
     "firmas": {
-        "cliente": "https://storage.googleapis.com/csb_puc_statics_prod/unsigned.png",
+        "cliente": "${getCustomerSignatureUrl()}",
         "promotor": "https://storage.googleapis.com/csb_puc_statics_prod/unsigned.png"
     }
 }

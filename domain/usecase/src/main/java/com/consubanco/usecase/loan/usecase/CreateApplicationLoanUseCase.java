@@ -1,16 +1,15 @@
 package com.consubanco.usecase.loan.usecase;
 
-import com.consubanco.model.commons.exception.factory.ExceptionFactory;
 import com.consubanco.model.entities.file.File;
 import com.consubanco.model.entities.file.constant.FileConstants;
 import com.consubanco.model.entities.file.gateway.FileRepository;
 import com.consubanco.model.entities.loan.LoanApplication;
 import com.consubanco.model.entities.loan.gateway.LoanApplicationRepository;
 import com.consubanco.model.entities.loan.gateway.LoanGateway;
-import com.consubanco.model.entities.loan.vo.ApplicationResponseVO;
 import com.consubanco.model.entities.otp.Otp;
 import com.consubanco.model.entities.process.Process;
 import com.consubanco.model.entities.process.gateway.ProcessGateway;
+import com.consubanco.usecase.document.usecase.GenerateNom151UseCase;
 import com.consubanco.usecase.loan.helpers.LoanApplicationValidationHelper;
 import com.consubanco.usecase.process.GetProcessByIdUseCase;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +18,7 @@ import reactor.function.TupleUtils;
 
 import java.util.Map;
 
+import static com.consubanco.model.commons.exception.factory.ExceptionFactory.monoBusiness;
 import static com.consubanco.model.entities.loan.message.LoanBusinessMessage.API_CREATE_APPLICATION_RESPONSE_ERROR;
 import static com.consubanco.model.entities.loan.message.LoanBusinessMessage.APPLICANT_RECORD_SIGNED_NOT_FOUND;
 
@@ -33,48 +33,43 @@ public class CreateApplicationLoanUseCase {
     private final LoanApplicationRepository loanRepository;
     private final BuildDataForApplicationUseCase buildDataForApplicationUseCase;
     private final ProcessGateway processGateway;
+    private final GenerateNom151UseCase generateNom151UseCase;
 
     public Mono<Map<String, String>> execute(String processId, Otp otp) {
         return getProcessByIdUseCase.execute(processId)
                 .flatMap(process -> loanApplicationValidationHelper.execute(process, otp))
+                .flatMap(process -> generateNom151UseCase.execute(process).thenReturn(process))
                 .flatMap(process -> processLoanApplication(otp, process))
                 .thenReturn(Map.of("message", MESSAGE));
     }
 
     private Mono<Void> processLoanApplication(Otp otp, Process process) {
-        return Mono.zip(getCreateApplicationTemplate(), buildDataForApplicationUseCase.execute(process))
+        return Mono.zip(this.getCreateApplicationTemplate(), buildDataForApplicationUseCase.execute(process))
                 .flatMap(TupleUtils.function(loanGateway::buildApplicationData))
                 .flatMap(applicationData -> createApplication(process, otp, applicationData))
                 .flatMap(loanApplication -> checkApplication(process, loanApplication));
     }
 
-    private Mono<Void> checkApplication(Process process, LoanApplication loanApplication) {
-        if (loanApplication.applicationIsSuccessful()) return finishProcess(process, loanApplication);
-        return ExceptionFactory.monoBusiness(API_CREATE_APPLICATION_RESPONSE_ERROR, loanApplication.getResponse().toString());
+    private Mono<String> getCreateApplicationTemplate() {
+        return fileRepository.getCreateApplicationTemplateWithoutSignedUrl()
+                .map(File::getContent);
     }
 
     private Mono<LoanApplication> createApplication(Process process, Otp otp, Map<String, Object> applicationData) {
         return loanGateway.createApplication(applicationData)
-                .map(applicationResponse -> buildLoanApplication(process, otp, applicationData, applicationResponse))
+                .map(applicationResponse -> LoanApplication.builder()
+                        .processId(process.getId())
+                        .otp(otp.getCode())
+                        .applicationStatus(applicationResponse.getApplicationStatus())
+                        .request(applicationData)
+                        .response(applicationResponse.getApplicationResponse())
+                        .build())
                 .flatMap(loanRepository::saveApplication);
     }
 
-    private LoanApplication buildLoanApplication(Process process,
-                                                 Otp otp,
-                                                 Map<String, Object> applicationData,
-                                                 ApplicationResponseVO applicationResponse) {
-        return LoanApplication.builder()
-                .processId(process.getId())
-                .otp(otp.getCode())
-                .applicationStatus(applicationResponse.getApplicationStatus())
-                .request(applicationData)
-                .response(applicationResponse.getApplicationResponse())
-                .build();
-    }
-
-    private Mono<String> getCreateApplicationTemplate() {
-        return fileRepository.getCreateApplicationTemplateWithoutSignedUrl()
-                .map(File::getContent);
+    private Mono<Void> checkApplication(Process process, LoanApplication loanApplication) {
+        if (loanApplication.applicationIsSuccessful()) return finishProcess(process, loanApplication);
+        return monoBusiness(API_CREATE_APPLICATION_RESPONSE_ERROR, loanApplication.getResponse().toString());
     }
 
     private Mono<Void> finishProcess(Process process, LoanApplication req) {
@@ -96,7 +91,7 @@ public class CreateApplicationLoanUseCase {
         String route = FileConstants.signedApplicantRecordRoute(offerId);
         return fileRepository.getByNameWithoutSignedUrl(route)
                 .map(File::getContent)
-                .switchIfEmpty(ExceptionFactory.monoBusiness(APPLICANT_RECORD_SIGNED_NOT_FOUND, route));
+                .switchIfEmpty(monoBusiness(APPLICANT_RECORD_SIGNED_NOT_FOUND, route));
     }
 
 }

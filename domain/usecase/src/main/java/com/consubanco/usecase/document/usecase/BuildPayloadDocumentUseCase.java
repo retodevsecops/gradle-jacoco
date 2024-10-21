@@ -3,10 +3,10 @@ package com.consubanco.usecase.document.usecase;
 import com.consubanco.model.entities.agreement.vo.AgreementConfigVO;
 import com.consubanco.model.entities.document.gateway.PayloadDocumentGateway;
 import com.consubanco.model.entities.file.File;
-import com.consubanco.model.entities.file.gateway.FileRepository;
 import com.consubanco.model.entities.process.Process;
 import com.consubanco.usecase.agreement.GetAgreementConfigUseCase;
 import com.consubanco.usecase.document.helper.BuildPayloadDataMapHelper;
+import com.consubanco.usecase.file.helpers.FileHelper;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
@@ -15,7 +15,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class BuildPayloadDocumentUseCase {
 
-    private final FileRepository fileRepository;
+    private final FileHelper fileHelper;
     private final PayloadDocumentGateway payloadGateway;
     private final GetAgreementConfigUseCase agreementConfigUseCase;
     private final BuildPayloadDataMapHelper buildPayloadDataMapHelper;
@@ -26,7 +26,7 @@ public class BuildPayloadDocumentUseCase {
     }
 
     private Mono<String> getPayloadTemplate() {
-        return fileRepository.getPayloadTemplateWithoutSignedUrl()
+        return fileHelper.getPayloadTemplate()
                 .map(File::getContent);
     }
 
