@@ -269,17 +269,6 @@
         "isRequired": true,
         "requestToCustomer": true,
         "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
-      },
-      {
-        "name": "Comprobante de domicilio",
-        "technicalName": "comprobante-domicilio",
-        "maxFiles": 1,
-        "isOcr": false,
-        "isRecoverable": true,
-        "namePreviousDocument": "COMPROBANTE-DOMICILIO",
-        "isRequired": true,
-        "requestToCustomer": true,
-        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
       }
     ],
     "compoundDocuments": [
@@ -310,6 +299,101 @@
           { "name": "formato-unico-caratula" },
           { "name": "mandato-de-autorizacion-de-descuento" },
           { "name": "identificacion-oficial" }
+        ]
+      }
+    ],
+    "customerVisibleDocuments": [
+      "formato-solicitud-gratuita",
+      "contrato-cliente",
+      "carta-de-liquidacion"
+    ]
+  },
+  {
+    "agreementName": "GEM - MN",
+    "agreementNumber": "10001430",
+    "promoterId": "0017131199",
+    "branchId": "51221892",
+    "attachmentsDocuments": [
+      {
+        "name": "Frente de la INE",
+        "technicalName": "frente-identificacion-oficial",
+        "maxFiles": 1,
+        "isOcr": false,
+        "isRecoverable": false,
+        "isRequired": true,
+        "requestToCustomer": true,
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
+      },
+      {
+        "name": "Reverso de la INE",
+        "technicalName": "reverso-identificacion-oficial",
+        "maxFiles": 1,
+        "isOcr": false,
+        "isRecoverable": false,
+        "isRequired": true,
+        "requestToCustomer": true,
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
+      },
+      {
+        "name": "Captura una selfie con tu INE visible de frente, colocándolo junto a tu rostro.",
+        "technicalName": "selfie",
+        "maxFiles": 1,
+        "isOcr": false,
+        "isRecoverable": false,
+        "isRequired": true,
+        "requestToCustomer": true,
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
+      },
+      {
+        "name": "Recibos de nomina",
+        "technicalName": "recibo-nomina",
+        "maxFiles": 2,
+        "isOcr": false,
+        "isRecoverable": true,
+        "namePreviousDocument": "RECIBO-NOMINA",
+        "isRequired": true,
+        "requestToCustomer": true,
+        "typeFile": ["JPG", "JPEG", "PNG", "PDF", "HEIF", "HEIC"]
+      }
+    ],
+    "compoundDocuments": [
+      {
+        "name": "formato-unico-contrato-credito",
+        "documents": [
+          { "name": "clausulas_sjt_v2" }
+        ]
+      },
+      {
+        "name": "identificacion-oficial",
+        "documents": [
+          { "name": "frente-identificacion-oficial" },
+          { "name": "reverso-identificacion-oficial" }
+        ]
+      },
+      {
+        "name": "formato-solicitud-gratuita",
+        "documents": [
+          { "name": "solicitud_credito_sjt_v2" }
+        ]
+      },
+      {
+        "name": "contrato-cliente",
+        "documents": [
+          { "name": "caratula_credito_sjt_v2" },
+          { "name": "clausulas_sjt_v2" }
+        ]
+      },
+      {
+        "name": "documentos-cobranza",
+        "documents": [
+          { "name": "identificacion-oficial" },
+          { "name": "recibo-nomina" },
+          { "name": "caratula_credito_sjt_v2" },
+          { "name": "solicitud_credito_sjt_v2" },
+          { "name": "carta-autorizacion-descuento" },
+          { "name": "anexo_c_sjt_v3" },
+          { "name": "anexo_d_sjt_v2" },
+          { "name": "anexo_d_sjt_v3" }
         ]
       }
     ],
