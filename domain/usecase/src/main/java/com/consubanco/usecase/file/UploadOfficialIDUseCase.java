@@ -1,9 +1,7 @@
 package com.consubanco.usecase.file;
 
-import com.consubanco.model.entities.document.constant.DocumentNames;
 import com.consubanco.model.entities.document.gateway.PDFDocumentGateway;
 import com.consubanco.model.entities.file.File;
-import com.consubanco.model.entities.file.constant.FileExtensions;
 import com.consubanco.model.entities.file.gateway.FileConvertGateway;
 import com.consubanco.model.entities.file.gateway.FileRepository;
 import com.consubanco.model.entities.process.Process;
@@ -14,7 +12,8 @@ import reactor.function.TupleUtils;
 
 import java.util.List;
 
-import static com.consubanco.model.entities.file.constant.FileConstants.attachmentsDirectory;
+import static com.consubanco.model.entities.document.constant.DocumentNames.OFFICIAL_ID;
+import static com.consubanco.model.entities.file.util.FileFactoryUtil.buildAttachmentPDF;
 
 @RequiredArgsConstructor
 public class UploadOfficialIDUseCase {
@@ -35,12 +34,7 @@ public class UploadOfficialIDUseCase {
 
     private Mono<File> buildFile(Process process, String frontOfficialID, String backOfficialID) {
         return pdfDocumentGateway.generatePdfWithImages(List.of(frontOfficialID, backOfficialID))
-                .map(fileContent -> File.builder()
-                        .name(DocumentNames.OFFICIAL_ID)
-                        .content(fileContent)
-                        .extension(FileExtensions.PDF)
-                        .directoryPath(attachmentsDirectory(process.getOffer().getId()))
-                        .build());
+                .map(fileContent -> buildAttachmentPDF(OFFICIAL_ID, fileContent, process.getOffer().getId()));
     }
 
 }

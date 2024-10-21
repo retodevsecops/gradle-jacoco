@@ -1,7 +1,7 @@
 package com.consubanco.gcsstorage.commons;
 
 import com.consubanco.model.entities.file.File;
-import com.consubanco.model.entities.file.vo.FileWithStorageRouteVO;
+import com.consubanco.model.entities.file.vo.FileStorageVO;
 import com.google.cloud.storage.Blob;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.codec.binary.Base64;
@@ -23,8 +23,8 @@ public class FileFactoryUtil {
         return buildFileFromBlob(blob, url);
     }
 
-    public static FileWithStorageRouteVO buildFileWithStorageRouteVO(Blob blob) {
-        return FileWithStorageRouteVO.builder()
+    public static FileStorageVO buildFileWithStorageRouteVO(Blob blob) {
+        return FileStorageVO.builder()
                 .name(FileStorageUtil.getFileName(blob.getName()))
                 .size(FileStorageUtil.getSize(blob))
                 .storageRoute(String.format(URI_GS, blob.getBucket(), blob.getName()))

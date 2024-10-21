@@ -10,8 +10,8 @@ import com.consubanco.model.entities.file.constant.FileConstants;
 import com.consubanco.model.entities.file.gateway.FileRepository;
 import com.consubanco.model.entities.file.util.FileFactoryUtil;
 import com.consubanco.model.entities.file.vo.AttachmentFileVO;
+import com.consubanco.model.entities.file.vo.FileStorageVO;
 import com.consubanco.model.entities.file.vo.FileUploadVO;
-import com.consubanco.model.entities.file.vo.FileWithStorageRouteVO;
 import com.consubanco.model.entities.ocr.OcrDocument;
 import com.consubanco.model.entities.process.Process;
 import com.consubanco.usecase.agreement.GetAgreementConfigUseCase;
@@ -60,7 +60,7 @@ public class UploadAgreementAttachmentsUseCase {
 
     private Mono<List<String>> filesByOffer(String offerId) {
         return fileRepository.listByFolder(FileConstants.offerDirectory(offerId))
-                .map(FileWithStorageRouteVO::getName)
+                .map(FileStorageVO::getName)
                 .collectList();
     }
 

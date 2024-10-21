@@ -9,7 +9,7 @@ import com.consubanco.model.entities.agreement.vo.AttachmentConfigVO;
 import com.consubanco.model.entities.document.constant.DocumentNames;
 import com.consubanco.model.entities.file.constant.FileConstants;
 import com.consubanco.model.entities.file.gateway.FileRepository;
-import com.consubanco.model.entities.file.vo.FileWithStorageRouteVO;
+import com.consubanco.model.entities.file.vo.FileStorageVO;
 import com.consubanco.model.entities.otp.Otp;
 import com.consubanco.model.entities.process.Process;
 import com.consubanco.usecase.otp.CheckOtpUseCase;
@@ -31,7 +31,7 @@ public class LoanApplicationValidationHelper {
     private final CheckOtpUseCase checkOtpUseCase;
 
     public Mono<Process> execute(Process process, Otp otp) {
-        return Mono.zip(verifyOtp(process, otp), verifyDocuments(process))
+        return Mono.zip(this.verifyOtp(process, otp), this.verifyDocuments(process))
                 .thenReturn(process);
     }
 
@@ -44,26 +44,10 @@ public class LoanApplicationValidationHelper {
 
     private Mono<Process> verifyDocuments(Process process) {
         Mono<List<String>> documentsRequiredForAgreement = documentsRequiredForAgreement(process.getAgreementNumber());
-        Mono<List<String>> documentsInStorageByOffer = documentsInStorageByOffer(process.getOfferId());
-        return Mono.zip(documentsRequiredForAgreement, documentsInStorageByOffer)
+        Mono<List<String>> getOfferFilesFromStorage = getOfferFilesFromStorage(process.getOfferId());
+        return Mono.zip(documentsRequiredForAgreement, getOfferFilesFromStorage)
                 .flatMap(TupleUtils.function(this::checkExistenceDocuments))
                 .thenReturn(process);
-    }
-
-    private Mono<Void> checkExistenceDocuments(List<String> documentsRequired, List<String> documentsInStorage) {
-        return Flux.fromIterable(documentsRequired)
-                .filter(documentName -> !documentsInStorage.contains(documentName))
-                .collectList()
-                .filter(list -> !list.isEmpty())
-                .flatMap(list -> ExceptionFactory.monoBusiness(MISSING_DOCUMENTS, String.join(", ", list)));
-    }
-
-    private Mono<List<String>> documentsInStorageByOffer(String offerId) {
-        return Mono.just(offerId)
-                .map(FileConstants::offerDirectory)
-                .flatMapMany(fileRepository::listByFolder)
-                .map(FileWithStorageRouteVO::getName)
-                .collectList();
     }
 
     private Mono<List<String>> documentsRequiredForAgreement(String agreementNumber) {
@@ -96,6 +80,22 @@ public class LoanApplicationValidationHelper {
                 .map(AttachmentConfigVO::getTechnicalName)
                 .distinct()
                 .collectList();
+    }
+
+    private Mono<List<String>> getOfferFilesFromStorage(String offerId) {
+        return Mono.just(offerId)
+                .map(FileConstants::offerDirectory)
+                .flatMapMany(fileRepository::listByFolder)
+                .map(FileStorageVO::getName)
+                .collectList();
+    }
+
+    private Mono<Void> checkExistenceDocuments(List<String> documentsRequired, List<String> documentsInStorage) {
+        return Flux.fromIterable(documentsRequired)
+                .filter(documentName -> !documentsInStorage.contains(documentName))
+                .collectList()
+                .filter(list -> !list.isEmpty())
+                .flatMap(list -> ExceptionFactory.monoBusiness(MISSING_DOCUMENTS, String.join(", ", list)));
     }
 
 }

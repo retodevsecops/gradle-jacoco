@@ -9,7 +9,7 @@ import com.consubanco.model.entities.file.util.MetadataUtil;
 import com.consubanco.model.entities.ocr.OcrDocument;
 import com.consubanco.model.entities.ocr.gateway.OcrDocumentRepository;
 import com.consubanco.model.entities.process.Process;
-import com.consubanco.usecase.file.helpers.GetAttachmentsByOfferHelper;
+import com.consubanco.usecase.file.helpers.FileHelper;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -22,7 +22,7 @@ import static com.consubanco.model.entities.ocr.message.OcrMessage.ocrNotAssocia
 @RequiredArgsConstructor
 public class GetOcrAttachmentsHelper {
 
-    private final GetAttachmentsByOfferHelper getAttachmentsByOfferHelper;
+    private final FileHelper fileHelper;
     private final OcrDocumentRepository ocrDocumentRepository;
 
     public Mono<List<OcrDocument>> execute(Process process, AgreementConfigVO agreementConfigVO) {
@@ -33,7 +33,7 @@ public class GetOcrAttachmentsHelper {
     }
 
     private Mono<List<File>> getNonRetrievedFilesByOfferId(String offerId) {
-        return getAttachmentsByOfferHelper.execute(offerId)
+        return fileHelper.getOfferAttachmentsWithoutUrls(offerId)
                 .filter(file -> !MetadataUtil.isRetrievedFile(file.getMetadata()))
                 .collectList();
     }
