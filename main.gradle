@@ -48,6 +48,9 @@ subprojects {
         }
     }
 
+    // Asegurarse de que jacocoTestReport se ejecute después de build
+    build.finalizedBy jacocoTestReport
+
     test.finalizedBy(project.tasks.jacocoTestReport)
 
     jacocoTestReport {
@@ -79,6 +82,9 @@ tasks.register('jacocoMergedReport', JacocoReport) {
         html.setRequired true
     }
 }
+
+// Asegurarse de que jacocoMergedReport se ejecute después de build en la raíz del proyecto
+build.finalizedBy jacocoMergedReport
 
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs = [
