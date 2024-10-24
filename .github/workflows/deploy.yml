@@ -1,19 +1,41 @@
-name: Build, Push and Deploy 
+name: Build and Publish Coverage Report
+
 on:
-  workflow_dispatch:
-    inputs:
-      env:
-        description: 'The environment to deploy for'
-        default: 'dev'
-        required: true
-        type: choice
-        options:
-          - 'dev'
-          - 'qa'
-          - 'prod'
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
 jobs:
-  workflow:
-    uses: InnovacionTecnologicaCSP/devsecops-actions/.github/workflows/main.yml@main
-    with:
-      env: ${{ inputs.env }}
-    secrets: inherit
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout the code
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # Set up JDK 17
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'adopt'
+
+    # Grant execute permission for gradlew
+    - name: Grant execute permission for gradlew
+      run: chmod +x ./gradlew
+
+    # Build the project and generate the coverage report
+    - name: Build and generate coverage report
+      run: ./gradlew build
+
+    # Archive the coverage report
+    - name: Upload coverage report as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: jacoco-coverage-report
+        path: build/reports
+        retention-days: 7
