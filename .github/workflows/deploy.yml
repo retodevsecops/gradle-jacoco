@@ -30,7 +30,11 @@ jobs:
 
     # Build the project and generate the coverage report
     - name: Build and generate coverage report
-      run: ./gradlew build
+      run: ./gradlew build sonarqube \
+            -Dsonar.organization=retodevsecops \
+            -Dsonar.projectKey=retodevsecops_gradle-jacoco \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.token=${{ vars.SONAR_TOKEN }}
 
     # Archive the coverage report
     - name: Upload coverage report as artifact
